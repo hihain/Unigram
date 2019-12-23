@@ -1,0 +1,2 @@
+# Privacy policy
+The Unigram Mobile App stores your chat messages and all your personal data on your mobile device and sends and receives your data (phone number, messages and some settings) from and to Telegram services, so have a look at [their privacy policy](https://telegram.org/privacy) at [https://telegram.org/privacy](https://telegram.org/privacy).
