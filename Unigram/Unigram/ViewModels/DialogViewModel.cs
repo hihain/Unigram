@@ -100,7 +100,6 @@ namespace Unigram.ViewModels
 
         private readonly DialogStickersViewModel _stickers;
         private readonly ILocationService _locationService;
-        private readonly ILiveLocationService _liveLocationService;
         private readonly INotificationsService _pushService;
         private readonly IPlaybackService _playbackService;
         private readonly IVoIPService _voipService;
@@ -113,11 +112,10 @@ namespace Unigram.ViewModels
 
         public IDialogDelegate Delegate { get; set; }
 
-        public DialogViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator, ILocationService locationService, ILiveLocationService liveLocationService, INotificationsService pushService, IPlaybackService playbackService, IVoIPService voipService, INetworkService networkService, IMessageFactory messageFactory)
+        public DialogViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator, ILocationService locationService, INotificationsService pushService, IPlaybackService playbackService, IVoIPService voipService, INetworkService networkService, IMessageFactory messageFactory)
             : base(protoService, cacheService, settingsService, aggregator)
         {
             _locationService = locationService;
-            _liveLocationService = liveLocationService;
             _pushService = pushService;
             _playbackService = playbackService;
             _voipService = voipService;
