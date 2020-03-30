@@ -39000,5 +39000,10 @@ namespace Unigram.Strings
                 return resourceLoader.GetString("CreateMyWalletTerms");
             }
         }
+
+        public static string FilterAllChats { get; }
+        public static string FilterDeleteAlert { get; }
+        public static string FilterDelete { get; }
+        public static string FilterAddChats { get; }
     }
 }

@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource PageBackgroundDarkBrush}">
+    <!--<Grid Background="{ThemeResource PageBackgroundDarkBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
@@ -94,5 +94,5 @@
                 </StackPanel>
             </ScrollViewer>
         </muxc:ItemsRepeaterScrollHost>
-    </Grid>
+    </Grid>-->
 </Page>

@@ -267,6 +267,17 @@
     <Compile Include="Common\VisualUtilities.cs" />
     <Compile Include="Common\WindowContext.cs" />
     <Compile Include="Common\XamlResourceLoader.cs" />
+    <Compile Include="CompatibilityLayer\ChatListFilterSuggestion.cs" />
+    <Compile Include="CompatibilityLayer\ChatListFilterElement.cs" />
+    <Compile Include="CompatibilityLayer\FilterFlag.cs" />
+    <Compile Include="CompatibilityLayer\FilterChat.cs" />
+    <Compile Include="CompatibilityLayer\ChatListFilters.cs" />
+    <Compile Include="CompatibilityLayer\ChatListFilterFlags.cs" />
+    <Compile Include="CompatibilityLayer\ChatListFilter.cs" />
+    <Compile Include="CompatibilityLayer\GetChatListFilters.cs" />
+    <Compile Include="CompatibilityLayer\GetChatFilters.cs" />
+    <Compile Include="CompatibilityLayer\ChatFilters.cs" />
+    <Compile Include="CompatibilityLayer\ChatFilter.cs" />
     <Compile Include="Constants.Secret.cs" />
     <Compile Include="Controls\AnimatedGlyphButton.cs" />
     <Compile Include="Controls\AnimatedGlyphToggleButton.cs" />
@@ -623,6 +634,7 @@
     <Compile Include="Services\AlertsService.cs" />
     <Compile Include="Services\EmojiSetService.cs" />
     <Compile Include="Services\EncryptionService.cs" />
+    <Compile Include="CompatibilityLayer\MessageDice.cs" />
     <Compile Include="Services\SettingsSearchService.cs" />
     <Compile Include="Services\Settings\AppearanceSettings.cs" />
     <Compile Include="Services\ContactsService.cs" />

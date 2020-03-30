@@ -41,16 +41,16 @@ namespace Unigram.Views.Filters
             var title = content.Children[1] as TextBlock;
             var photo = content.Children[0] as ProfilePicture;
 
-            if (element is FilterChat chat)
-            {
-                title.Text = ViewModel.ProtoService.GetTitle(chat.Chat);
-                photo.Source = PlaceholderHelper.GetChat(ViewModel.ProtoService, chat.Chat, 36);
-            }
-            else if (element is FilterFlag flag)
-            {
-                title.Text = Enum.GetName(typeof(ChatListFilterFlags), flag.Flag);
-                photo.Source = PlaceholderHelper.GetGlyph(MainPage.GetFilterIcon(flag.Flag), (int)flag.Flag, 36);
-            }
+            //TODO: Weird... if (element is FilterChat chat)
+            //{
+            //    title.Text = ViewModel.ProtoService.GetTitle(chat.Chat);
+            //    photo.Source = PlaceholderHelper.GetChat(ViewModel.ProtoService, chat.Chat, 36);
+            //}
+            //else if (element is FilterFlag flag)
+            //{
+            //    title.Text = Enum.GetName(typeof(ChatListFilterFlags), flag.Flag);
+            //    photo.Source = PlaceholderHelper.GetGlyph(MainPage.GetFilterIcon(flag.Flag), (int)flag.Flag, 36);
+            //}
 
             //button.Command = ViewModel.OpenChatCommand;
             //button.CommandParameter = nearby;
@@ -69,7 +69,7 @@ namespace Unigram.Views.Filters
             var element = sender as FrameworkElement;
             var chat = element.Tag as ChatListFilterElement;
 
-            flyout.CreateFlyoutItem(viewModel.RemoveIncludeCommand, chat, Strings.Resources.StickersRemove, new FontIcon { Glyph = Icons.Delete });
+            //TODOflyout.CreateFlyoutItem(viewModel.RemoveIncludeCommand, chat, Strings.Resources.StickersRemove, new FontIcon { Glyph = Icons.Delete });
 
             args.ShowAt(flyout, element);
         }
@@ -87,7 +87,7 @@ namespace Unigram.Views.Filters
             var element = sender as FrameworkElement;
             var chat = element.Tag as ChatListFilterElement;
 
-            flyout.CreateFlyoutItem(viewModel.RemoveExcludeCommand, chat, Strings.Resources.StickersRemove, new FontIcon { Glyph = Icons.Delete });
+            //TODOflyout.CreateFlyoutItem(viewModel.RemoveExcludeCommand, chat, Strings.Resources.StickersRemove, new FontIcon { Glyph = Icons.Delete });
 
             args.ShowAt(flyout, element);
         }
