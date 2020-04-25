@@ -278,7 +278,6 @@
     <Compile Include="Common\CameraRotationHelper.cs" />
     <Compile Include="Common\InactivityHelper.cs" />
     <Compile Include="Common\Locale.cs" />
-    <Compile Include="Common\Markdown.cs" />
     <Compile Include="Common\MosaicMedia.cs" />
     <Compile Include="Common\GroupedMessages.cs" />
     <Compile Include="Common\MessageDialogExtensions.cs" />
@@ -345,6 +344,9 @@
     </Compile>
     <Compile Include="Controls\ChannelStickersButton.cs" />
     <Compile Include="Controls\ChatsListView.cs" />
+    <Compile Include="Controls\ChatStatisticsOverview.xaml.cs">
+      <DependentUpon>ChatStatisticsOverview.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Chats\ChatActionIndicator.cs" />
     <Compile Include="Controls\Chats\ChatBackgroundPresenter.cs" />
     <Compile Include="Controls\Chats\ChatBottomButton.cs" />
@@ -757,8 +759,8 @@
     <Compile Include="ViewModels\Delegates\IDialogDelegate.cs" />
     <Compile Include="ViewModels\Delegates\IFileDelegate.cs" />
     <Compile Include="ViewModels\Delegates\IMessageDelegate.cs" />
-    <Compile Include="ViewModels\Filters\FiltersViewModel.cs" />
-    <Compile Include="ViewModels\Filters\FilterViewModel.cs" />
+    <Compile Include="ViewModels\Folders\FoldersViewModel.cs" />
+    <Compile Include="ViewModels\Folders\FolderViewModel.cs" />
     <Compile Include="ViewModels\Gallery\GalleryAnimation.cs" />
     <Compile Include="ViewModels\Gallery\GalleryChatPhoto.cs" />
     <Compile Include="ViewModels\Gallery\GalleryContent.cs" />
@@ -896,11 +898,11 @@
     <Compile Include="Views\DiagnosticsPage.xaml.cs">
       <DependentUpon>DiagnosticsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Filters\FilterPage.xaml.cs">
-      <DependentUpon>FilterPage.xaml</DependentUpon>
+    <Compile Include="Views\Folders\FolderPage.xaml.cs">
+      <DependentUpon>FolderPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Filters\FiltersPage.xaml.cs">
-      <DependentUpon>FiltersPage.xaml</DependentUpon>
+    <Compile Include="Views\Folders\FoldersPage.xaml.cs">
+      <DependentUpon>FoldersPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Host\RootPage.xaml.cs">
       <DependentUpon>RootPage.xaml</DependentUpon>
@@ -1644,7 +1646,6 @@
     <Content Include="Assets\Animations\WalletSynchronization.tgs" />
     <Content Include="Assets\Animations\Compass.tgs" />
     <Content Include="Assets\Animations\ChatListFolders.tgs" />
-    <Content Include="Assets\Animations\DiceLoop.tgs" />
     <None Include="Assets\Fonts\Telegram.json" />
     <PRIResource Include="Strings\uk\Additional.resw">
       <SubType>Designer</SubType>
@@ -1757,6 +1758,8 @@
     <PRIResource Include="Strings\tr\Resources.resw" />
     <PRIResource Include="Strings\ca\Resources.resw" />
     <Content Include="Assets\Themes\DarkBlue.unigram-theme" />
+    <PRIResource Include="Strings\pl\Resources.resw" />
+    <PRIResource Include="Strings\uz\Resources.resw" />
     <None Include="Unigram_StoreKey.pfx" />
     <None Include="Unigram_TemporaryKey.pfx" />
   </ItemGroup>
@@ -1917,6 +1920,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Cells\WebSessionCell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ChatStatisticsOverview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -2231,17 +2238,14 @@
     <Page Include="Themes\Accent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Themes\Fluent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Themes\Messages.xaml">
       <SubType>Designer</SubType>
@@ -2254,7 +2258,6 @@
     <Page Include="Themes\Plain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Themes\TeachingTip.xaml">
       <SubType>Designer</SubType>
@@ -2320,13 +2323,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Filters\FilterPage.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Views\Folders\FolderPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Filters\FiltersPage.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Views\Folders\FoldersPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Host\RootPage.xaml">
       <Generator>MSBuild:Compile</Generator>

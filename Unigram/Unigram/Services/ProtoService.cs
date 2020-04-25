@@ -103,6 +103,7 @@ namespace Unigram.Services
         ScopeNotificationSettings GetScopeNotificationSettings(Chat chat);
 
         Task<StickerSet> GetAnimatedSetAsync(AnimatedSetType type);
+        bool IsDiceEmoji(string text, out string dice);
     }
 
     public class ProtoService : IProtoService, ClientResultHandler
@@ -140,6 +141,8 @@ namespace Unigram.Services
 
         private StickerSet[] _animatedSet = new StickerSet[2] { null, null };
         private TaskCompletionSource<StickerSet>[] _animatedSetTask = new TaskCompletionSource<StickerSet>[2] { null, null };
+
+        private IList<string> _diceEmojis;
 
         private IList<int> _favoriteStickers;
         private IList<long> _installedStickerSets;
@@ -1187,10 +1190,6 @@ namespace Unigram.Services
             {
                 name = Options.AnimatedEmojiStickerSetName ?? "AnimatedEmojies";
             }
-            else if (type == AnimatedSetType.Dice)
-            {
-                name = Options.AnimatedDiceStickerSetName ?? "AnimatedDice";
-            }
             else
             {
                 return null;
@@ -1205,6 +1204,20 @@ namespace Unigram.Services
             }
 
             return null;
+        }
+
+        public bool IsDiceEmoji(string text, out string dice)
+        {
+            text = text.Trim();
+
+            if (_diceEmojis == null)
+            {
+                dice = null;
+                return false;
+            }
+
+            dice = text;
+            return _diceEmojis.Contains(text);
         }
 
         #endregion
@@ -1394,6 +1407,10 @@ namespace Unigram.Services
             {
 
             }
+            else if (update is UpdateDiceEmojis updateDiceEmojis)
+            {
+                _diceEmojis = updateDiceEmojis.Emojis.ToArray();
+            }
             else if (update is UpdateFavoriteStickers updateFavoriteStickers)
             {
                 _favoriteStickers = updateFavoriteStickers.StickerIds;
@@ -1543,6 +1560,13 @@ namespace Unigram.Services
             {
 
             }
+            else if (update is UpdateStickerSet updateStickerSet)
+            {
+                if (string.Equals(updateStickerSet.StickerSet.Name, Options.AnimatedEmojiStickerSetName, StringComparison.OrdinalIgnoreCase))
+                {
+                    _animatedSet[(int)AnimatedSetType.Emoji] = updateStickerSet.StickerSet;
+                }
+            }
             else if (update is UpdateSupergroup updateSupergroup)
             {
                 _supergroups[updateSupergroup.Supergroup.Id] = updateSupergroup.Supergroup;
@@ -1618,8 +1642,7 @@ namespace Unigram.Services
 
     public enum AnimatedSetType
     {
-        Emoji,
-        Dice
+        Emoji
     }
 
     public class ChatListUnreadCount

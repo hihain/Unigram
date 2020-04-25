@@ -546,7 +546,7 @@
     <value>Afegeix un compte</value>
   </data>
   <data name="AddAdminErrorBlacklisted" xml:space="preserve">
-    <value>No podeu fer administrador aquest usuari perquè es troba a la llista d’usuaris eliminats i no l'en podeu treure.</value>
+    <value>No podeu fer administrador aquest usuari perquè es troba a la llista d’usuaris bandejats i no l'en podeu treure.</value>
   </data>
   <data name="AddAdminErrorNotAMember" xml:space="preserve">
     <value>No podeu afegir l'usuari com a administrador perquè no és membre del grup i no teniu permisos per a afegir-lo.</value>
@@ -1076,7 +1076,7 @@ Recordeu, en tancar la sessió perdreu els xats secrets.</value>
     <value>per {0}</value>
   </data>
   <data name="ArticleDateByAuthor" xml:space="preserve">
-    <value>{0} per {1}</value>
+    <value>{1} • {0}</value>
   </data>
   <data name="AskAQuestion" xml:space="preserve">
     <value>Cap dubte?</value>
@@ -1123,7 +1123,7 @@ Vegeu les <![CDATA[<a href="https://telegram.org/faq#general-questions">PMF del 
     <value>Els administradors del grup us han restringit la publicació de contingut integrat fins {0}</value>
   </data>
   <data name="AttachInlineRestrictedForever" xml:space="preserve">
-    <value>Els administradors del grup us han restringit la publicació de contingut integrat</value>
+    <value>Els administradors del grup us han restringit la publicació de contingut integrat.</value>
   </data>
   <data name="AttachLiveLocation" xml:space="preserve">
     <value>Ubicació en directe</value>
@@ -1668,7 +1668,7 @@ Ocàs: {1}</value>
     <value>{0} ({1})</value>
   </data>
   <data name="CallNotAvailable" xml:space="preserve">
-    <value>**{0}** no accepta trucades.</value>
+    <value>No podeu trucar a {0} per la seva configuració de privadesa.</value>
   </data>
   <data name="CallReportHint" xml:space="preserve">
     <value>Què ha anat malament?</value>
@@ -1882,7 +1882,7 @@ Nota: Si oblideu el codi d'accés haureu d'eliminar i reinstal·lar l'aplicació
     <value>Elimina el canal</value>
   </data>
   <data name="ChannelDeleteAlert" xml:space="preserve">
-    <value>En eliminar el canal s'expulsaran tots els membres i els missatges es perdran. Voleu eliminar-lo?</value>
+    <value>En eliminar el canal s'expulsaran tots els subscriptors i els missatges es perdran. Voleu eliminar-lo?</value>
   </data>
   <data name="ChannelDeletedUndo" xml:space="preserve">
     <value>S'ha eliminat el canal.</value>
@@ -2002,10 +2002,10 @@ Nota: Si oblideu el codi d'accés haureu d'eliminar i reinstal·lar l'aplicació
     <value>SILENCIA</value>
   </data>
   <data name="ChannelNotifyMembersInfoOff" xml:space="preserve">
-    <value>Els membres rebran una notificació silenciosa</value>
+    <value>Els subscriptors rebran una notificació silenciosa</value>
   </data>
   <data name="ChannelNotifyMembersInfoOn" xml:space="preserve">
-    <value>Es notificarà als membres quan publiqueu</value>
+    <value>Es notificarà als subscriptors quan publiqueu</value>
   </data>
   <data name="ChannelOtherMembers" xml:space="preserve">
     <value>Altres membres</value>
@@ -3886,6 +3886,9 @@ Durada: {1}</value>
   <data name="Folder" xml:space="preserve">
     <value>Carpeta</value>
   </data>
+  <data name="FollowersChartTitle" xml:space="preserve">
+    <value>Seguidors</value>
+  </data>
   <data name="FontSize" xml:space="preserve">
     <value>Mida de la lletra</value>
   </data>
@@ -4377,6 +4380,9 @@ amb el Telegram?</value>
     <value>Si una persona ja no forma part d'un grup heu d'estar en els seus contactes del Telegram per a tornar a afegir-la-hi.
 
 Teniu present que encara s'hi pot unir amb l'enllaç d'invitació, sempre que no estigui a la llista d'usuaris eliminats.</value>
+  </data>
+  <data name="GrowthChartTitle" xml:space="preserve">
+    <value>Creixement</value>
   </data>
   <data name="Hashtags" xml:space="preserve">
     <value>ETIQUETES</value>
@@ -6039,6 +6045,9 @@ Podeu personalitzar les notificacions d'un xat si obriu el seu perfil i trieu «
   <data name="NotificationsChannels" xml:space="preserve">
     <value>Canals</value>
   </data>
+  <data name="NotificationsChartTitle" xml:space="preserve">
+    <value>Notificacions</value>
+  </data>
   <data name="NotificationsCustom" xml:space="preserve">
     <value>Personalitzat</value>
   </data>
@@ -7382,7 +7391,7 @@ Permeteu l'accés a la ubicació per a activar aquesta opció.</value>
     <value>Fixa'l a dalt</value>
   </data>
   <data name="PinToTopLimitReached" xml:space="preserve">
-    <value>Només podeu fixar {0} a la llista de xats. Si voleu més organització, podeu arxivar alguns xats: a la carpeta de Xats Arxivats es poden fixar xats il·limitats. </value>
+    <value>Només podeu fixar {0} xats a la llista de xats. Per a més organització, la carpeta de xats arxivats permet fixar-ne un nombre il·limitat.</value>
   </data>
   <data name="PlacesInThisArea" xml:space="preserve">
     <value>Llocs en aquesta zona</value>
@@ -8468,7 +8477,7 @@ No respongueu la trucada, el Telegram ho processarà tot automàticament.</value
   <data name="SetTimer" xml:space="preserve">
     <value>Estableix l'autodestrucció</value>
   </data>
-  <data name="SETTINGS" xml:space="preserve">
+  <data name="Settings" xml:space="preserve">
     <value>Configuració</value>
   </data>
   <data name="SettingsFaqSearchTitle" xml:space="preserve">
@@ -8754,7 +8763,7 @@ El mode lent està activat. No podeu enviar més d'un missatge alhora.</value>
     <value>Us enviarem un SMS en {0}:%2$02d</value>
   </data>
   <data name="SoftUserLimitAlert" xml:space="preserve">
-    <value>Podreu afegir-hi més usuaris una vegada acabeu de crear el grup i el convertiu en un supergrup.</value>
+    <value>Podreu afegir-hi més membres una vegada acabeu de crear el grup.</value>
   </data>
   <data name="SortBy" xml:space="preserve">
     <value>Ordena per</value>

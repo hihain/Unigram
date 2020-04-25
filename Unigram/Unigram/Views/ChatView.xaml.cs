@@ -3500,7 +3500,7 @@ namespace Unigram.Views
 
             var value = show ? 48 : 0;
 
-            if (ApiInformation.IsMethodPresent("Windows.UI.Composition.Compositor", "CreateRoundedRectangleGeometry"))
+            if (ApiInformation.IsMethodPresent("Windows.UI.Composition.Compositor", "CreateGeometricClip"))
             {
                 var rect = textArea.Compositor.CreateRoundedRectangleGeometry();
                 rect.CornerRadius = new Vector2(SettingsService.Current.Appearance.BubbleRadius);
@@ -3619,7 +3619,7 @@ namespace Unigram.Views
 
             var value = show ? 48 : 0;
 
-            if (ApiInformation.IsMethodPresent("Windows.UI.Composition.Compositor", "CreateRoundedRectangleGeometry"))
+            if (ApiInformation.IsMethodPresent("Windows.UI.Composition.Compositor", "CreateGeometricClip"))
             {
                 var rect = textArea.Compositor.CreateRoundedRectangleGeometry();
                 rect.CornerRadius = new Vector2(SettingsService.Current.Appearance.BubbleRadius);

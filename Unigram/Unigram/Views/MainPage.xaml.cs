@@ -2678,27 +2678,23 @@ namespace Unigram.Views
             {
                 return Icons.MarkAsUnread; //FontFamily = App.Current.Resources["TelegramThemeFontFamily"] as FontFamily };
             }
-            else if (filter.IncludeContacts && !filter.IncludeNonContacts && !filter.IncludeLargeGroups && !filter.IncludeSmallGroups && !filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
+            else if (filter.IncludeContacts && !filter.IncludeNonContacts && !filter.IncludeGroups && !filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
             {
                 return Icons.Contact;
             }
-            else if (!filter.IncludeContacts && filter.IncludeNonContacts && !filter.IncludeLargeGroups && !filter.IncludeSmallGroups && !filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
+            else if (!filter.IncludeContacts && filter.IncludeNonContacts && !filter.IncludeGroups && !filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
             {
-                return Icons.Secret;
+                return Icons.Help;
             }
-            else if (!filter.IncludeContacts && !filter.IncludeNonContacts && filter.IncludeLargeGroups && !filter.IncludeSmallGroups && !filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
+            else if (!filter.IncludeContacts && !filter.IncludeNonContacts && filter.IncludeGroups && !filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
             {
                 return Icons.Group;
             }
-            else if (!filter.IncludeContacts && !filter.IncludeNonContacts && !filter.IncludeLargeGroups && filter.IncludeSmallGroups && !filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
-            {
-                return Icons.BasicGroup;
-            }
-            else if (!filter.IncludeContacts && !filter.IncludeNonContacts && !filter.IncludeLargeGroups && !filter.IncludeSmallGroups && filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
+            else if (!filter.IncludeContacts && !filter.IncludeNonContacts && !filter.IncludeGroups && filter.IncludeChannels && !filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
             {
                 return Icons.Channel;
             }
-            else if (!filter.IncludeContacts && !filter.IncludeNonContacts && !filter.IncludeLargeGroups && !filter.IncludeSmallGroups && !filter.IncludeChannels && filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
+            else if (!filter.IncludeContacts && !filter.IncludeNonContacts && !filter.IncludeGroups && !filter.IncludeChannels && filter.IncludeBots && !filter.ExcludeRead && !filter.ExcludeMuted)
             {
                 return Icons.Bot;
             }
@@ -2724,13 +2720,9 @@ namespace Unigram.Views
             {
                 return Icons.Admin; //TODO Help;
             }
-            else if (filter == ChatListFilterFlags.IncludeLargeGroups)
+            else if (filter == ChatListFilterFlags.IncludeGroups)
             {
                 return Icons.Group;
-            }
-            else if (filter == ChatListFilterFlags.IncludeSmallGroups)
-            {
-                return Icons.BasicGroup;
             }
             else if (filter == ChatListFilterFlags.IncludeChannels)
             {

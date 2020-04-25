@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Telegram.Td;
 using Telegram.Td.Api;
 using Unigram.Strings;
 using Windows.UI.Text;
@@ -49,8 +50,9 @@ namespace Unigram.Common
                 markdown = Regex.Replace(markdown, "<a href=\"(.*?)\">(.*?)<\\/a>", "[$2]($1)");
             }
 
-            var entities = Markdown.Parse(ref markdown);
-            var text = markdown;
+            var formatted = Client.Execute(new ParseMarkdown(new FormattedText(markdown, new TextEntity[0]))) as FormattedText;
+            var text = formatted.Text;
+            var entities = formatted.Entities;
             var previous = 0;
 
             foreach (var entity in entities.OrderBy(x => x.Offset))
@@ -134,7 +136,9 @@ namespace Unigram.Common
             var sender = d as TextBlock;
             var markdown = e.NewValue as FormattedText;
 
+            var span = new Span();
             sender.Inlines.Clear();
+            sender.Inlines.Add(span);
 
             if (markdown == null)
             {
@@ -143,13 +147,15 @@ namespace Unigram.Common
 
             var entities = markdown.Entities;
             var text = markdown.Text;
+
+            var runs = TextStyleRun.GetRuns(text, entities);
             var previous = 0;
 
-            foreach (var entity in entities.OrderBy(x => x.Offset))
+            foreach (var entity in runs)
             {
                 if (entity.Offset > previous)
                 {
-                    sender.Inlines.Add(new Run { Text = text.Substring(previous, entity.Offset - previous) });
+                    span.Inlines.Add(new Run { Text = text.Substring(previous, entity.Offset - previous) });
                 }
 
                 if (entity.Length + entity.Offset > text.Length)
@@ -158,20 +164,43 @@ namespace Unigram.Common
                     continue;
                 }
 
-                if (entity.Type is TextEntityTypeBold)
+                if (entity.HasFlag(TextStyle.Monospace))
                 {
-                    sender.Inlines.Add(new Run { Text = text.Substring(entity.Offset, entity.Length), FontWeight = FontWeights.SemiBold });
+                    span.Inlines.Add(new Run { Text = text.Substring(entity.Offset, entity.Length), FontFamily = new FontFamily("Consolas") });
                 }
-                else if (entity.Type is TextEntityTypeItalic)
+                else
                 {
-                    sender.Inlines.Add(new Run { Text = text.Substring(entity.Offset, entity.Length), FontStyle = FontStyle.Italic });
-                }
-                else if (entity.Type is TextEntityTypeTextUrl textUrl)
-                {
-                    var hyperlink = new Hyperlink();
-                    hyperlink.NavigateUri = new Uri(textUrl.Url);
-                    hyperlink.Inlines.Add(new Run { Text = text.Substring(entity.Offset, entity.Length) });
-                    sender.Inlines.Add(hyperlink);
+                    var local = span;
+
+                    if (entity.Type is TextEntityTypeTextUrl textUrl)
+                    {
+                        var hyperlink = new Hyperlink { NavigateUri = new Uri(textUrl.Url) };
+                        var data = text.Substring(entity.Offset, entity.Length);
+
+                        span.Inlines.Add(hyperlink);
+                        local = hyperlink;
+                    }
+
+                    var run = new Run { Text = text.Substring(entity.Offset, entity.Length) };
+
+                    if (entity.HasFlag(TextStyle.Bold))
+                    {
+                        run.FontWeight = FontWeights.SemiBold;
+                    }
+                    if (entity.HasFlag(TextStyle.Italic))
+                    {
+                        run.FontStyle |= FontStyle.Italic;
+                    }
+                    if (entity.HasFlag(TextStyle.Underline))
+                    {
+                        run.TextDecorations |= TextDecorations.Underline;
+                    }
+                    if (entity.HasFlag(TextStyle.Strikethrough))
+                    {
+                        run.TextDecorations |= TextDecorations.Strikethrough;
+                    }
+
+                    local.Inlines.Add(run);
                 }
 
                 previous = entity.Offset + entity.Length;
@@ -179,7 +208,7 @@ namespace Unigram.Common
 
             if (text.Length > previous)
             {
-                sender.Inlines.Add(new Run { Text = text.Substring(previous) });
+                span.Inlines.Add(new Run { Text = text.Substring(previous) });
             }
 
             //var previous = 0;
