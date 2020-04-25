@@ -8,7 +8,6 @@ using Template10.Services.NavigationService;
 using Unigram.Controls;
 using Unigram.Services;
 using Unigram.ViewModels;
-using Unigram.ViewModels.SignIn;
 using Unigram.Views;
 using Unigram.Views.SignIn;
 using Windows.UI.Xaml.Controls;
@@ -36,19 +35,9 @@ namespace Unigram.Common
                     Navigate(typeof(MainPage));
                     break;
                 case AuthorizationStateWaitPhoneNumber waitPhoneNumber:
-                case AuthorizationStateWaitOtherDeviceConfirmation waitOtherDeviceConfirmation:
                     if (_lifetimeService.Items.Count > 1)
                     {
-                        if (Frame.Content is SignInPage page && page.DataContext is SignInViewModel viewModel)
-                        {
-                            await viewModel.OnNavigatedToAsync(null, NavigationMode.Refresh, null);
-                        }
-                        else
-                        {
-                            Navigate(typeof(SignInPage));
-                        }
-
-                        Frame.BackStack.Clear();
+                        Navigate(typeof(SignInPage));
                         Frame.BackStack.Add(new PageStackEntry(typeof(BlankPage), null, null));
                     }
                     else

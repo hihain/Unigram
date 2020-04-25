@@ -13,7 +13,7 @@ namespace Unigram.Services
     public interface ISettingsService
     {
         int Session { get; }
-        ulong Version { get; }
+        ulong VersionLastStart { get; }
 
         void UpdateVersion();
 
@@ -187,32 +187,48 @@ namespace Unigram.Services
 
 #region App version
 
-        public const ulong CurrentVersion = (3UL << 48) | (14UL << 32) | (2665UL << 16);
-        public const string CurrentChangelog = "• Enjoy rich text editing capabilites by right clicking on Chat input > Formatting > Show formatting";
+        public const string CurrentChangelog = "â€¢ Enjoy rich text editing capabilites by right clicking on Chat input > Formatting > Show formatting";
         public const bool CurrentMedia = false;
 
         public int Session => _session;
 
-        private ulong? _version;
-        public ulong Version
+        private ulong? _versionLastStart;
+        public ulong VersionLastStart
         {
             get
             {
-                if (_version == null)
-                    _version = GetValueOrDefault("LongVersion", 0UL);
+                if (_versionLastStart == null)
+                    _versionLastStart = GetValueOrDefault("LongVersion", 0UL);
 
-                return _version ?? 0;
+                return _versionLastStart ?? 0;
             }
             private set
             {
-                _version = value;
+                _versionLastStart = value;
                 AddOrUpdateValue("LongVersion", value);
             }
         }
 
         public void UpdateVersion()
         {
-            Version = CurrentVersion;
+            var version = GetAppVersion();
+            VersionLastStart = ((ulong)version.Major << 48) | ((ulong)version.Minor << 32);
+        }
+
+        public static ulong CurrentVersion
+        {
+            get
+            {
+                var version = GetAppVersion();
+                return ((ulong)version.Major << 48) | ((ulong)version.Minor << 32);
+            }
+        }
+
+    public static Windows.ApplicationModel.PackageVersion GetAppVersion()
+        {
+            Windows.ApplicationModel.Package package = Windows.ApplicationModel.Package.Current;
+            Windows.ApplicationModel.PackageId packageId = package.Id;
+            return packageId.Version;
         }
 
 #endregion
@@ -222,7 +238,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _chats ??= new ChatSettingsBase(_own);
+                return _chats = _chats ?? new ChatSettingsBase(_own);
             }
         }
 
@@ -231,7 +247,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _notifications ??= new NotificationsSettings(_container);
+                return _notifications = _notifications ?? new NotificationsSettings(_container);
             }
         }
 
@@ -240,7 +256,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _stickers ??= new StickersSettings(_local);
+                return _stickers = _stickers ?? new StickersSettings(_local);
             }
         }
 
@@ -249,7 +265,8 @@ namespace Unigram.Services
         {
             get
             {
-                return _emoji ??= new EmojiSettings();
+                return _emoji = _emoji ?? new EmojiSettings();
+                // c# 8.0: return _emoji ??= new EmojiSettings();
             }
         }
 
@@ -259,7 +276,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _wallet ??= new WalletSettings(_own);
+                return _wallet = _wallet ?? new WalletSettings(_own);
             }
         }
 #endif
@@ -269,7 +286,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _autoDownload ??= new AutoDownloadSettings(_own.CreateContainer("AutoDownload", ApplicationDataCreateDisposition.Always));
+                return _autoDownload = _autoDownload ?? new AutoDownloadSettings(_own.CreateContainer("AutoDownload", ApplicationDataCreateDisposition.Always));
             }
             set
             {
@@ -283,7 +300,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _appearance ??= new AppearanceSettings();
+                return _appearance = _appearance ?? new AppearanceSettings();
             }
         }
 
@@ -292,7 +309,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _diagnostics ??= new DiagnosticsSettings();
+                return _diagnostics = _diagnostics ?? new DiagnosticsSettings();
             }
         }
 
@@ -301,7 +318,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _filters ??= new FiltersSettings(_own);
+                return _filters = _filters ?? new FiltersSettings(_container);
             }
         }
 
@@ -310,7 +327,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _passcodeLock ??= new PasscodeLockSettings();
+                return _passcodeLock = _passcodeLock ?? new PasscodeLockSettings();
             }
         }
 
@@ -319,7 +336,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _playback ??= new PlaybackSettings(_local);
+                return _playback = _playback ?? new PlaybackSettings(_local);
             }
         }
 
@@ -328,7 +345,7 @@ namespace Unigram.Services
         {
             get
             {
-                return _voip ??= new VoIPSettings();
+                return _voip = _voip ?? new VoIPSettings();
             }
         }
 

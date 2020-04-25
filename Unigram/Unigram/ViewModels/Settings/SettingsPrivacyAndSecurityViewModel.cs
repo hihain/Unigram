@@ -342,8 +342,8 @@ namespace Unigram.ViewModels.Settings
                 var max = 2147483647;
                 foreach (var current in periods)
                 {
-                    var days = (int)current.Value;
-                    int abs = Math.Abs(_accountTTL - days);
+                    var myDays = (int)current.Value;
+                    int abs = Math.Abs(_accountTTL - myDays);
                     if (abs < max)
                     {
                         max = abs;

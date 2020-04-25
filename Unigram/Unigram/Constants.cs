@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Unigram
+﻿namespace Unigram
 {
     public static partial class Constants
     {
@@ -12,7 +6,6 @@ namespace Unigram
         public static readonly string ApiHash;
 
         public static readonly string AppCenterId;
-
 
         public const int TypingTimeout = 300;
 
@@ -34,5 +27,7 @@ namespace Unigram
             "telegra.ph"
             /*"telesco.pe"*/
         };
+
+        public static readonly Windows.UI.Xaml.Media.FontFamily SymbolThemeFontFamily = new Windows.UI.Xaml.Media.FontFamily("ms-appx:///Assets/Fonts/SEGMDL2.TTF#Segoe MDL2 Assets"); // see App.xaml
     }
 }

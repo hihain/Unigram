@@ -1181,7 +1181,7 @@ namespace Unigram.Controls.Chats
 
     public interface IAutocompleteCollection : ICollection
     {
-        public Orientation Orientation { get; }
+        Orientation Orientation { get; }
     }
 
     public class AutocompleteList<T> : List<T>, IAutocompleteCollection

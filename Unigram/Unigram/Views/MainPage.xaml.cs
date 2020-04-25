@@ -598,12 +598,12 @@ namespace Unigram.Views
             var opacity1 = visual.Compositor.CreateScalarKeyFrameAnimation();
             opacity1.InsertKeyFrame(show ? 0 : 1, 0);
             opacity1.InsertKeyFrame(show ? 1 : 0, 1);
-            opacity1.Duration /= 2;
+            opacity1.Duration = TimeSpan.FromTicks(opacity1.Duration.Ticks / 2); // newer Framework / language is able to do that: opacity1.Duration /= 2; 
 
             var opacity2 = visual.Compositor.CreateScalarKeyFrameAnimation();
             opacity2.InsertKeyFrame(show ? 0 : 1, 1);
             opacity2.InsertKeyFrame(show ? 1 : 0, 0);
-            opacity2.Duration /= 2;
+            opacity2.Duration = TimeSpan.FromTicks(opacity2.Duration.Ticks / 2); //opacity2.Duration /= 2;
 
             header.StartAnimation("Offset", offset);
             visual.StartAnimation("Offset", offset);
@@ -2085,57 +2085,49 @@ namespace Unigram.Views
 
         public async void NavigationView_ItemClick(RootDestination destination)
         {
-            if (destination == RootDestination.NewChat)
+            switch (destination)
             {
-                MasterDetail.NavigationService.Navigate(typeof(BasicGroupCreateStep1Page));
-            }
-            else if (destination == RootDestination.NewSecretChat)
-            {
-                ViewModel.CreateSecretChatCommand.Execute();
-            }
-            else if (destination == RootDestination.NewChannel)
-            {
-                MasterDetail.NavigationService.Navigate(typeof(ChannelCreateStep1Page));
-            }
-            else if (destination == RootDestination.Chats)
-            {
-                rpMasterTitlebar.SelectedIndex = 0;
-                MasterDetail.Push(true);
-            }
-            else if (destination == RootDestination.Contacts)
-            {
-                rpMasterTitlebar.SelectedIndex = 1;
-                MasterDetail.Push(true);
-            }
-            else if (destination == RootDestination.Calls)
-            {
-                rpMasterTitlebar.SelectedIndex = 2;
-                MasterDetail.Push(true);
-            }
-            else if (destination == RootDestination.Settings)
-            {
-                rpMasterTitlebar.SelectedIndex = 3;
-                MasterDetail.Push(true);
-            }
-            else if (destination == RootDestination.InviteFriends)
-            {
-                MasterDetail.NavigationService.Navigate(typeof(InvitePage));
-            }
-            else if (destination == RootDestination.Wallet)
-            {
-                MasterDetail.NavigationService.NavigateToWallet();
-            }
-            else if (destination == RootDestination.SavedMessages)
-            {
-                var response = await ViewModel.ProtoService.SendAsync(new CreatePrivateChat(ViewModel.CacheService.Options.MyId, false));
-                if (response is Chat chat)
-                {
-                    MasterDetail.NavigationService.NavigateToChat(chat);
-                }
-            }
-            else if (destination == RootDestination.News)
-            {
-                MessageHelper.NavigateToUsername(ViewModel.ProtoService, MasterDetail.NavigationService, "unigram", null, null, null);
+                case RootDestination.NewChat:
+                    MasterDetail.NavigationService.Navigate(typeof(BasicGroupCreateStep1Page));
+                    break;
+                case RootDestination.NewSecretChat:
+                    ViewModel.CreateSecretChatCommand.Execute();
+                    break;
+                case RootDestination.NewChannel:
+                    MasterDetail.NavigationService.Navigate(typeof(ChannelCreateStep1Page));
+                    break;
+                case RootDestination.Chats:
+                    rpMasterTitlebar.SelectedIndex = 0;
+                    MasterDetail.Push(true);
+                    break;
+                case RootDestination.Contacts:
+                    rpMasterTitlebar.SelectedIndex = 1;
+                    MasterDetail.Push(true);
+                    break;
+                case RootDestination.Calls:
+                    rpMasterTitlebar.SelectedIndex = 2;
+                    MasterDetail.Push(true);
+                    break;
+                case RootDestination.Settings:
+                    rpMasterTitlebar.SelectedIndex = 3;
+                    MasterDetail.Push(true);
+                    break;
+                case RootDestination.InviteFriends:
+                    MasterDetail.NavigationService.Navigate(typeof(InvitePage));
+                    break;
+                case RootDestination.Wallet:
+                    MasterDetail.NavigationService.NavigateToWallet();
+                    break;
+                case RootDestination.SavedMessages:
+                    {
+                        var response = await ViewModel.ProtoService.SendAsync(new CreatePrivateChat(ViewModel.CacheService.Options.MyId, false));
+                        if (response is Chat chat)
+                        {
+                            MasterDetail.NavigationService.NavigateToChat(chat);
+                        }
+
+                        break;
+                    }
             }
         }
 

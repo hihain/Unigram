@@ -43,7 +43,7 @@ namespace Unigram.Views
 
             NavigationCacheMode = NavigationCacheMode.Required;
 
-            Diagnostics.Text = $"Unigram " + GetVersion();
+            Diagnostics.Text = $"Unigram Mobile " + GetVersion();
 
             if (ApiInformation.IsEnumNamedValuePresent("Windows.UI.Xaml.Controls.Primitives.FlyoutPlacementMode", "BottomEdgeAlignedRight"))
             {
@@ -60,10 +60,8 @@ namespace Unigram.Views
 
         private string GetVersion()
         {
-            Package package = Package.Current;
-            PackageId packageId = package.Id;
-            PackageVersion version = packageId.Version;
-            return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build, version.Revision);
+            PackageVersion version = Services.SettingsService.GetAppVersion();
+            return $"{version.Major}.{version.Minor}.{version.Build}";
         }
 
         private MasterDetailView _masterDetail;

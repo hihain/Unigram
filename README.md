@@ -1,73 +1,57 @@
 <p align="center">
-  <a href="https://www.microsoft.com/store/apps/9n97zckpd60q">
+  <a href="https://www.microsoft.com/store/apps/9NSD4T15QLFX">
     <img src="https://raw.githubusercontent.com/UnigramDev/Unigram/develop/Unigram/Assets/StoreLogo/Release/StoreLogo.scale-200.png" width=80 height=80>
   </a>
 
-  <h3 align="center">Unigram</h3>
+  <h3 align="center">Unigram Mobile Messenger</h3>
 
   <p align="center">
-    The Telegram client optimised for the Windows 10 platform.
+    The Telegram client optimised for the Windows 10 Mobile platform.
     <br>
     <br>
-    <a href="https://www.microsoft.com/store/apps/9n97zckpd60q">Download</a>
+    <a href="https://www.microsoft.com/store/apps/9NSD4T15QLFX">Download</a>
     &middot;
-    <a href="https://t.me/unigraminsiders">Insiders Group</a>
+    [UnigramMobile Group on Telegram](https://t.me/UnigramMobile)
   </p>
 </p>
 
 <br>
 
-Thanks to the [Universal Windows Platform](https://docs.microsoft.com/en-us/windows/uwp/get-started/whats-a-uwp), Unigram can run on any Windows 10 device (PC, smartphones, Xbox One, Holo Lens and Surface Hub), integrated with almost all the new Windows features, it provides a seamless and consistent user experience. 
+Thanks to the [Universal Windows Platform](https://docs.microsoft.com/en-us/windows/uwp/get-started/whats-a-uwp), Unigram can run on any Windows 10 device (PC, smartphones, Xbox One, Holo Lens and Surface Hub), integrated with almost all the new Windows features, it provides a seamless and consistent user experience. Unigram Mobile continues to support Windows 10 Mobile smartphones, whereas the original Unigram stopped the support at the end of 2019.
 
 ## Table of contents
 - [Features](#features)
 - [Contributing](#contributing)
 - [Changelog](#changelog)
-- [Screenshots](#screenshots)
-- [Download without Microsoft Store](#alternativedownload)
 - [Wiki](#wiki)
 
 
 <a name="features"></a>
 ## Features
-- Based on [TDLib](https://github.com/tdlib/td)
-- Secret chats
-- Instant view (now updated with the most recent 2.0)
-- Multi-account
-- Filter chats (users, bots, groups, channels, unread chats and unmuted chats)
+- Based on [TDLib](https://github.com/tdlib/td) and [Unigram](https://github.com/UnigramDev/Unigram)
+- Contiuum Support
+- Built-in App Lock (e.g. Windows Hello Authentication)
+- Secret Chats
+- Instant View
+- Multi-Account
+- Filter Chats (Users, Bots, Groups, Channels, Unread Chats and Unmuted Chats)
 - Calls
-- Videos and photos editor (easily crop photos, set video resultion or remove some parts of the videos before sending them)
-- Drag&drop files to chats to send them quickly
-- Open chats in separated windows (Shift+click)
-- Replace sent media content
+- Replace Sent Media Content
 - Polls 2.0
-- Backgrounds 2.0 (blurred and motion options available)
-- Built-in app lock with support for Windows Hello authentication (fingerprint, face and iris recognition)
-- Advanced markdown editor for messages
-- In-app music player
-- Animated stickers and emojis
-- Scheduled and silent messages
-- Full support of Windows 10 notifications and Action Centre (reply to a message or mark it as read without opening the app)
-- Accessibility for visually impaired people
+- Backgrounds 2.0
+- Advanced Markdown Editor for Messages
+- In-App Music Player
+- Animated Stickers and Emojis
+- Scheduled and Silent Messages
 
 
 <a name="contributing"></a>
 ## Contributing
-Before reporting bugs, doing features requests or embarking pull requests, be sure you have already read our [contributing guidelines](https://github.com/UnigramDev/Unigram/blob/develop/CONTRIBUTING.md).
+Before reporting bugs, doing features requests or embarking pull requests, be sure you have already read the official Unigram [contributing guidelines](https://github.com/UnigramDev/Unigram/blob/develop/CONTRIBUTING.md) and check if the same behaviour aplies to Unigram (for example on a desktop).
 
 <a name="changelog"></a>
 ## Changelog
-Changelogs are provided both in [Releases section of our GitHub project](https://github.com/UnigramDev/Unigram/releases) and [Unigram News channel](https://t.me/unigram).
-
-<a name="screenshots"></a>
-## Screenshots
-![1](https://github.com/UnigramDev/Unigram/blob/develop/Screenshots/Screen1.PNG)
-![2](https://raw.githubusercontent.com/UnigramDev/Unigram/develop/Screenshots/Screen2.PNG)
-
-<a name="alternativedownload"></a>
-## Download without the store
-If you don't want Microsoft Store you can install Unigram from [here](https://unigramdev.github.io/).
-Only major updates will be posted here. If you care about minor updates you should use Microsoft Store.
+Changelogs are provided both in [Releases section of the Unigram GitHub project](https://github.com/UnigramDev/Unigram/releases) and [Unigram News channel](https://t.me/unigram).
 
 <a name="wiki"></a>
 ## Wiki

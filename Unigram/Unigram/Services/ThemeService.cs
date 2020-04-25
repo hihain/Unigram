@@ -2851,7 +2851,8 @@ namespace Unigram.Services
 
     public abstract class ThemeInfoBase
     {
-        public string Name { get; set; }
+        private string _name;
+        public string Name { get => Locale.GetString("Theme" + _name.Replace(" ", string.Empty)); set => _name = value; }
         public TelegramTheme Parent { get; set; }
 
         public abstract bool IsOfficial { get; }

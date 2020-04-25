@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4" xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4" xmlns:iot2="http://schemas.microsoft.com/appx/manifest/iot/windows10/2" IgnorableNamespaces="uap uap3 uap4 uap5 mp rescap desktop desktop4 iot2">
-  <Identity Name="38833FF26BA1D.UnigramExperimental" Publisher="CN=D89C87B4-2758-402A-8F40-3571D00882AB" Version="3.12.2610.0" />
-  <mp:PhoneIdentity PhoneProductId="beb00b97-1a3d-4d32-bc5a-b2dc6d897873" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4" xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4" xmlns:iot2="http://schemas.microsoft.com/appx/manifest/iot/windows10/2" IgnorableNamespaces="uap uap3 uap4 uap5 mp rescap desktop desktop4 iot2">
+  <Identity Name="49197Wirdschon.UnigramMobile" Publisher="CN=DC409D7A-979D-42E5-AAA5-E9A0F674260F" Version="19.12.2638.0" />
+  <mp:PhoneIdentity PhoneProductId="712e101e-47a5-4030-bdf6-712fe8a12fde" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Unigram Experimental</DisplayName>
-    <PublisherDisplayName>Unigram, Inc.</PublisherDisplayName>
+    <DisplayName>Unigram Mobile Experimental</DisplayName>
+    <PublisherDisplayName>abaculi</PublisherDisplayName>
     <Logo>Assets\Logos\StoreLogo\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Unigram.App">
-      <uap:VisualElements DisplayName="Telegram" Square150x150Logo="Assets\Logos\Square150x150Logo\Square150x150Logo.png" Square44x44Logo="Assets\Logos\Square44x44Logo\Square44x44Logo.png" Description="Unigram" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Unigram Mobile Experimental" Square150x150Logo="Assets\Logos\Square150x150Logo\Square150x150Logo.png" Square44x44Logo="Assets\Logos\Square44x44Logo\Square44x44Logo.png" Description="Unigram Mobile is a Telegram client for Windows 10 Mobile" BackgroundColor="transparent">
         <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\Logos\LockScreenLogo\LockScreenLogo.png" />
         <uap:DefaultTile Wide310x150Logo="Assets\Logos\Wide310x150Logo\Wide310x150Logo.png" Square71x71Logo="Assets\Logos\Square71x71Logo\Square71x71Logo.png" Square310x310Logo="Assets\Logos\Square310x310Logo\Square310x310Logo.png">
           <uap:ShowNameOnTiles>
@@ -86,10 +86,10 @@
         </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="theme">
+            <uap:DisplayName>Unigram Theme</uap:DisplayName>
             <uap:SupportedFileTypes>
               <uap:FileType>.unigram-theme</uap:FileType>
             </uap:SupportedFileTypes>
-            <uap:DisplayName>Unigram Theme</uap:DisplayName>
           </uap:FileTypeAssociation>
         </uap:Extension>
       </Extensions>
@@ -111,12 +111,12 @@
   </Extensions>
   <Capabilities>
     <Capability Name="internetClient" />
-	  <Capability Name="privateNetworkClientServer" />
+    <Capability Name="privateNetworkClientServer" />
     <uap:Capability Name="removableStorage" />
     <uap:Capability Name="picturesLibrary" />
     <uap:Capability Name="voipCall" />
     <uap:Capability Name="contacts" />
-	  <uap3:Capability Name="backgroundMediaPlayback" />
+    <uap3:Capability Name="backgroundMediaPlayback" />
     <DeviceCapability Name="location" />
     <DeviceCapability Name="microphone" />
     <DeviceCapability Name="webcam" />

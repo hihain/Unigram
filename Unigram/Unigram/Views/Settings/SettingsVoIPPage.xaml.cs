@@ -30,12 +30,7 @@ namespace Unigram.Views.Settings
 
         private string ConvertVolumeLabel(float value, bool output)
         {
-            if (output)
-            {
-                return string.Format("Output volume: {0}", (int)(value * 100));
-            }
-
-            return string.Format("Input volume: {0}", (int)(value * 100));
+            return string.Format("{0}: {1}", Common.Locale.GetString(output ? "OutputVolume" : "InputVolume"), (int)(value * 100));
         }
 
         private double ConvertVolume(float value)

@@ -98,6 +98,13 @@ namespace Unigram.Controls.Views
             titlebar.ForegroundColor = foregroundBrush.Color;
             //titlebar.ButtonBackgroundColor = backgroundBrush.Color;
             titlebar.ButtonForegroundColor = foregroundBrush.Color;
+
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundColor = backgroundBrush.Color;
+                statusBar.ForegroundColor = foregroundBrush.Color;
+            }
         }
 
         private async void List_ItemClick(object sender, ItemClickEventArgs e)
