@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Telegram.Td.Api
 {
@@ -8,8 +9,8 @@ namespace Telegram.Td.Api
     /// </summary>
     public class ChatListFilter
     {
-        public IList IncludeChats { get; internal set; }
-        public IList ExcludeChats { get; internal set; }
+        public IList<long> IncludeChats { get; internal set; }
+        public IList<long> ExcludeChats { get; internal set; }
         public bool ExcludeMuted { get; internal set; }
         public bool ExcludeRead { get; internal set; }
         public bool IncludeBots { get; internal set; }
@@ -19,11 +20,13 @@ namespace Telegram.Td.Api
         public bool IncludeSmallGroups { get; internal set; }
         public bool IncludeChannels { get; internal set; }
         public int Id { get; internal set; }
-        public object Title { get; internal set; }
+        public string Title { get; internal set; }
+        public bool IncludeGroups { get; internal set; }
+        public bool ExcludeArchived { get; internal set; }
 
         internal bool IncludeAll() // should be a property?
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Telegram.Td.Api
     /// </summary>
     public class ChatListFilterSuggestion
     {
-        public ChatFilter Filter { get; internal set; }
+        public ChatListFilter Filter { get; internal set; }
         public string Description { get; internal set; }
     }
 }
