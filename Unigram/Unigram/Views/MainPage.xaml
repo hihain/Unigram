@@ -2,7 +2,6 @@
     x:Class="Unigram.Views.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:contract7Present="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
     xmlns:local="using:Unigram.Views"
     xmlns:common="using:Unigram.Common"
     xmlns:controls="using:Unigram.Controls"
@@ -85,9 +84,9 @@
         <controls:MasterDetailView x:Name="MasterDetail" ViewStateChanged="OnStateChanged" Update="OnUpdate">
             <controls:MasterDetailView.Header>
                 <Grid x:Name="TitleBarrr" Background="{ThemeResource PageTitleBackgroundBrush}">
-                    <contract7Present:Grid.BackgroundTransition>
+                    <!--<contract7Present:Grid.BackgroundTransition>
                         <BrushTransition/>
-                    </contract7Present:Grid.BackgroundTransition>
+                    </contract7Present:Grid.BackgroundTransition>-->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
@@ -117,9 +116,9 @@
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                <contract7Present:Grid.BackgroundTransition>
+                <!--<contract7Present:Grid.BackgroundTransition>
                     <BrushTransition/>
-                </contract7Present:Grid.BackgroundTransition>
+                </contract7Present:Grid.BackgroundTransition>-->
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -498,7 +497,7 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <ScrollViewer x:Name="ChatTabs" x:Load="False" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Hidden">
+                                    <ScrollViewer x:Name="ChatTabs" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Hidden">
                                         <ScrollViewer.Resources>
                                             <x:Double x:Key="NavigationViewTopPaneHeight">40</x:Double>
                                         </ScrollViewer.Resources>
@@ -793,7 +792,6 @@
 
         <controls:ConfettiView
             x:Name="Confetti"
-            x:Load="False"
             Completed="Confetti_Completed"
             IsHitTestVisible="False"/>
     </Grid>

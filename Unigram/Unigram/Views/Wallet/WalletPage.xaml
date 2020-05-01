@@ -108,7 +108,6 @@
 
                     <Grid
                         x:Name="LoadingPanel"
-                        x:Load="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
                         Loaded="CreatedPanel_Loaded"
                         Unloaded="CreatedPanel_Unloaded"
                         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -137,7 +136,6 @@
 
                     <Grid
                         x:Name="CreatedPanel"
-                        x:Load="{x:Bind ViewModel.IsEmpty, Mode=OneWay}"
                         Loaded="CreatedPanel_Loaded"
                         Unloaded="CreatedPanel_Unloaded"
                         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"

@@ -1,7 +1,6 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:contract7Present="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
     xmlns:chats="using:Unigram.Controls.Chats"
     xmlns:gallery="using:Unigram.Controls.Gallery"
     xmlns:local="using:Unigram.Controls"
@@ -11,7 +10,7 @@
 
     <Style TargetType="local:PhoneTextBox" BasedOn="{StaticResource DefaultTextBoxStyle}" />
     <Style TargetType="local:FormattedTextBox" BasedOn="{StaticResource DefaultRichEditBoxStyle}" />
-
+    
     <Style TargetType="local:NavigationView">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Template">
@@ -283,7 +282,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+    
     <Style TargetType="local:HeaderedControl">
         <!--<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>-->
@@ -1720,7 +1719,7 @@
                 <ControlTemplate TargetType="local:PeriodTimer">
                     <Grid Background="{TemplateBinding Background}" CornerRadius="18">
                         <local:ProgressBarRingSlice x:Name="Indicator" CacheMode="BitmapCache" Stroke="{TemplateBinding Foreground}" StrokeThickness="2" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" InnerRadius="16" Radius="18" StartAngle="0" EndAngle="0"/>
-                        <TextBlock x:Name="TimeoutLabel" Text="15" Foreground="{ThemeResource MessageHeaderBorderBrush}" FontWeight="SemiBold" TextLineBounds="TrimToBaseline,TrimToCapHeight" TextAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="TimeoutLabel" Text="15" Foreground="{ThemeResource MessageHeaderBorderBrush}" FontWeight="SemiBold" TextLineBounds="Tight" TextAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -1896,12 +1895,12 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-
+                        
                         <ScrollViewer
                             x:Name="ScrollingHost"
                             VerticalScrollBarVisibility="Auto"
                             VerticalScrollMode="Auto">
-
+                            
                             <Grid MaxWidth="360">
                                 <Grid.RowDefinitions>
                                     <RowDefinition x:Name="FitRow"/>
@@ -1940,7 +1939,7 @@
                                     VerticalAlignment="Bottom"
                                     Margin="0,0,0,24"
                                     Grid.Row="4">
-
+                                    
                                     <Button
                                         Content="{TemplateBinding ButtonText}"
                                         Command="{TemplateBinding ButtonCommand}"
@@ -2043,7 +2042,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+    
     <Style TargetType="local:ButtonPageHeader">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
@@ -2054,9 +2053,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:ButtonPageHeader">
                     <Border Background="{TemplateBinding Background}">
-                        <contract7Present:Border.BackgroundTransition>
+                        <!--<contract7Present:Border.BackgroundTransition>
                             <BrushTransition/>
-                        </contract7Present:Border.BackgroundTransition>
+                        </contract7Present:Border.BackgroundTransition>-->
                         <Grid Height="{ThemeResource AppBarThemeCompactHeight}" Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -2100,9 +2099,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:ContentPageHeader">
                     <Border Background="{TemplateBinding Background}">
-                        <contract7Present:Border.BackgroundTransition>
+                        <!--<contract7Present:Border.BackgroundTransition>
                             <BrushTransition/>
-                        </contract7Present:Border.BackgroundTransition>
+                        </contract7Present:Border.BackgroundTransition>-->
                         <Grid Height="{ThemeResource AppBarThemeCompactHeight}" Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -2137,9 +2136,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:PageHeader">
                     <Border Background="{TemplateBinding Background}">
-                        <contract7Present:Border.BackgroundTransition>
+                        <!--<contract7Present:Border.BackgroundTransition>
                             <BrushTransition/>
-                        </contract7Present:Border.BackgroundTransition>
+                        </contract7Present:Border.BackgroundTransition>-->
                         <Grid Height="{ThemeResource AppBarThemeCompactHeight}" Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>

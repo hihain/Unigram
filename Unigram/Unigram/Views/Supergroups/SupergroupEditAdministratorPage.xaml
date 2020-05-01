@@ -113,7 +113,6 @@
 
                 <controls:HeaderedControl
                     x:Name="Yolo"
-                    x:Load="False"
                     Visibility="{x:Bind ViewModel.CanTransferOwnership, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <controls:BadgeButton
                         x:Name="TransferOwnership"

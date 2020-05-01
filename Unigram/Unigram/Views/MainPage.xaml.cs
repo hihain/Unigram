@@ -2645,7 +2645,7 @@ namespace Unigram.Views
         {
             this.BeginOnUIThread(() =>
             {
-                UnloadObject(Confetti);
+                //UnloadObject(Confetti); //TODO: Not working in Anniversary Update - does not exist in 10.0.14393.0! A workaround with IsApiContractPresent is not possible.
             });
         }
 

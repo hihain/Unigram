@@ -166,7 +166,7 @@
             </Grid.RowDefinitions>
             <Border x:Name="ThemeShadow" Grid.RowSpan="2"/>
             <Border Background="{ThemeResource PageHeaderBackgroundBrush}"/>
-            <settings:SettingsThemePage x:Name="ThemePage" x:Load="False" Width="320" Grid.Row="1"/>
+            <settings:SettingsThemePage x:Name="ThemePage" Width="320" Grid.Row="1"/>
         </Grid>
     </Grid>
 </Page>

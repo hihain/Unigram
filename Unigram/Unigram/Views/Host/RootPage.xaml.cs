@@ -566,7 +566,7 @@ namespace Unigram.Views.Host
 
         public void HideEditor()
         {
-            UnloadObject(ThemePage);
+            //UnloadObject(ThemePage); //TODO x:Load - does not exist in 10.0.14393.0 - a bummer! A workaround with IsApiContractPresent is not possible.
 
             var view = ApplicationView.GetForCurrentView();
             view.TryResizeView(ApplicationView.PreferredLaunchViewSize);
