@@ -1,2 +1,3 @@
-# Privacy policy
-The Unigram Mobile App stores your chat messages and all your personal data on your mobile device and sends and receives your data (phone number, messages and some settings) from and to Telegram services, so have a look at [their privacy policy](https://telegram.org/privacy) at [https://telegram.org/privacy](https://telegram.org/privacy).
+# Privacy Policy
+The Unigram Mobile App stores your chat messages and all your personal data on your mobile device and sends and receives your data (phone number, messages (e.g. sharing a location) and some settings) from and to Telegram services, so have a look at [their privacy policy](https://telegram.org/privacy) at [https://telegram.org/privacy](https://telegram.org/privacy).
+Be aware that location sharing services may use a Foursquare Telegram bot to find known locations nearby and show them in the share location view. ([See: tdlib](https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1venue.html))
