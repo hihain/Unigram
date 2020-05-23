@@ -259,7 +259,6 @@ namespace Unigram.Controls.Messages.Content
                 if (_message.Content is MessageText text && text.WebPage?.EmbedUrl?.Length > 0)
                 {
                     _message.Delegate.OpenUrl(text.WebPage.Url, false);
-                    //await EmbedUrlView.GetForCurrentView().ShowAsync(_message, text.WebPage, () => this);
                 }
                 else
                 {
