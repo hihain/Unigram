@@ -1,44 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using Template10.Common;
+using Telegram.Td.Api;
 using Unigram.Controls;
 using Unigram.Controls.Views;
 using Unigram.Converters;
-using Unigram.Views;
+using Unigram.Navigation;
+using Unigram.Services;
+using Unigram.Services.Navigation;
 using Unigram.ViewModels;
-using Unigram.Views.Users;
+using Unigram.Views;
+using Unigram.Views.Host;
+using Unigram.Views.Passport;
+using Unigram.Views.Settings;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage.Streams;
+using Windows.ApplicationModel.Resources.Core;
+using Windows.Foundation;
+using Windows.Foundation.Metadata;
 using Windows.System;
 using Windows.UI;
-using Windows.UI.Popups;
-using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Unigram.Views.SignIn;
-using Windows.Foundation;
-using Windows.UI.Xaml.Input;
-using Unigram.ViewModels.Dialogs;
-using Unigram.Services;
-using Template10.Services.NavigationService;
-using Telegram.Td.Api;
-using Unigram.Entities;
-using Windows.Foundation.Metadata;
 using Windows.UI.Xaml.Controls.Primitives;
-using Unigram.Views.Passport;
-using Windows.ApplicationModel;
-using Unigram.Views.Settings;
-using Windows.ApplicationModel.Resources.Core;
-using Unigram.Views.Host;
+using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace Unigram.Common
 {
@@ -207,18 +194,18 @@ namespace Unigram.Common
 
         public static bool IsTelegramUrl(Uri uri)
         {
-            if (Constants.TelegramHosts.Contains(uri.Host))
+            var host = uri.Host;
+            if (host.ToLower().StartsWith("www."))
+            {
+                host = host.Substring("www.".Length);
+            }
+
+            if (Constants.TelegramHosts.Contains(host))
             {
                 return true;
             }
 
-            //var config = InMemoryCacheService.Current.GetConfig();
-            //if (config != null && Uri.TryCreate(config.MeUrlPrefix, UriKind.Absolute, out Uri meUri))
-            //{
-            //    return uri.Host.Equals(meUri.Host, StringComparison.OrdinalIgnoreCase);
-            //}
-
-            return IsTelegramScheme(uri) || IsTonScheme(uri);
+            return IsTelegramScheme(uri);
         }
 
         public static bool IsTelegramScheme(Uri uri)
@@ -226,17 +213,11 @@ namespace Unigram.Common
             return string.Equals(uri.Scheme, "tg", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool IsTonScheme(Uri uri)
-        {
-            return string.Equals(uri.Scheme, "ton", StringComparison.OrdinalIgnoreCase);
-        }
-
         public static async void OpenTelegramScheme(IProtoService protoService, INavigationService navigation, Uri scheme)
         {
             string username = null;
             string group = null;
             string sticker = null;
-            string[] instantView = null;
             Dictionary<string, object> auth = null;
             string botUser = null;
             string botChat = null;
@@ -253,7 +234,6 @@ namespace Unigram.Common
             string phoneCode = null;
             string lang = null;
             string channel = null;
-            bool hasUrl = false;
 
             var query = scheme.Query.ParseQueryString();
             if (scheme.AbsoluteUri.StartsWith("tg:resolve") || scheme.AbsoluteUri.StartsWith("tg://resolve"))
@@ -306,7 +286,6 @@ namespace Unigram.Common
                 {
                     if (message.Length > 0)
                     {
-                        hasUrl = true;
                         message += "\n";
                     }
                     message += query.GetParameter("text");
@@ -374,7 +353,7 @@ namespace Unigram.Common
 
             if (phone != null || phoneHash != null)
             {
-                NavigateToConfirmPhone(protoService, phone, phoneHash);
+                Logs.Logger.Warning(Logs.Target.API, "NavigateToConfirmPhone does not exist anymore. ;(");
             }
             if (server != null && int.TryParse(port, out int portCode))
             {
@@ -394,7 +373,7 @@ namespace Unigram.Common
             }
             else if (message != null)
             {
-                NavigateToShare(message, hasUrl);
+                Logs.Logger.Warning(Logs.Target.API, "NavigateToShare does not exist anymore. ;(");
             }
             else if (phoneCode != null)
             {
@@ -426,20 +405,11 @@ namespace Unigram.Common
             }
         }
 
-        public static void OpenTonScheme(INavigationService navigation, Uri uri)
-        {
-            navigation.NavigateToWallet(uri.Host.Length > 0 ? uri.OriginalString : null);
-        }
-
         public static void OpenTelegramUrl(IProtoService protoService, INavigationService navigation, Uri uri)
         {
             if (IsTelegramScheme(uri))
             {
                 OpenTelegramScheme(protoService, navigation, uri);
-            }
-            else if (IsTonScheme(uri))
-            {
-                OpenTonScheme(navigation, uri);
             }
             else
             {
@@ -492,10 +462,7 @@ namespace Unigram.Common
                         {
                             if (username.Equals("confirmphone", StringComparison.OrdinalIgnoreCase))
                             {
-                                var phone = query.GetParameter("phone");
-                                var hash = query.GetParameter("hash");
-
-                                NavigateToConfirmPhone(null, phone, hash);
+                                Logs.Logger.Warning(Logs.Target.API, "NavigateToConfirmPhone does not exist anymore. ;(");
                             }
                             else if (username.Equals("login", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(post))
                             {
@@ -520,32 +487,7 @@ namespace Unigram.Common
                             }
                             else if (username.Equals("share"))
                             {
-                                var hasUrl = false;
-                                var text = query.GetParameter("url");
-                                if (text == null)
-                                {
-                                    text = "";
-                                }
-                                if (query.GetParameter("text") != null)
-                                {
-                                    if (text.Length > 0)
-                                    {
-                                        hasUrl = true;
-                                        text += "\n";
-                                    }
-                                    text += query.GetParameter("text");
-                                }
-                                if (text.Length > 4096 * 4)
-                                {
-                                    text = text.Substring(0, 4096 * 4);
-                                }
-                                while (text.EndsWith("\n"))
-                                {
-                                    text = text.Substring(0, text.Length - 1);
-                                }
-
-
-                                NavigateToShare(text, hasUrl);
+                                Logs.Logger.Warning(Logs.Target.API, "NavigateToShare does not exist anymore. ;(");
                             }
                             else if (username.Equals("setlanguage", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(post))
                             {
@@ -733,11 +675,6 @@ namespace Unigram.Common
             }
         }
 
-        public static async void NavigateToShare(string text, bool hasUrl)
-        {
-            //await ShareView.GetForCurrentView().ShowAsync(text, hasUrl);
-        }
-
         public static async void NavigateToProxy(IProtoService protoService, string server, int port, string username, string password, string secret)
         {
             var userText = username != null ? $"{Strings.Resources.UseProxyUsername}: {username}\n" : string.Empty;
@@ -759,38 +696,6 @@ namespace Unigram.Common
 
                 protoService.Send(new AddProxy(server ?? string.Empty, port, true, type));
             }
-        }
-
-        public static async void NavigateToConfirmPhone(IProtoService protoService, string phone, string hash)
-        {
-            //var response = await protoService.SendConfirmPhoneCodeAsync(hash, false);
-            //if (response.IsSucceeded)
-            //{
-            //    var state = new SignInSentCodePage.NavigationParameters
-            //    {
-            //        PhoneNumber = phone,
-            //        //Result = response.Result,
-            //    };
-
-            //    App.Current.NavigationService.Navigate(typeof(SignInSentCodePage), state);
-
-            //    //Telegram.Api.Helpers.Execute.BeginOnUIThread(delegate
-            //    //{
-            //    //    if (frame != null)
-            //    //    {
-            //    //        frame.CloseBlockingProgress();
-            //    //    }
-            //    //    TelegramViewBase.NavigateToConfirmPhone(result);
-            //    //});
-            //}
-            //else
-            //{
-            //    //if (error.CodeEquals(ErrorCode.BAD_REQUEST) && error.TypeEquals(ErrorType.USERNAME_NOT_OCCUPIED))
-            //    //{
-            //    //    return;
-            //    //}
-            //    //Telegram.Api.Helpers.Logs.Log.Write(string.Format("account.sendConfirmPhoneCode error {0}", error));
-            //};
         }
 
         public static async void NavigateToStickerSet(string text)

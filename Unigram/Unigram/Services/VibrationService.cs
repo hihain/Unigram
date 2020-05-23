@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Devices.Haptics;
+using HapticsDevice = Windows.Devices.Haptics.VibrationDevice;
+using PhoneDevice = Windows.Phone.Devices.Notification.VibrationDevice;
 
 namespace Unigram.Services
 {
@@ -17,10 +18,10 @@ namespace Unigram.Services
     {
         public async Task<bool> GetAvailabilityAsync()
         {
-            var access = await VibrationDevice.RequestAccessAsync();
-            if (access == VibrationAccessStatus.Allowed)
+            var access = await HapticsDevice.RequestAccessAsync();
+            if (access == Windows.Devices.Haptics.VibrationAccessStatus.Allowed)
             {
-                var device = await VibrationDevice.GetDefaultAsync();
+                var device = await HapticsDevice.GetDefaultAsync();
                 return device != null;
             }
 
@@ -29,10 +30,10 @@ namespace Unigram.Services
 
         public async Task VibrateAsync()
         {
-            var access = await VibrationDevice.RequestAccessAsync();
-            if (access == VibrationAccessStatus.Allowed)
+            var access = await HapticsDevice.RequestAccessAsync();
+            if (access == Windows.Devices.Haptics.VibrationAccessStatus.Allowed)
             {
-                var device = await VibrationDevice.GetDefaultAsync();
+                var device = await HapticsDevice.GetDefaultAsync();
                 if (device != null)
                 {
                     device.SimpleHapticsController.SendHapticFeedback(device.SimpleHapticsController.SupportedFeedback[0]);
@@ -51,6 +52,30 @@ namespace Unigram.Services
         public Task VibrateAsync()
         {
             return Task.CompletedTask;
+        }
+    }
+
+    public class WindowsPhoneVibrationService : IVibrationService
+    {
+        public Task<bool> GetAvailabilityAsync()
+        {
+            return Task.Run(() =>
+            {
+                var device = PhoneDevice.GetDefault();
+                return device != null;
+            });
+        }
+
+        public Task VibrateAsync()
+        {
+            return Task.Run(() =>
+            {
+                var device = PhoneDevice.GetDefault();
+                if (device != null)
+                {
+                    device.Vibrate(TimeSpan.FromMilliseconds(200));
+                }
+            });
         }
     }
 }

@@ -25,29 +25,38 @@ namespace Unigram.ViewModels.Settings
             if (parameter is AutoDownloadType type)
             {
                 _type = type;
-
-                Title = type == AutoDownloadType.Photos
-                    ? Strings.Resources.AutoDownloadPhotos
-                    : type == AutoDownloadType.Videos
-                    ? Strings.Resources.AutoDownloadVideos
-                    : Strings.Resources.AutoDownloadFiles;
-                Header = type == AutoDownloadType.Photos
-                    ? Strings.Resources.AutoDownloadPhotosTitle
-                    : type == AutoDownloadType.Videos
-                    ? Strings.Resources.AutoDownloadVideosTitle
-                    : Strings.Resources.AutoDownloadFilesTitle;
-
+                AutoDownloadMode mode;
+                int limit;
                 var preferences = Settings.AutoDownload;
-                var mode = type == AutoDownloadType.Photos
-                    ? preferences.Photos
-                    : type == AutoDownloadType.Videos
-                    ? preferences.Videos
-                    : preferences.Documents;
-                var limit = type == AutoDownloadType.Photos
-                    ? 0
-                    : type == AutoDownloadType.Videos
-                    ? preferences.MaximumVideoSize
-                    : preferences.MaximumDocumentSize;
+
+                switch (type)
+                {
+                    case AutoDownloadType.Photos:
+                        Title = Strings.Resources.AutoDownloadPhotos;
+                        Header =  Strings.Resources.AutoDownloadPhotosTitle;
+                        mode = preferences.Photos;
+                        limit = 0;
+                        break;
+                    case AutoDownloadType.Videos:
+                        Title = Strings.Resources.AutoDownloadVideos;
+                        Header = Strings.Resources.AutoDownloadVideosTitle;
+                        mode = preferences.Videos;
+                        limit = preferences.MaximumVideoSize;
+                        break;
+                    case AutoDownloadType.VoiceMessages:
+                        Title = Strings.Resources.AudioAutodownload;
+                        Header = $"Auto-Download ({Strings.Resources.AudioAutodownload})"; //TODO
+                        mode = preferences.VoiceMessages;
+                        limit = 0;
+                        break;
+                    case AutoDownloadType.Documents:
+                    default:
+                        Title = Strings.Resources.AutoDownloadFiles;
+                        Header = Strings.Resources.AutoDownloadFilesTitle;
+                        mode = preferences.Documents;
+                        limit = preferences.MaximumDocumentSize;
+                        break;
+                }
 
                 Contacts = mode.HasFlag(AutoDownloadMode.WifiContacts);
                 PrivateChats = mode.HasFlag(AutoDownloadMode.WifiPrivateChats);
@@ -108,7 +117,7 @@ namespace Unigram.ViewModels.Settings
             set => Set(ref _limit, value);
         }
 
-        public bool IsLimitSupported => _type != AutoDownloadType.Photos;
+        public bool IsLimitSupported => _type != AutoDownloadType.Photos && _type != AutoDownloadType.VoiceMessages;
 
         public RelayCommand SendCommand { get; }
         private void SendExecute()
@@ -133,17 +142,20 @@ namespace Unigram.ViewModels.Settings
                 mode |= AutoDownloadMode.WifiChannels;
             }
 
-            if (_type == AutoDownloadType.Photos)
+            switch (_type)
             {
-                preferences = preferences.UpdatePhotosMode(mode); 
-            }
-            else if (_type == AutoDownloadType.Videos)
-            {
-                preferences = preferences.UpdateVideosMode(mode, _limit);
-            }
-            else if (_type == AutoDownloadType.Documents)
-            {
-                preferences = preferences.UpdateDocumentsMode(mode, _limit);
+                case AutoDownloadType.Photos:
+                    preferences = preferences.UpdatePhotosMode(mode);
+                    break;
+                case AutoDownloadType.VoiceMessages:
+                    preferences = preferences.UpdateVoiceMessagesMode(mode);
+                    break;
+                case AutoDownloadType.Videos:
+                    preferences = preferences.UpdateVideosMode(mode, _limit);
+                    break;
+                case AutoDownloadType.Documents:
+                    preferences = preferences.UpdateDocumentsMode(mode, _limit);
+                    break;
             }
 
             Settings.AutoDownload = preferences;

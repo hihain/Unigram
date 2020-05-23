@@ -3,22 +3,13 @@ using Microsoft.Graphics.Canvas.Effects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Telegram.Td.Api;
-using Template10.Common;
 using Unigram.Common;
 using Unigram.Controls;
-using Unigram.Converters;
-using Unigram.Entities;
 using Unigram.Services;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Foundation.Metadata;
-using Windows.Graphics.Effects;
 using Windows.Phone.Media.Devices;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -26,13 +17,10 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
 namespace Unigram.Views
@@ -142,10 +130,30 @@ namespace Unigram.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            if (Routing == null)
+            {
+                return;
+            }
+
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.PhoneContract", 1))
+            {
+                Routing.Visibility = Visibility.Visible;
+                AudioRoutingManager.GetDefault().AudioEndpointChanged += AudioEndpointChanged;
+            }
+            else
+            {
+                Routing.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("Unloaded");
+
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.PhoneContract", 1))
+            {
+                AudioRoutingManager.GetDefault().AudioEndpointChanged -= AudioEndpointChanged;
+            }
         }
 
         public void Dispose()
@@ -159,6 +167,11 @@ namespace Unigram.Views
                 //_controller.CallStateChanged -= OnCallStateChanged;
                 //_controller.SignalBarsChanged -= OnSignalBarsChanged;
                 _controller = null;
+            }
+
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.PhoneContract", 1))
+            {
+                AudioRoutingManager.GetDefault().AudioEndpointChanged -= AudioEndpointChanged;
             }
         }
 
@@ -551,6 +564,30 @@ namespace Unigram.Views
             _protoService.Send(new DiscardCall(call.Id, false, (int)duration.TotalSeconds, relay));
         }
 
+        private void Routing_Click(object sender, RoutedEventArgs e)
+        {
+            var routingManager = AudioRoutingManager.GetDefault();
+
+            var toggle = sender as ToggleButton;
+            toggle.IsChecked = !toggle.IsChecked;
+
+            if (toggle.IsChecked.Value)
+            {
+                routingManager.SetAudioEndpoint(AudioRoutingEndpoint.Speakerphone);
+            }
+            else
+            {
+                if (routingManager.AvailableAudioEndpoints.HasFlag(AvailableAudioRoutingEndpoints.Bluetooth))
+                {
+                    routingManager.SetAudioEndpoint(AudioRoutingEndpoint.Bluetooth);
+                }
+                else if (routingManager.AvailableAudioEndpoints.HasFlag(AvailableAudioRoutingEndpoints.Earpiece))
+                {
+                    routingManager.SetAudioEndpoint(AudioRoutingEndpoint.Earpiece);
+                }
+            }
+        }
+
         private bool _isMuted;
         public bool IsMuted
         {
@@ -567,6 +604,20 @@ namespace Unigram.Views
                     _controller.SetMicMute(value);
                 }
             }
+        }
+
+        private async void AudioEndpointChanged(AudioRoutingManager sender, object args)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                var routingManager = AudioRoutingManager.GetDefault();
+                Routing.IsChecked = routingManager.GetAudioEndpoint() == AudioRoutingEndpoint.Speakerphone;
+            });
         }
 
         private void DebugString_Tapped(object sender, TappedRoutedEventArgs e)

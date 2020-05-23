@@ -21,7 +21,7 @@
         <controls:ProfilePicture x:Name="Photo" Width="72" Height="72" IsEnabled="False"/>
 
         <StackPanel Margin="0,8,0,12" Grid.Row="1">
-            <TextBlock x:Name="Title" TextAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource BaseTextBlockStyle}"/>
+            <TextBlock x:Name="TitleChat" TextAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource BaseTextBlockStyle}"/>
             <TextBlock x:Name="Subtitle" TextAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" Style="{StaticResource CaptionTextBlockStyle}"/>
         </StackPanel>
 

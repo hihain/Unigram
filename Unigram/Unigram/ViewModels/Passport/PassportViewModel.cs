@@ -12,7 +12,6 @@ using Unigram.Views.Passport;
 using System.Diagnostics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml.Controls;
-using Unigram.Services;
 using Unigram.Collections;
 
 namespace Unigram.ViewModels.Passport

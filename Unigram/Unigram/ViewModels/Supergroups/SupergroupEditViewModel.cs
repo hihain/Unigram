@@ -1,22 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
-using Template10.Common;
 using Unigram.Common;
 using Unigram.Controls;
 using Unigram.Controls.Views;
-using Unigram.Converters;
-using Unigram.Entities;
 using Unigram.Services;
 using Unigram.ViewModels.Delegates;
-using Unigram.Views.Channels;
 using Unigram.Views.Supergroups;
 using Windows.Storage;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -315,7 +307,7 @@ namespace Unigram.ViewModels.Supergroups
         }
 
         public RelayCommand<StorageFile> EditPhotoCommand { get; }
-        private async void EditPhotoExecute(StorageFile file)
+        private void EditPhotoExecute(StorageFile file)
         {
             _photo = file;
             _deletePhoto = false;
@@ -443,22 +435,33 @@ namespace Unigram.ViewModels.Supergroups
                 return;
             }
 
+            var dialog = new DeleteChatView(ProtoService, chat, false, true);
+
+            var confirm = await dialog.ShowQueuedAsync();
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            Function function;
             if (chat.Type is ChatTypeSupergroup super)
             {
-                var message = super.IsChannel ? Strings.Resources.ChannelDeleteAlert : Strings.Resources.MegaDeleteAlert;
-                var confirm = await TLMessageDialog.ShowAsync(message, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
-                if (confirm == ContentDialogResult.Primary)
-                {
-                    var response = await ProtoService.SendAsync(new DeleteSupergroup(super.SupergroupId));
-                    if (response is Ok)
-                    {
-                        NavigationService.RemovePeerFromStack(chat.Id);
-                    }
-                    else if (response is Error error)
-                    {
-                        // TODO: ...
-                    }
-                }
+                function = new DeleteSupergroup(super.SupergroupId);
+            }
+            else
+            {
+                await ProtoService.SendAsync(new LeaveChat(chat.Id));
+                function = new DeleteChatHistory(chat.Id, true, false);
+            }
+
+            var response = await ProtoService.SendAsync(function);
+            if (response is Ok)
+            {
+                NavigationService.RemovePeerFromStack(chat.Id);
+            }
+            else if (response is Error error)
+            {
+                // TODO: ...
             }
         }
 

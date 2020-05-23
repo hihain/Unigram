@@ -32,6 +32,7 @@ namespace Unigram.Services
         private const int QUANTITY_MANY = 0x0010;
 
         private readonly ResourceLoader _loader;
+        private readonly ResourceLoader _loaderAdditional;
 
         private readonly Dictionary<string, Dictionary<string, string>> _languagePack = new Dictionary<string, Dictionary<string, string>>();
         private string _languageCode;
@@ -42,6 +43,7 @@ namespace Unigram.Services
         public LocaleService()
         {
             _loader = ResourceLoader.GetForViewIndependentUse("Resources");
+            _loaderAdditional = ResourceLoader.GetForViewIndependentUse("Additional");
 
             _languagePath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "langpack");
 
@@ -76,7 +78,7 @@ namespace Unigram.Services
                 }
 
                 return new Error();
-#endif
+#else
 
                 var response = await protoService.SendAsync(new SetOption("language_pack_id", new OptionValueString(info.Id)));
                 if (response is Ok && refresh)
@@ -97,6 +99,7 @@ namespace Unigram.Services
                 {
                     return response;
                 }
+#endif
             }
 
             return new Ok();
@@ -106,16 +109,7 @@ namespace Unigram.Services
         {
             string GetName(string value)
             {
-                var split = value.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-                var result = string.Empty;
-
-                foreach (var item in split)
-                {
-                    result += item.Substring(0, 1).ToUpper();
-                    result += item.Substring(1);
-                }
-
-                return result;
+                return value;
             }
 
             var fileName = Path.Combine(ApplicationData.Current.LocalFolder.Path, "test", lang, "Resources.resw");
@@ -127,6 +121,19 @@ namespace Unigram.Services
                 {
                     if (difference.Strings[a].Value is LanguagePackStringValueOrdinary single)
                     {
+                        if (difference.Strings[a].Key == difference.Strings[a].Key.ToLower())
+                        {
+                            continue;
+                        }
+                        //else if (difference.Strings[a].Key == difference.Strings[a].Key.ToUpper())
+                        //{
+                        //    continue;
+                        //}
+                        else if (difference.Strings[a].Key.StartsWith("_"))
+                        {
+                            continue;
+                        }
+
                         if (already.Contains(GetName(difference.Strings[a].Key).ToLower()))
                         {
                             continue;
@@ -299,13 +306,15 @@ namespace Unigram.Services
             }
             catch (Exception ignore)
             {
-
+                Logs.Logger.Error(Logs.Target.API, ignore.Message, "LocaleService");
             }
         }
 
 
         public string GetString(string key)
         {
+            if (key.StartsWith("Additional.")) return _loaderAdditional.GetString(key.Substring(11));
+
             var values = GetLanguagePack(_languageCode);
             if (values.TryGetValue(key, out string value))
             {
@@ -318,7 +327,7 @@ namespace Unigram.Services
                 return values[key] = GetValue(ordinary.Value);
             }
 
-#if DEBUG
+#if zDEBUG
             var text = _loader.GetString(key);
             if (text.Length > 0)
             {
@@ -368,7 +377,7 @@ namespace Unigram.Services
                 }
             }
 
-#if DEBUG
+#if zDEBUG
             var text = _loader.GetString(selector);
             if (text.Length > 0)
             {

@@ -46,7 +46,9 @@ namespace Unigram.Controls
         }
 
         private bool _pressed;
+#pragma warning disable CS0414 // field value is never used - WHY?
         private bool _entered;
+#pragma warning disable CS0414 // field value is never used
 
         protected override void OnPointerEntered(PointerRoutedEventArgs e)
         {

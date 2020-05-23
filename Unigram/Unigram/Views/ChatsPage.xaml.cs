@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.Linq;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
 using Unigram.Converters;
 using Unigram.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Views
 {
     public sealed partial class ChatsPage : ChatsListView
     {
+        public MainViewModel Main { get; set; }
+
         public ChatsPage()
         {
             InitializeComponent();
@@ -35,11 +28,11 @@ namespace Unigram.Views
             if (args.ItemContainer == null)
             {
                 args.ItemContainer = new ChatsListViewItem(ChatsList);
+                args.ItemContainer.Style = ChatsList.ItemContainerStyle;
                 args.ItemContainer.ContentTemplate = ChatsList.ItemTemplate;
                 args.ItemContainer.ContextRequested += Chat_ContextRequested;
             }
 
-            args.ItemContainer.Style = ChatsList.ItemContainerStyleSelector.SelectStyle(args.Item, null);
             args.IsContainerPrepared = true;
         }
 
@@ -59,8 +52,35 @@ namespace Unigram.Views
             var chat = element.Tag as Chat;
 
             var muted = ViewModel.CacheService.GetNotificationSettingsMuteFor(chat) > 0;
-            flyout.CreateFlyoutItem(DialogPin_Loaded, viewModel.ChatPinCommand, chat, chat.IsPinned ? Strings.Resources.UnpinFromTop : Strings.Resources.PinToTop, new FontIcon { Glyph = chat.IsPinned ? Icons.Unpin : Icons.Pin });
             flyout.CreateFlyoutItem(DialogArchive_Loaded, viewModel.ChatArchiveCommand, chat, chat.ChatList is ChatListArchive ? Strings.Resources.Unarchive : Strings.Resources.Archive, new FontIcon { Glyph = Icons.Archive });
+            
+            var folders = ViewModel.CacheService.ChatFilters;
+            var item = new MenuFlyoutSubItem();
+            item.Text = "Add to folder...";
+            item.Icon = new FontIcon { Glyph = "\uE8DE" };
+
+            if (folders.Count < 10)
+            {
+                item.Items.Add(new MenuFlyoutItem { Text = "New folder" });
+            }
+            if (folders.Count > 0 && item.Items.Count > 0)
+            {
+                item.Items.Add(new MenuFlyoutSeparator());
+            }
+
+            foreach (var folder in folders)
+            {
+                if (chat.ChatList.ListEquals(new ChatListFilter(folder.ChatFilterId)))
+                {
+                    continue;
+                }
+
+                item.Items.Add(new MenuFlyoutItem { Text = folder.Title });
+            }
+
+            flyout.Items.Add(item);
+
+            flyout.CreateFlyoutItem(DialogPin_Loaded, viewModel.ChatPinCommand, chat, chat.IsPinned ? Strings.Resources.UnpinFromTop : Strings.Resources.PinToTop, new FontIcon { Glyph = chat.IsPinned ? Icons.Unpin : Icons.Pin });
             flyout.CreateFlyoutItem(DialogNotify_Loaded, viewModel.ChatNotifyCommand, chat, muted ? Strings.Resources.UnmuteNotifications : Strings.Resources.MuteNotifications, new FontIcon { Glyph = muted ? Icons.Unmute : Icons.Mute });
             flyout.CreateFlyoutItem(DialogMark_Loaded, viewModel.ChatMarkCommand, chat, chat.IsUnread() ? Strings.Resources.MarkAsRead : Strings.Resources.MarkAsUnread, new FontIcon { Glyph = chat.IsUnread() ? Icons.MarkAsRead : Icons.MarkAsUnread, FontFamily = App.Current.Resources["TelegramThemeFontFamily"] as FontFamily });
             flyout.CreateFlyoutItem(DialogClear_Loaded, viewModel.ChatClearCommand, chat, Strings.Resources.ClearHistory, new FontIcon { Glyph = Icons.Clear });
@@ -95,7 +115,7 @@ namespace Unigram.Views
             //    return count < max ? Visibility.Visible : Visibility.Collapsed;
             //}
 
-            if (ViewModel.CacheService.IsChatSponsored(chat))
+            if (chat.Source != null)
             {
                 return false;
             }
@@ -105,7 +125,7 @@ namespace Unigram.Views
 
         private bool DialogArchive_Loaded(Chat chat)
         {
-            if (ViewModel.CacheService.IsChatSponsored(chat) || ViewModel.CacheService.IsSavedMessages(chat) || chat.Id == 777000)
+            if (ViewModel.CacheService.IsSavedMessages(chat) || chat.Source != null || chat.Id == 777000)
             {
                 return false;
             }
@@ -115,7 +135,7 @@ namespace Unigram.Views
 
         private bool DialogNotify_Loaded(Chat chat)
         {
-            if (ViewModel.CacheService.IsSavedMessages(chat))
+            if (ViewModel.CacheService.IsSavedMessages(chat) || chat.Source is ChatSourcePublicServiceAnnouncement)
             {
                 return false;
             }
@@ -125,7 +145,7 @@ namespace Unigram.Views
 
         public bool DialogClear_Loaded(Chat chat)
         {
-            if (ViewModel.CacheService.IsChatSponsored(chat))
+            if (chat.Source != null)
             {
                 return false;
             }
@@ -144,7 +164,7 @@ namespace Unigram.Views
 
         private bool DialogDelete_Loaded(Chat chat)
         {
-            if (ViewModel.CacheService.IsChatSponsored(chat))
+            if (chat.Source is ChatSourceMtprotoProxy)
             {
                 return false;
             }
@@ -169,7 +189,11 @@ namespace Unigram.Views
 
         private string DialogDelete_Text(Chat chat)
         {
-            if (chat.Type is ChatTypeSupergroup super)
+            if (chat.Source is ChatSourcePublicServiceAnnouncement)
+            {
+                return Strings.Resources.PsaHide;
+            }
+            else if (chat.Type is ChatTypeSupergroup super)
             {
                 return super.IsChannel ? Strings.Resources.LeaveChannelMenu : Strings.Resources.LeaveMegaMenu;
             }
@@ -205,7 +229,7 @@ namespace Unigram.Views
         {
             ChatsList.CanReorderItems = false;
 
-            var chatList = ViewModel?.ChatList;
+            var chatList = ViewModel?.Items.ChatList;
             if (chatList == null)
             {
                 return;
@@ -218,7 +242,7 @@ namespace Unigram.Views
 
                 var compare = items[index > 0 ? index - 1 : index + 1];
 
-                if (compare.IsSponsored && index > 0)
+                if (compare.Source != null && index > 0)
                 {
                     compare = items[index + 1];
                 }
@@ -229,7 +253,7 @@ namespace Unigram.Views
                 }
                 else
                 {
-                    ViewModel.Handle(new UpdateChatOrder(chat.Id, chat.Order));
+                    ViewModel.Items.Handle(chat.Id, chat.Order);
                 }
             }
         }

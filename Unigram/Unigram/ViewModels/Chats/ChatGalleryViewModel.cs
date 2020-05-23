@@ -15,7 +15,7 @@ namespace Unigram.ViewModels.Chats
         private readonly bool _isMirrored;
 
         private readonly MvxObservableCollection<GalleryContent> _group;
-        private long _current;
+        //private long _current;
 
         public ChatGalleryViewModel(IProtoService protoService, IEventAggregator aggregator, long chatId, Message selected, bool mirrored = false)
             : base(protoService, aggregator)
@@ -163,38 +163,5 @@ namespace Unigram.ViewModels.Chats
         public override int Position => _isMirrored ? base.Position : TotalItems - (Items.Count - base.Position);
 
         public override MvxObservableCollection<GalleryContent> Group => _group;
-
-        protected override void OnSelectedItemChanged(GalleryContent item)
-        {
-            //var messageItem = item as GalleryLegacyMessageItem;
-            //if (messageItem == null)
-            //{
-            //    return;
-            //}
-
-            //var message = messageItem.Message as TLMessage;
-            //if (message == null)
-            //{
-            //    return;
-            //}
-
-            //if (message.GroupedId is long group)
-            //{
-            //    var all = Items.Where(x => x is GalleryLegacyMessageItem msg && msg.Message.GroupedId == group).ToList();
-            //    if (all.Count == _group.Count && group == _current)
-            //    {
-            //        return;
-            //    }
-
-            //    _current = group;
-            //    _group.ReplaceWith(all);
-
-            //    RaisePropertyChanged(() => SelectedItem);
-            //}
-            //else
-            //{
-            //    _group.Clear();
-            //}
-        }
     }
 }

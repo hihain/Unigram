@@ -27,7 +27,8 @@ namespace Unigram.ViewModels.Settings
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            await UpdateSessionsAsync();
+            UpdateSessions();
+            await Task.CompletedTask;
         }
 
         //public void Handle(TLUpdateServiceNotification update)
@@ -38,7 +39,7 @@ namespace Unigram.ViewModels.Settings
         //    });
         //}
 
-        private async Task UpdateSessionsAsync()
+        private void UpdateSessions()
         {
             ProtoService.Send(new GetActiveSessions(), result =>
             {

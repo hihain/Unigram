@@ -29,7 +29,6 @@ namespace Unigram.Controls
         private const int _fallParticlesCount = 30;//(SharedConfig.getDevicePerfomanceClass() == 0 ? 20 : 30);
         private const int _particlesCount = 60; //(SharedConfig.getDevicePerfomanceClass() == 0 ? 50 : 60);
         private int _fallingDownCount;
-        private long lastUpdateTime;
         private readonly List<Particle> _particles = new List<Particle>(_particlesCount + _fallParticlesCount);
         private float _speedCoef = 1.0f;
         private bool _started;

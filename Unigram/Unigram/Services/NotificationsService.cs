@@ -8,12 +8,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Td;
 using Telegram.Td.Api;
-using Template10.Common;
 using Unigram.Common;
 using Unigram.Controls;
 using Unigram.Controls.Messages;
 using Unigram.Converters;
 using Unigram.Native.Tasks;
+using Unigram.Navigation;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -64,8 +64,10 @@ namespace Unigram.Services
 
         private readonly DisposableMutex _registrationLock;
         private bool _alreadyRegistered;
-
+#pragma warning disable CS0649 // Never assigned field, always false - because the code got commented out
         private bool _suppress;
+#pragma warning disable CS0649 // Never assigned field, always false
+        private int _tickCount;
 
         public NotificationsService(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, ISessionService sessionService, IEventAggregator aggregator)
         {
@@ -82,6 +84,18 @@ namespace Unigram.Services
             var unreadCount = _cacheService.GetUnreadCount(new ChatListMain());
             Handle(unreadCount.UnreadChatCount);
             Handle(unreadCount.UnreadMessageCount);
+        }
+
+        private void UpdateBadge(int count)
+        {
+            var tick = Environment.TickCount;
+            if (tick < _tickCount + 500)
+            {
+                return;
+            }
+
+            _tickCount = tick;
+            NotificationTask.UpdatePrimaryBadge(count);
         }
 
         public async void Handle(UpdateTermsOfService update)
@@ -203,11 +217,11 @@ namespace Unigram.Services
 
             if (_settings.Notifications.IncludeMutedChats)
             {
-                NotificationTask.UpdatePrimaryBadge(update.UnreadCount);
+                UpdateBadge(update.UnreadCount);
             }
             else
             {
-                NotificationTask.UpdatePrimaryBadge(update.UnreadUnmutedCount);
+                UpdateBadge(update.UnreadUnmutedCount);
             }
 
             if (App.Connection is AppServiceConnection connection)
@@ -230,11 +244,11 @@ namespace Unigram.Services
 
             if (_settings.Notifications.IncludeMutedChats)
             {
-                NotificationTask.UpdatePrimaryBadge(update.UnreadCount);
+                UpdateBadge(update.UnreadCount);
             }
             else
             {
-                NotificationTask.UpdatePrimaryBadge(update.UnreadUnmutedCount);
+                UpdateBadge(update.UnreadUnmutedCount);
             }
 
             if (App.Connection is AppServiceConnection connection)
@@ -258,17 +272,10 @@ namespace Unigram.Services
                 return;
             }
 
-            TypedEventHandler<MediaPlayer, object> handler = null;
-            handler = (s, args) =>
+            Task.Run(() =>
             {
-                s.MediaEnded -= handler;
-                s.Dispose();
-            };
-
-            var player = new MediaPlayer();
-            player.MediaEnded += handler;
-            player.Source = MediaSource.CreateFromUri(new Uri("ms-appx:///Assets/Audio/sent.mp3"));
-            player.Play();
+                SoundEffects.Play(SoundEffect.Sent);
+            });
         }
 
         public void Handle(UpdateActiveNotifications update)
@@ -521,7 +528,7 @@ namespace Unigram.Services
 
                     channel.PushNotificationReceived += OnPushNotificationReceived;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     _alreadyRegistered = false;
                     _settings.NotificationsToken = null;
@@ -543,7 +550,7 @@ namespace Unigram.Services
             {
                 var displayName = user.GetFullName();
                 var launchArg = $"session={_sessionService.Id}&user_id={user.Id}";
-                var icon = new Uri("ms-appx:///Assets/Logos/Square44x44Logo/Square44x44Logo.png");
+                var icon = new Uri("ms-appx:///Assets/Logos/Square44x44Logo.png");
 
 #if DEBUG
                 displayName += " BETA";
@@ -568,13 +575,14 @@ namespace Unigram.Services
 
         public async Task UnregisterAsync()
         {
-            var channel = _settings.NotificationsToken;
+            //var channel = _settings.NotificationsToken;
             //var response = await _protoService.UnregisterDeviceAsync(8, channel);
             //if (response.IsSucceeded)
             //{
             //}
 
             _settings.NotificationsToken = null;
+            await Task.CompletedTask;
         }
 
         public async Task CloseAsync()
@@ -586,6 +594,7 @@ namespace Unigram.Services
             }
             catch (Exception ex)
             {
+                Logs.Logger.Error(Logs.Target.Notifications, $"OnClose, message: {ex.Message}");
                 Debugger.Break();
             }
         }

@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Template10.Common;
-using Template10.Mvvm;
-using Unigram.Common;
+using Unigram.Navigation;
 using Unigram.Services;
 
 namespace Unigram.ViewModels
@@ -21,7 +14,7 @@ namespace Unigram.ViewModels
         private readonly ISettingsService _settingsService;
         private readonly IEventAggregator _aggregator;
 
-        private readonly IDispatcherWrapper _dispatcher;
+        //private readonly IDispatcherWrapper _dispatcher;
 
         public TLViewModelBase(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
         {
@@ -91,19 +84,4 @@ namespace Unigram.ViewModels
             }
         }
     }
-
-#if INCLUDE_WALLET
-    public class TonViewModelBase : TLViewModelBase
-    {
-        private readonly ITonService _tonService;
-
-        public TonViewModelBase(ITonService tonService, IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
-            : base(protoService, cacheService, settingsService, aggregator)
-        {
-            _tonService = tonService;
-        }
-
-        public ITonService TonService => _tonService;
-    }
-#endif
 }

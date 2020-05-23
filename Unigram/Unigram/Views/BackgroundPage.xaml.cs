@@ -526,13 +526,15 @@ namespace Unigram.Views
                 if (_accelerometer == null && !_loaded)
                 {
                     _loaded = true;
-                    //_accelerometer = await Task.Run(() => Accelerometer.GetDefault());
-
+#if MOBILE
+                    _accelerometer = await Task.Run(() => Accelerometer.GetDefault());
+#else
                     var devices = await DeviceInformation.FindAllAsync(Accelerometer.GetDeviceSelector(AccelerometerReadingType.Standard));
                     if (devices.Count > 0)
                     {
                         _accelerometer = await Accelerometer.FromIdAsync(devices[0].Id);
                     }
+#endif
                 }
 
                 return _accelerometer != null;
@@ -611,13 +613,15 @@ namespace Unigram.Views
                 if (_accelerometer == null && !_loaded)
                 {
                     _loaded = true;
-                    //_accelerometer = await Task.Run(() => Accelerometer.GetDefault());
-
+#if MOBILE
+                    _accelerometer = await Task.Run(() => Accelerometer.GetDefault());
+#else
                     var devices = await DeviceInformation.FindAllAsync(Accelerometer.GetDeviceSelector(AccelerometerReadingType.Standard));
                     if (devices.Count > 0)
                     {
                         _accelerometer = await Accelerometer.FromIdAsync(devices[0].Id);
                     }
+#endif
                 }
 
                 if (_accelerometer == null)

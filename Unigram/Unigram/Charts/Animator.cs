@@ -257,7 +257,6 @@ namespace Unigram.Charts
         internal override object getAnimatedValue()
         {
             return _result;
-            return _f2;
         }
     }
 

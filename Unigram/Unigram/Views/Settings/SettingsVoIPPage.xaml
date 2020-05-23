@@ -14,15 +14,15 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <controls:PageHeader Text="Call Settings"/>
+        <controls:PageHeader Text="{CustomResource Additional.CallSettingsTitle}" x:Uid="CallSettingsHeader"/>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto"
                       VerticalScrollMode="Auto"
                       Grid.Row="1">
             <StackPanel>
                 <controls:HeaderedControl
-                    Header="Speakers and headphones">
-                    <ComboBox Header="Output device"
+                    Header="{CustomResource Additional.CallSettingOutputTitle}">
+                    <ComboBox Header="{CustomResource Additional.CallSettingOutput}"
                               ItemsSource="{x:Bind ViewModel.Output}"
                               SelectedItem="{x:Bind ViewModel.SelectedOutput, Mode=TwoWay}"
                               DisplayMemberPath="Name"
@@ -32,10 +32,10 @@
                             Value="{x:Bind ConvertVolume(ViewModel.OutputVolume), BindBack=ConvertVolumeOutput, Mode=TwoWay}"
                             Margin="12,16,12,8"/>
                 </controls:HeaderedControl>
-                
+
                 <controls:HeaderedControl
-                    Header="Microphone">
-                    <ComboBox Header="Input device"
+                    Header="{CustomResource Additional.CallSettingInputTitle}">
+                    <ComboBox Header="{CustomResource Additional.CallSettingInput}"
                               ItemsSource="{x:Bind ViewModel.Input}"
                               SelectedItem="{x:Bind ViewModel.SelectedInput, Mode=TwoWay}"
                               DisplayMemberPath="Name"
@@ -44,13 +44,6 @@
                     <Slider Header="{x:Bind ConvertVolumeLabel(ViewModel.InputVolume, x:False), Mode=OneWay}"
                             Value="{x:Bind ConvertVolume(ViewModel.InputVolume), BindBack=ConvertVolumeInput, Mode=TwoWay}"
                             Margin="12,16,12,8"/>
-                </controls:HeaderedControl>
-
-                <controls:HeaderedControl
-                    Header="Other settings">
-                    <controls:BadgeButton
-                        Content="Open system sound preferences"
-                        Command="{x:Bind ViewModel.SystemCommand}"/>
                 </controls:HeaderedControl>
 
             </StackPanel>

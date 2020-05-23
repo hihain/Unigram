@@ -127,7 +127,7 @@ namespace Unigram.ViewModels
 
             if (content is Animation animation)
             {
-                return Settings.AutoDownload.ShouldDownloadDocument(GetChatType(chat), animation.AnimationValue.Size);
+                return Settings.AutoDownload.ShouldDownloadVideo(GetChatType(chat), animation.AnimationValue.Size);
             }
             else if (content is Audio audio)
             {
@@ -158,12 +158,11 @@ namespace Unigram.ViewModels
             }
             else if (content is VideoNote videoNote)
             {
-                return Settings.AutoDownload.ShouldDownloadDocument(GetChatType(chat), videoNote.Video.Size);
+                return Settings.AutoDownload.ShouldDownloadVideo(GetChatType(chat), videoNote.Video.Size);
             }
             else if (content is VoiceNote voiceNote)
             {
-                // Voice notes aren't part of the deal
-                return true;
+                return Settings.AutoDownload.ShouldDownloadVoiceMessages(GetChatType(chat));
             }
 
             return false;

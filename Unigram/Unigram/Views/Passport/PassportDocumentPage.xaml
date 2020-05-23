@@ -47,7 +47,7 @@
 
                 <StackPanel x:Name="TranslationPanel">
                     <TextBlock Text="{CustomResource PassportTranslation}" Margin="12,12,0,0" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
-                    <ListView x:Name="Translation"
+                    <ListView x:Name="Translations"
                               ItemsSource="{x:Bind ViewModel.Translation}"
                               ContainerContentChanging="OnContainerContentChanging">
                         <ListView.ItemTemplate>

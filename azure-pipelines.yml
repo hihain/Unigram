@@ -1,0 +1,94 @@
+# Universal Windows Platform
+# Build a Universal Windows Platform project using Visual Studio.
+# Add steps that test and distribute an app, save build artifacts, and more:
+# https://aka.ms/yaml
+
+trigger:
+- RS1
+- RS2
+
+pool:
+  vmImage: 'vs2017-win2016'
+
+variables:
+  solution: '**/UnigramMobile.sln'
+  buildPlatform: 'ARM'
+  buildConfiguration: 'Release'
+  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+
+steps:
+- checkout: self
+
+- task: CmdLine@2
+  displayName: 'Install tdlib extension'
+  inputs:
+    script: |
+      echo Checkout tdlib VSIX branch
+      git checkout tdlib
+      echo Install tdlib extension
+      "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VSIXInstaller.exe" /q tdlib.vsix
+      echo Cleanup
+      git checkout $(Build.SourceBranchName)
+#    workingDirectory: '$(Build.Repository.LocalPath)'
+
+- task: PowerShell@2
+  displayName: 'Install windows-sdk-10.1.18362.1'
+  inputs:
+    targetType: 'inline'
+    script: |
+      # https://chocolatey.org/packages/windows-sdk-10.1#versionhistory
+      choco install windows-sdk-10.1 --version=10.1.18362.1
+
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: DownloadSecureFile@1
+  name: Secrets
+  displayName: 'Download Constants.Secret.cs.'
+  inputs:
+    secureFile: 'Constants.Secret.cs'
+
+- task: CopyFiles@2
+  displayName: 'Copy Constants.Secret.cs to repository.'
+  inputs:
+    SourceFolder: '$(Agent.TempDirectory)'
+    Contents: 'Constants.Secret.cs'
+    TargetFolder: '$(Build.Repository.LocalPath)\Unigram\Unigram\'
+
+- task: DownloadSecureFile@1
+  name: StoreKey
+  displayName: 'Get the pfx file StoreKey.'
+  inputs:
+    secureFile: 'Unigram_StoreKey.pfx'
+
+- task: PowerShell@2
+  displayName: 'Add the pfx file to the certificate store.'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $pfxpath = '$(StoreKey.secureFilePath)'
+      $password = ''
+      
+      Add-Type -AssemblyName System.Security
+      $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+      $cert.Import($pfxpath, $password, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]"PersistKeySet")
+      $store = new-object system.security.cryptography.X509Certificates.X509Store -argumentlist "MY", CurrentUser
+      $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]"ReadWrite")
+      $store.Add($cert)
+      $store.Close()
+
+- task: VSBuild@1
+  inputs:
+    platform: 'ARM'
+    vsVersion: '15.0'
+    solution: '$(solution)'
+    configuration: '$(buildConfiguration)'
+    msbuildArgs: '/p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'

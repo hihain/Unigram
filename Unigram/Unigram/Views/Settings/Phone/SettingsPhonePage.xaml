@@ -64,7 +64,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <TextBox x:Name="PhoneCode"
+                <TextBox x:Name="PhoneCodeTextBox"
                          Text="{x:Bind ViewModel.PhoneCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0,0,8,0"
                          Width="30"

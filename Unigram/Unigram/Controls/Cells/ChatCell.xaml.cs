@@ -4,19 +4,18 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using Telegram.Td.Api;
-using Template10.Common;
-using Template10.Services.NavigationService;
 using Unigram.Common;
 using Unigram.Common.Chats;
 using Unigram.Controls.Messages;
 using Unigram.Converters;
+using Unigram.Navigation;
 using Unigram.Services;
+using Unigram.Services.Navigation;
 using Unigram.ViewModels.Delegates;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
-using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
@@ -459,6 +458,11 @@ namespace Unigram.Controls.Cells
 
         private string UpdateBriefLabel(Chat chat)
         {
+            if (chat.Source is ChatSourcePublicServiceAnnouncement psa && !string.IsNullOrEmpty(psa.Text))
+            {
+                return psa.Text.Replace('\n', ' ');
+            }
+
             var topMessage = chat.LastMessage;
             if (topMessage != null)
             {
@@ -559,7 +563,11 @@ namespace Unigram.Controls.Cells
 
         private string UpdateFromLabel(Chat chat)
         {
-            if (chat.DraftMessage != null)
+            if (chat.Source is ChatSourcePublicServiceAnnouncement psa && !string.IsNullOrEmpty(psa.Text))
+            {
+                return string.Empty;
+            }
+            else if (chat.DraftMessage != null)
             {
                 switch (chat.DraftMessage.InputMessageText)
                 {
@@ -823,9 +831,19 @@ namespace Unigram.Controls.Cells
 
         private string UpdateTimeLabel(Chat chat)
         {
-            if (_protoService != null && _protoService.IsChatSponsored(chat))
+            if (chat.Source is ChatSourceMtprotoProxy)
             {
                 return Strings.Resources.UseProxySponsor;
+            }
+            else if (chat.Source is ChatSourcePublicServiceAnnouncement psa)
+            {
+                var type = LocaleService.Current.GetString("PsaType_" + psa.Type);
+                if (type.Length > 0)
+                {
+                    return type;
+                }
+
+                return Strings.Resources.PsaTypeDefault;
             }
 
             var lastMessage = chat.LastMessage;

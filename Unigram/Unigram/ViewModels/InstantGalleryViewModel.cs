@@ -15,8 +15,6 @@ namespace Unigram.ViewModels
 {
     public class InstantGalleryViewModel : GalleryViewModelBase
     {
-        private readonly bool _shouldGroup;
-
         public InstantGalleryViewModel(IProtoService protoService, IEventAggregator aggregator)
             : base(protoService, aggregator)
         {
@@ -77,7 +75,7 @@ namespace Unigram.ViewModels
             return null;
         }
 
-        public override MvxObservableCollection<GalleryContent> Group => _shouldGroup ? this.Items : null;
+        public override MvxObservableCollection<GalleryContent> Group => null; //TODO: This has a weird history
 
         //private GalleryItem GetBlock(TLMessage message, TLWebPage webPage, object pageBlock)
         //{

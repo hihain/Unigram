@@ -1,40 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Template10.Common;
-using Unigram.Controls;
-using Unigram.Controls.Views;
-using Unigram.Views;
+using System.Numerics;
+using System.Reactive.Linq;
+using Telegram.Td.Api;
+using Unigram.Collections;
+using Unigram.Common;
+using Unigram.Controls.Gallery;
+using Unigram.Converters;
 using Unigram.ViewModels;
+using Unigram.ViewModels.Chats;
+using Unigram.ViewModels.Delegates;
 using Unigram.ViewModels.Users;
+using Unigram.Views.Supergroups;
+using Unigram.Views.Users;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
-using Unigram.Common;
-using System.Windows.Input;
-using Telegram.Td.Api;
-using Unigram.Converters;
-using Unigram.Collections;
-using Unigram.ViewModels.Chats;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Text;
-using Unigram.ViewModels.Delegates;
-using System.Reactive.Linq;
-using Unigram.Controls.Gallery;
-using Windows.Foundation.Metadata;
-using Windows.UI.Xaml.Hosting;
-using System.Numerics;
-using Unigram.Views.Users;
-using Unigram.Views.Supergroups;
 
 namespace Unigram.Views
 {
@@ -922,89 +911,6 @@ namespace Unigram.Views
         {
             ScrollingHost.ViewChanged += ScrollingHost_ViewChanged;
             SharedMedia.ViewChanged += SharedMedia_ViewChanged;
-
-            return;
-
-            var properties = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
-            var header = ElementCompositionPreview.GetElementVisual(HeaderPanel);
-            var info = ElementCompositionPreview.GetElementVisual(ScrollingInfo);
-
-            var photo = ElementCompositionPreview.GetElementVisual(Photo);
-            var title = ElementCompositionPreview.GetElementVisual(LabelTitle);
-            var subtitle = ElementCompositionPreview.GetElementVisual(Subtitle);
-            var action = ElementCompositionPreview.GetElementVisual(SendMessage);
-
-            if (ApiInformation.IsMethodPresent("Windows.UI.Composition.Compositor", "CreateLinearGradientBrush"))
-            {
-                var overlay = photo.Compositor.CreateSpriteVisual();
-                var gradient = overlay.Compositor.CreateLinearGradientBrush();
-                gradient.ColorStops.Add(overlay.Compositor.CreateColorGradientStop(0, ((SolidColorBrush)App.Current.Resources["PageHeaderBackgroundBrush"]).Color));
-                gradient.ColorStops.Add(overlay.Compositor.CreateColorGradientStop(1, ((SolidColorBrush)App.Current.Resources["PageSubHeaderBackgroundBrush"]).Color));
-                gradient.StartPoint = new Vector2();
-                gradient.EndPoint = new Vector2(0, 1);
-                overlay.Brush = gradient;
-                overlay.Size = new Vector2((float)HeaderOverlay.ActualWidth, (float)HeaderOverlay.ActualHeight);
-
-                HeaderOverlay.SizeChanged += (s, args) =>
-                {
-                    overlay.Size = args.NewSize.ToVector2();
-                };
-
-                ElementCompositionPreview.SetElementChildVisual(HeaderOverlay, overlay);
-
-                var animOverlay = header.Compositor.CreateExpressionAnimation("Min(76, -Min(scrollViewer.Translation.Y, 0)) / 38");
-                animOverlay.SetReferenceParameter("scrollViewer", properties);
-
-                overlay.StartAnimation("Scale.Y", animOverlay);
-            }
-
-            var animClip = header.Compositor.CreateExpressionAnimation("Min(76, -Min(scrollViewer.Translation.Y, 0))");
-            animClip.SetReferenceParameter("scrollViewer", properties);
-
-            header.Clip = header.Compositor.CreateInsetClip(0, -32, -12, 0);
-            header.Clip.StartAnimation("BottomInset", animClip);
-
-
-            var animPhotoOffsetY = header.Compositor.CreateExpressionAnimation("-(Min(76, -Min(scrollViewer.Translation.Y, 0)) / 76 * 41)");
-            animPhotoOffsetY.SetReferenceParameter("scrollViewer", properties);
-
-            var animPhotoOffsetX = header.Compositor.CreateExpressionAnimation("Min(76, -Min(scrollViewer.Translation.Y, 0)) / 76 * 28");
-            animPhotoOffsetX.SetReferenceParameter("scrollViewer", properties);
-
-            var animPhotoScale = header.Compositor.CreateExpressionAnimation("1 -(Min(76, -Min(scrollViewer.Translation.Y, 0)) / 76 * (34 / 64))");
-            animPhotoScale.SetReferenceParameter("scrollViewer", properties);
-
-            photo.StartAnimation("Offset.Y", animPhotoOffsetY);
-            photo.StartAnimation("Offset.X", animPhotoOffsetX);
-            photo.StartAnimation("Scale.X", animPhotoScale);
-            photo.StartAnimation("Scale.Y", animPhotoScale);
-
-
-            var animTitleY = header.Compositor.CreateExpressionAnimation("-(Min(76, -Min(scrollViewer.Translation.Y, 0)) / 76 * 58)");
-            animTitleY.SetReferenceParameter("scrollViewer", properties);
-
-            var animTitleX = header.Compositor.CreateExpressionAnimation("-(Min(76, -Min(scrollViewer.Translation.Y, 0)) / 76 * 6)");
-            animTitleX.SetReferenceParameter("scrollViewer", properties);
-
-            title.StartAnimation("Offset.Y", animTitleY);
-            title.StartAnimation("Offset.X", animTitleX);
-            subtitle.StartAnimation("Offset.Y", animTitleY);
-            subtitle.StartAnimation("Offset.X", animTitleX);
-
-
-            var animInfoY = header.Compositor.CreateExpressionAnimation("-(Min(76, -Min(scrollViewer.Translation.Y, 0)) / 76 * 40)");
-            animInfoY.SetReferenceParameter("scrollViewer", properties);
-
-            var animOpacity = header.Compositor.CreateExpressionAnimation("1 -(Min(76, -Min(scrollViewer.Translation.Y, 0)) / 76)");
-            animOpacity.SetReferenceParameter("scrollViewer", properties);
-
-            info.StartAnimation("Offset.Y", animInfoY);
-            info.StartAnimation("Opacity", animOpacity);
-
-            action.CenterPoint = new Vector3(18);
-            action.StartAnimation("Opacity", animOpacity);
-            action.StartAnimation("Scale.X", animOpacity);
-            action.StartAnimation("Scale.Y", animOpacity);
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)

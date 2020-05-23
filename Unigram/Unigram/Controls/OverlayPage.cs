@@ -1,28 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
+using Unigram.Common;
+using Unigram.Navigation;
+using Unigram.Services.Navigation;
+using Unigram.Services.ViewService;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.System.Profile;
+using Windows.Foundation.Metadata;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using LinqToVisualTree;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls.Primitives;
-using Template10.Common;
-using Windows.UI;
-using Windows.Foundation.Metadata;
-using Template10.Services.NavigationService;
-using Template10.Services.ViewService;
-using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Input;
-using Windows.System;
-using Unigram.Common;
-using Windows.ApplicationModel.Core;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace Unigram.Controls
 {
@@ -40,7 +34,7 @@ namespace Unigram.Controls
 
         protected Border Container;
         protected Border BackgroundElement;
-        private AppViewBackButtonVisibility BackButtonVisibility;
+        //private AppViewBackButtonVisibility BackButtonVisibility;
 
         public event EventHandler Closing;
 
@@ -91,6 +85,13 @@ namespace Unigram.Controls
                 titlebar.ForegroundColor = maskForeground;
                 //titlebar.ButtonBackgroundColor = maskBackground;
                 titlebar.ButtonForegroundColor = maskForeground;
+
+                if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+                {
+                    var statusBar = StatusBar.GetForCurrentView();
+                    statusBar.BackgroundColor = maskBackground;
+                    statusBar.ForegroundColor = maskForeground;
+                }
             }
         }
 
@@ -122,7 +123,9 @@ namespace Unigram.Controls
             {
                 if (value)
                 {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     ShowAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 }
                 else
                 {
@@ -376,9 +379,9 @@ namespace Unigram.Controls
         public bool IsInMainView => throw new NotImplementedException();
 
         public int SessionId => throw new NotImplementedException();
-
-        public event TypedEventHandler<Type> AfterRestoreSavedNavigation;
-
+#pragma warning disable CS0067 // Event is never used
+        public event TypedEventHandler<INavigationService, Type> AfterRestoreSavedNavigation;
+#pragma warning disable CS0067 // Event is never used
         public void ClearCache(bool removeCachedPagesInBackStack = false)
         {
             throw new NotImplementedException();

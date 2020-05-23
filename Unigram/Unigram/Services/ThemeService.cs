@@ -4,12 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Telegram.Td;
 using Telegram.Td.Api;
-using Template10.Common;
 using Unigram.Common;
+using Unigram.Navigation;
 using Unigram.Services.Settings;
-using Unigram.Services.Updates;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.UI;
@@ -98,8 +96,8 @@ namespace Unigram.Services
             }
             else
             {
-                result.Add(new ThemeBundledInfo { Name = "Light", Parent = TelegramTheme.Light });
-                result.Add(new ThemeBundledInfo { Name = "Dark", Parent = TelegramTheme.Dark });
+                result.Add(new ThemeBundledInfo { Name = Strings.Additional.ThemeLight, Parent = TelegramTheme.Light });
+                result.Add(new ThemeBundledInfo { Name = Locale.GetString("ThemeDark"), Parent = TelegramTheme.Dark });
 
                 var package = await Package.Current.InstalledLocation.GetFolderAsync("Assets\\Themes");
                 var official = await package.GetFilesAsync();
@@ -109,7 +107,7 @@ namespace Unigram.Services
                     result.Add(await DeserializeAsync(file, true));
                 }
 
-                result.Add(new ThemeSystemInfo { Name = "System Theme" });
+                result.Add(new ThemeSystemInfo { Name = Strings.Additional.ThemeSystemTheme });
             }
 
             return result;

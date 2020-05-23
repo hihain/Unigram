@@ -79,6 +79,8 @@ namespace Unigram.ViewModels.Channels
         public RelayCommand<StorageFile> EditPhotoCommand { get; }
         private async void EditPhotoExecute(StorageFile file)
         {
+            Logs.Logger.Warning(Logs.Target.API, "Call to not implemented EditPhotoExecute (ChannelCreateStep1)");
+            await Task.CompletedTask;
         }
     }
 }

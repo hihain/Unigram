@@ -55,7 +55,9 @@ namespace Unigram.ViewModels.Settings
 
                     if (App.Connection != null)
                     {
+#pragma warning disable CS4014 // Not needed for mobile anyway - TODO
                         App.Connection.SendMessageAsync(new Windows.Foundation.Collections.ValueSet { { "IsTrayVisible", value } });
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     }
                 }
             }

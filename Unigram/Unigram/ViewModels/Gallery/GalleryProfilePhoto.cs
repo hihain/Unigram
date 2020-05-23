@@ -7,7 +7,9 @@ namespace Unigram.ViewModels.Gallery
     {
         private readonly User _user;
         private readonly ProfilePhoto _photo;
+#pragma warning disable CS0649 // Never assigned field, always null
         private readonly string _caption;
+#pragma warning disable CS0649 // Never assigned field, always null
         private int _date;
 
         public GalleryProfilePhoto(IProtoService protoService, User user)

@@ -104,7 +104,7 @@ namespace Unigram.Views.Chats
             //}
 
             BaseChartView chartView = null;
-            BaseChartView zoomedChartView = null;
+            //BaseChartView zoomedChartView = null;
 
             switch (data.graphType)
             {

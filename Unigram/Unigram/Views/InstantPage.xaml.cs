@@ -1,46 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
+using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
+using Unigram.Controls.Gallery;
+using Unigram.Controls.Messages;
+using Unigram.Controls.Messages.Content;
 using Unigram.Converters;
-using Unigram.Views;
 using Unigram.Services;
 using Unigram.ViewModels;
+using Unigram.ViewModels.Delegates;
+using Unigram.ViewModels.Gallery;
 using Windows.ApplicationModel;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Foundation.Metadata;
-using Windows.Globalization.DateTimeFormatting;
 using Windows.System;
 using Windows.UI;
-using Windows.UI.Core;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
-using Windows.UI.Xaml.Media.Animation;
-using Unigram.Controls.Views;
-using LinqToVisualTree;
-using Unigram.ViewModels.Users;
-using Telegram.Td.Api;
-using Unigram.Controls.Messages.Content;
-using Unigram.Controls.Messages;
-using Unigram.ViewModels.Dialogs;
-using Unigram.ViewModels.Delegates;
-using Unigram.ViewModels.Gallery;
-using Unigram.Controls.Gallery;
-using Windows.UI.Xaml.Media.Imaging;
-using System.Globalization;
 
 namespace Unigram.Views
 {
@@ -48,8 +34,9 @@ namespace Unigram.Views
     {
         public InstantViewModel ViewModel => DataContext as InstantViewModel;
 
+        public IEventAggregator Aggregator => throw new NotImplementedException();
+
         private readonly string _injectedJs;
-        private ScrollViewer _scrollingHost;
 
         private FileContext<Tuple<IContentWithFile, MessageViewModel>> _filesMap = new FileContext<Tuple<IContentWithFile, MessageViewModel>>();
         private FileContext<Image> _iconsMap = new FileContext<Image>();
@@ -329,7 +316,7 @@ namespace Unigram.Views
             }
         }
 
-        private long _webpageId;
+        //private long _webpageId;
 
         //private Stack<Panel> _containers = new Stack<Panel>();
         private double _padding = 12;
@@ -391,8 +378,6 @@ namespace Unigram.Views
                 default:
                     return ProcessUnsupported(block);
             }
-
-            return null;
         }
 
         #region 2.0
@@ -1379,6 +1364,20 @@ namespace Unigram.Views
                     span.TextDecorations |= TextDecorations.Underline;
                     ProcessRichText(underlineText.Text, span, textBlock, effects, ref offset);
                     break;
+                case RichTextAnchorLink anchorLinkText:
+                    try
+                    {
+                        var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
+                        span.Inlines.Add(hyperlink);
+                        hyperlink.Click += (s, args) => Hyperlink_Click(anchorLinkText);
+                        ProcessRichText(anchorLinkText.Text, hyperlink, textBlock, effects, ref offset);
+                    }
+                    catch
+                    {
+                        ProcessRichText(anchorLinkText.Text, span, textBlock, effects, ref offset);
+                        Debug.WriteLine("InstantPage: Probably nesting textUrl inside textUrl");
+                    }
+                    break;
                 case RichTextUrl urlText:
                     try
                     {
@@ -1460,116 +1459,6 @@ namespace Unigram.Views
             }
 
             return 12;
-
-            if (lower is PageBlockCover || lower is PageBlockChatLink)
-            {
-                return 0;
-            }
-            else if (lower is PageBlockDivider || upper is PageBlockDivider)
-            {
-                return 15; // 25;
-            }
-            else if (lower is PageBlockBlockQuote || upper is PageBlockBlockQuote || lower is PageBlockPullQuote || upper is PageBlockPullQuote)
-            {
-                return 17; // 27;
-            }
-            else if (lower is PageBlockTitle)
-            {
-                return 12; // 20;
-            }
-            else if (lower is PageBlockAuthorDate)
-            {
-                if (upper is PageBlockTitle)
-                {
-                    return 16; // 26;
-                }
-                else
-                {
-                    return 12; // 20;
-                }
-            }
-            else if (lower is PageBlockParagraph)
-            {
-                if (upper is PageBlockTitle || upper is PageBlockAuthorDate)
-                {
-                    return 20; // 34;
-                }
-                else if (upper is PageBlockHeader || upper is PageBlockSubheader)
-                {
-                    return 15; // 25;
-                }
-                else if (upper is PageBlockParagraph)
-                {
-                    return 15; // 25;
-                }
-                else if (upper is PageBlockList)
-                {
-                    return 19; // 31;
-                }
-                else if (upper is PageBlockPreformatted)
-                {
-                    return 11; // 19;
-                }
-                else
-                {
-                    return 12; // 20;
-                }
-            }
-            else if (lower is PageBlockList)
-            {
-                if (upper is PageBlockTitle || upper is PageBlockAuthorDate)
-                {
-                    return 20; // 34;
-                }
-                else if (upper is PageBlockHeader || upper is PageBlockSubheader)
-                {
-                    return 19; // 31;
-                }
-                else if (upper is PageBlockParagraph || upper is PageBlockList)
-                {
-                    return 19; // 31;
-                }
-                else if (upper is PageBlockPreformatted)
-                {
-                    return 11; // 19;
-                }
-                else
-                {
-                    return 12; // 20;
-                }
-            }
-            else if (lower is PageBlockPreformatted)
-            {
-                if (upper is PageBlockParagraph)
-                {
-                    return 11; // 19;
-                }
-                else
-                {
-                    return 12; // 20;
-                }
-            }
-            else if (lower is PageBlockHeader)
-            {
-                return 20; // 32;
-            }
-            else if (lower is PageBlockSubheader)
-            {
-                return 20; // 32;
-            }
-            else if (lower == null)
-            {
-                if (upper is PageBlockFooter)
-                {
-                    return 14; // 24;
-                }
-                else
-                {
-                    return 14; // 24;
-                }
-            }
-
-            return 12; // 20;
         }
 
         private double PaddingForBlock(PageBlock block)
@@ -1597,42 +1486,44 @@ namespace Unigram.Views
             }
         }
 
+        private async void Hyperlink_Click(RichTextAnchorLink anchorLinkText)
+        {
+            if (string.IsNullOrEmpty(anchorLinkText.Name))
+            {
+                ScrollingHost.GetScrollViewer().ChangeView(null, 0, null);
+            }
+            else if (_anchors.TryGetValue(anchorLinkText.Name, out Border anchor))
+            {
+                await ScrollingHost.ScrollToItem2(anchor, VerticalAlignment.Top, false);
+            }
+        }
+
         private async void Hyperlink_Click(RichTextUrl urlText)
         {
-            //if (_instantView != null && IsCurrentPage(_instantView.Url, urlText.Url, out string fragment))
-            //{
-            //    if (_anchors.TryGetValue(fragment, out Border anchor))
-            //    {
-            //        await ScrollingHost.ScrollToItem2(anchor, VerticalAlignment.Top, false);
-            //    }
-            //}
-            //else
+            ViewModel.IsLoading = true;
+
+            var response = await ViewModel.ProtoService.SendAsync(new GetWebPageInstantView(urlText.Url, false));
+            if (response is WebPageInstantView instantView)
             {
-                ViewModel.IsLoading = true;
+                ViewModel.IsLoading = false;
+                ViewModel.NavigationService.NavigateToInstant(urlText.Url);
+            }
+            else if (MessageHelper.TryCreateUri(urlText.Url, out Uri uri))
+            {
+                ViewModel.IsLoading = false;
 
-                var response = await ViewModel.ProtoService.SendAsync(new GetWebPageInstantView(urlText.Url, false));
-                if (response is WebPageInstantView instantView)
+                if (MessageHelper.IsTelegramUrl(uri))
                 {
-                    ViewModel.IsLoading = false;
-                    ViewModel.NavigationService.NavigateToInstant(urlText.Url);
+                    MessageHelper.OpenTelegramUrl(ViewModel.ProtoService, ViewModel.NavigationService, uri);
                 }
-                else if (MessageHelper.TryCreateUri(urlText.Url, out Uri uri))
+                else
                 {
-                    ViewModel.IsLoading = false;
-
-                    if (MessageHelper.IsTelegramUrl(uri))
-                    {
-                        MessageHelper.OpenTelegramUrl(ViewModel.ProtoService, ViewModel.NavigationService, uri);
-                    }
-                    else
-                    {
-                        await Launcher.LaunchUriAsync(uri);
-                    }
+                    await Launcher.LaunchUriAsync(uri);
                 }
             }
         }
 
-        private async void Hyperlink_Click(RichTextPhoneNumber phoneNumber)
+        private void Hyperlink_Click(RichTextPhoneNumber phoneNumber)
         {
 
         }

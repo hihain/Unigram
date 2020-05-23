@@ -1,10 +1,7 @@
-﻿using Template10.Common;
-using Unigram.Common;
-using Unigram.Controls;
+﻿using Unigram.Common;
 using Unigram.Controls.Views;
 using Unigram.Services;
 using Unigram.Services.Settings;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Unigram.ViewModels.Settings
@@ -26,6 +23,16 @@ namespace Unigram.ViewModels.Settings
             set
             {
                 Settings.Stickers.SuggestionMode = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool PlayStickers
+        {
+            get => Settings.Diagnostics.PlayStickers;
+            set
+            {
+                Settings.Diagnostics.PlayStickers = value;
                 RaisePropertyChanged();
             }
         }

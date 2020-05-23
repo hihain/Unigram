@@ -1,38 +1,26 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Navigation;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Popups;
-using Unigram.Controls;
-using Template10.Common;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Media;
-using Windows.Foundation.Metadata;
-using Windows.ApplicationModel.Calls;
-using System.Diagnostics;
-using Unigram.Views;
-using Windows.ApplicationModel.Contacts;
 using System.Collections.ObjectModel;
-using Unigram.Common;
 using System.Linq;
-using Unigram.Controls.Views;
-using Unigram.Views.Users;
-using Unigram.Converters;
-using System.Runtime.CompilerServices;
-using Unigram.Services;
+using System.Threading.Tasks;
 using Telegram.Td.Api;
-using Unigram.Views.Channels;
 using Unigram.Collections;
+using Unigram.Common;
+using Unigram.Controls;
+using Unigram.Controls.Views;
+using Unigram.Converters;
+using Unigram.Services;
 using Unigram.ViewModels.Chats;
-using Unigram.Views.Supergroups;
-using Unigram.Views.Chats;
 using Unigram.ViewModels.Delegates;
-using Unigram.Views.BasicGroups;
-using Windows.ApplicationModel.DataTransfer;
-using Unigram.ViewModels.Users;
 using Unigram.ViewModels.Supergroups;
+using Unigram.ViewModels.Users;
+using Unigram.Views;
+using Unigram.Views.Chats;
+using Unigram.Views.Supergroups;
+using Unigram.Views.Users;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.ViewModels
 {
@@ -517,6 +505,8 @@ namespace Unigram.ViewModels
         public RelayCommand ReportCommand { get; }
         private async void ReportExecute()
         {
+            Logs.Logger.Warning(Logs.Target.API, "Call to not implemented ReportCommand (ProfileView)");
+            await Task.CompletedTask;
             //var user = Item as TLUser;
             //if (user != null)
             //{
@@ -722,19 +712,7 @@ namespace Unigram.ViewModels
 
             if (chat.Type is ChatTypePrivate privata)
             {
-                Function request;
-
-                var existing = ProtoService.GetSecretChatForUser(privata.UserId);
-                if (existing != null)
-                {
-                    request = new CreateSecretChat(existing.Id);
-                }
-                else
-                {
-                    request = new CreateNewSecretChat(privata.UserId);
-                }
-
-                var response = await ProtoService.SendAsync(request);
+                var response = await ProtoService.SendAsync(new CreateNewSecretChat(privata.UserId));
                 if (response is Chat result)
                 {
                     NavigationService.NavigateToChat(result);

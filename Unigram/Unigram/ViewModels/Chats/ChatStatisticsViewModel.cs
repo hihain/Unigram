@@ -138,8 +138,10 @@ namespace Unigram.ViewModels.Chats
         public readonly int graphType;
         public readonly String title;
 
-        bool loading;
+        //bool loading;
+#pragma warning disable CS0414 // field value is never used
         bool isEmpty;
+#pragma warning disable CS0414 // field value is never used
 
         public ChartViewData(String title, int grahType)
         {
@@ -174,6 +176,7 @@ namespace Unigram.ViewModels.Chats
                 }
                 catch (Exception e)
                 {
+                    Logs.Logger.Error(Logs.Target.Chat, e.Message, "ChatStatisticsViewModel");
                     //e.printStackTrace();
                     return null;
                 }
@@ -236,6 +239,7 @@ namespace Unigram.ViewModels.Chats
                 }
                 catch (Exception e)
                 {
+                    Logs.Logger.Error(Logs.Target.Chat, e.Message, "ChatStatisticsViewModel");
                     //e.printStackTrace();
                 }
             }

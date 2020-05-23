@@ -691,46 +691,6 @@ namespace Unigram.Controls.Messages
             }
 
             return true;
-
-            //var documentMedia = message.Media as TLMessageMediaDocument;
-            //if (documentMedia != null)
-            //{
-            //    var document = documentMedia.Document as TLDocument;
-            //    if (document != null)
-            //    {
-            //        var photoSize = document.Thumb as TLPhotoSize;
-            //        var photoCachedSize = document.Thumb as TLPhotoCachedSize;
-            //        if (photoCachedSize != null || photoSize != null)
-            //        {
-            //            Visibility = Visibility.Visible;
-
-            //            FindName(nameof(ThumbRoot));
-            //            if (ThumbRoot != null)
-            //                ThumbRoot.Visibility = Visibility.Visible;
-
-            //            ThumbRoot.CornerRadius = ThumbEllipse.CornerRadius = default(CornerRadius);
-            //            ThumbImage.ImageSource = (ImageSource)DefaultPhotoConverter.Convert(documentMedia.Document, true);
-            //        }
-            //        else
-            //        {
-            //            Visibility = Visibility.Visible;
-
-            //            if (ThumbRoot != null)
-            //                ThumbRoot.Visibility = Visibility.Collapsed;
-            //        }
-
-            //        TitleLabel.Text = GetFromLabel(message, title);
-            //        ServiceLabel.Text = document.FileName;
-            //        MessageLabel.Text = string.Empty;
-
-            //        if (!string.IsNullOrWhiteSpace(documentMedia.Caption))
-            //        {
-            //            ServiceLabel.Text += ", ";
-            //            MessageLabel.Text += documentMedia.Caption.Replace("\r\n", "\n").Replace('\n', ' ');
-            //        }
-            //    }
-            //}
-            return true;
         }
 
         private bool SetServiceTextTemplate(MessageViewModel message, string title)

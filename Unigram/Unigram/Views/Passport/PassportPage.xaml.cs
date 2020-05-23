@@ -345,7 +345,7 @@ namespace Unigram.Views.Passport
 
 
 
-            bool isError = false;
+            //bool isError = false;
 
             var errors = !field.IsDocumentOnly ? field.AvailableElements.GetErrorsForType(field.RequiredType.Type).ToList() : null;
             var documentsErrors = documentRequiredType != null ? field.AvailableElements.GetErrorsForType(documentRequiredType.Type).ToList() : null;
@@ -361,7 +361,7 @@ namespace Unigram.Views.Passport
                 {
                     value = documentsErrors[0].Message;
                 }
-                isError = true;
+                //isError = true;
             }
 
             //Dictionary<String, String> errors = !field.GetHashCode ? errorsMap.get(getNameForType(requiredType.type)) : null;

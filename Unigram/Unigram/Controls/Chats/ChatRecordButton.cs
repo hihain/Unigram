@@ -693,7 +693,9 @@ namespace Unigram.Controls.Chats
                 public bool _externalCamera;
 
                 // Rotation Helper to simplify handling rotation compensation for the camera streams
+#pragma warning disable CS0649 // Never assigned field, always null - TODO!
                 public CameraRotationHelper _rotationHelper;
+#pragma warning disable CS0649// Never assigned field, always null
 
                 #endregion
 

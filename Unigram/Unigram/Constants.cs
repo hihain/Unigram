@@ -24,7 +24,8 @@ namespace Unigram
         public const string WallpaperColorFileName = "wallpaper.color.jpg";
         public const int WallpaperLocalId = -1;
 
-        public const int ChatListFilterAll = -1;
+        public const int ChatListMain = 0;
+        public const int ChatListArchive = 1;
 
         public static readonly string[] TelegramHosts = new string[]
         {
@@ -34,5 +35,7 @@ namespace Unigram
             "telegra.ph"
             /*"telesco.pe"*/
         };
+
+        public static readonly Windows.UI.Xaml.Media.FontFamily SymbolThemeFontFamily = new Windows.UI.Xaml.Media.FontFamily("ms-appx:///Assets/Fonts/SEGMDL2.TTF#Segoe MDL2 Assets"); // see App.xaml
     }
 }

@@ -17,6 +17,7 @@ using Windows.ApplicationModel.Contacts;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
+using Windows.Media.Capture;
 using Windows.Media.Effects;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
@@ -35,7 +36,12 @@ namespace Unigram.ViewModels
         #region Stickers
 
         public RelayCommand<Sticker> StickerSendCommand { get; }
-        public async void StickerSendExecute(Sticker sticker)
+        public void StickerSendExecute(Sticker sticker)
+        {
+            StickerSendExecute(sticker, null, null);
+        }
+
+        public async void StickerSendExecute(Sticker sticker, bool? schedule, bool? silent)
         {
             Delegate?.HideStickers();
 
@@ -51,7 +57,7 @@ namespace Unigram.ViewModels
                 return;
             }
 
-            var options = await PickSendMessageOptionsAsync();
+            var options = await PickSendMessageOptionsAsync(schedule, silent);
             if (options == null)
             {
                 return;
@@ -88,7 +94,12 @@ namespace Unigram.ViewModels
         #region Animations
 
         public RelayCommand<Animation> AnimationSendCommand { get; }
-        public async void AnimationSendExecute(Animation animation)
+        public void AnimationSendExecute(Animation animation)
+        {
+            AnimationSendExecute(animation, null, null);
+        }
+
+        public async void AnimationSendExecute(Animation animation, bool? schedule, bool? silent)
         {
             Delegate?.HideStickers();
 
@@ -104,7 +115,7 @@ namespace Unigram.ViewModels
                 return;
             }
 
-            var options = await PickSendMessageOptionsAsync();
+            var options = await PickSendMessageOptionsAsync(schedule, silent);
             if (options == null)
             {
                 return;
@@ -399,6 +410,28 @@ namespace Unigram.ViewModels
             await SendMessageAsync(reply, input, options);
         }
 
+        public RelayCommand SendCameraCommand { get; }
+        private async void SendCameraExecute()
+        {
+            var capture = new CameraCaptureUI();
+            capture.PhotoSettings.AllowCropping = false;
+            capture.PhotoSettings.Format = CameraCaptureUIPhotoFormat.Jpeg;
+            capture.PhotoSettings.MaxResolution = CameraCaptureUIMaxPhotoResolution.HighestAvailable;
+            capture.VideoSettings.Format = CameraCaptureUIVideoFormat.Mp4;
+            capture.VideoSettings.MaxResolution = CameraCaptureUIMaxVideoResolution.HighestAvailable;
+
+            var storages = new ObservableCollection<StorageMedia>();
+
+            var file = await capture.CaptureFileAsync(CameraCaptureUIMode.PhotoOrVideo);
+            var storage = await StorageMedia.CreateAsync(file, true);
+            if (storage != null)
+            {
+                storages.Add(storage);
+            }
+
+            SendMediaExecute(storages, storage);
+        }
+
         public RelayCommand SendMediaCommand { get; }
         private async void SendMediaExecute()
         {
@@ -493,7 +526,7 @@ namespace Unigram.ViewModels
 
             var formattedText = GetFormattedText(true);
 
-            if (selectedItem.Caption is null)
+            if (selectedItem != null && selectedItem.Caption is null)
             {
                 selectedItem.Caption = formattedText
                     .Substring(0, CacheService.Options.MessageCaptionLengthMax);
@@ -678,7 +711,7 @@ namespace Unigram.ViewModels
         //    return await SendMessageAsync(replyToMessageId, inputMessageContent, options);
         //}
 
-        public async Task<SendMessageOptions> PickSendMessageOptionsAsync(bool? schedule = null)
+        public async Task<SendMessageOptions> PickSendMessageOptionsAsync(bool? schedule = null, bool? silent = null)
         {
             var chat = _chat;
             if (chat == null)
@@ -709,7 +742,7 @@ namespace Unigram.ViewModels
             }
             else
             {
-                return new SendMessageOptions(false, false, null);
+                return new SendMessageOptions(silent ?? false, false, null);
             }
         }
 
@@ -989,12 +1022,17 @@ namespace Unigram.ViewModels
 
                 if (package.AvailableFormats.Contains(StandardDataFormats.Text))
                 {
-                    captionElements.Add(await package.GetTextAsync());
+                    var text = await package.GetTextAsync();
+                    captionElements.Add(text);
                 }
                 if (package.AvailableFormats.Contains(StandardDataFormats.WebLink))
                 {
-                    var webLink = await package.GetWebLinkAsync();
-                    captionElements.Add(webLink.AbsoluteUri);
+                    try
+                    {
+                        var webLink = await package.GetWebLinkAsync();
+                        captionElements.Add(webLink.AbsoluteUri);
+                    }
+                    catch { }
                 }
 
                 if (captionElements.Count > 0)

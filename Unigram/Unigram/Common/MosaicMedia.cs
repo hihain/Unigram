@@ -38,7 +38,6 @@ namespace Unigram.Common
         private Dictionary<int, int> itemSpans = new Dictionary<int, int>();
         private Dictionary<int, int> itemsToRow = new Dictionary<int, int>();
         private List<List<int>> rows;
-        private double lineHeight = 100;
 
         private MosaicMedia(IList items)
         {

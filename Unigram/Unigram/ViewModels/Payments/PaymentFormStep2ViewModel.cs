@@ -14,7 +14,7 @@ namespace Unigram.ViewModels.Payments
 {
     public class PaymentFormStep2ViewModel : PaymentFormViewModelBase
     {
-        private OrderInfo _info;
+        //private OrderInfo _info;
 
         public PaymentFormStep2ViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(protoService, cacheService, settingsService, aggregator)

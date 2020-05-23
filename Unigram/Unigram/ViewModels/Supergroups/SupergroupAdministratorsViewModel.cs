@@ -52,6 +52,8 @@ namespace Unigram.ViewModels.Supergroups
         public RelayCommand<ChatMember> ParticipantDismissCommand { get; }
         private async void ParticipantDismissExecute(ChatMember participant)
         {
+            Logs.Logger.Warning(Logs.Target.API, "Call to not implemented function ParticipantDismissExecute (AdminView)");
+            await Task.CompletedTask;
         }
 
         #endregion

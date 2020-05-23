@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
-using Template10.Mvvm;
 using Unigram.Common;
+using Unigram.Navigation;
 using Unigram.Services.Updates;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Sensors;
@@ -75,7 +73,7 @@ namespace Unigram.Services
         private SystemMediaTransportControls _transport;
 
         private Dictionary<string, PlaybackItem> _mapping;
-        private Dictionary<string, Deferral> _inverse;
+        private Dictionary<string, Windows.Foundation.Deferral> _inverse;
         private Dictionary<string, MediaBindingEventArgs> _binders;
 
         private List<PlaybackItem> _items;
@@ -112,7 +110,7 @@ namespace Unigram.Services
                 : (bool?)false;
 
             _mapping = new Dictionary<string, PlaybackItem>();
-            _inverse = new Dictionary<string, Deferral>();
+            _inverse = new Dictionary<string, Windows.Foundation.Deferral>();
             _binders = new Dictionary<string, MediaBindingEventArgs>();
 
             aggregator.Subscribe(this);
@@ -267,7 +265,7 @@ namespace Unigram.Services
 
         private void OnReadingChanged(ProximitySensor sender, ProximitySensorReadingChangedEventArgs args)
         {
-            //AudioRoutingManager.GetDefault().SetAudioEndpoint(args.Reading.IsDetected ? AudioRoutingEndpoint.Earpiece : AudioRoutingEndpoint.Speakerphone);
+            AudioRoutingManager.GetDefault().SetAudioEndpoint(args.Reading.IsDetected ? AudioRoutingEndpoint.Earpiece : AudioRoutingEndpoint.Speakerphone);
         }
 
         #endregion
@@ -695,7 +693,7 @@ namespace Unigram.Services
                     if (message.UpdateFile(update.File))
                     {
                         var token = $"{message.Message.ChatId}_{message.Message.Id}";
-                        if (_binders.TryGetValue(token, out MediaBindingEventArgs args) && _inverse.TryGetValue(token, out Deferral deferral))
+                        if (_binders.TryGetValue(token, out MediaBindingEventArgs args) && _inverse.TryGetValue(token, out Windows.Foundation.Deferral deferral))
                         {
                             args.SetUri(new Uri("file:///" + update.File.Local.Path));
                             deferral.Complete();

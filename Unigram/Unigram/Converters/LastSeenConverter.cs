@@ -149,17 +149,18 @@ namespace Unigram.Converters
                 }
                 else if (Math.Abs(DateTime.Now.ToTimestamp() / 1000 - date) < 31536000000L)
                 {
-                    string format = string.Format(Strings.Resources.FormatDateAtTime, online.ToString(Strings.Resources.FormatterMonth), BindConvert.Current.ShortTime.Format(online));
+                    string format = string.Format(Strings.Resources.formatDateAtTime, online.ToString(Strings.Resources.formatterMonth), BindConvert.Current.ShortTime.Format(online));
                     return string.Format("{0} {1}", Strings.Resources.LastSeenDate, format);
                 }
                 else
                 {
-                    string format = string.Format(Strings.Resources.FormatDateAtTime, online.ToString(Strings.Resources.FormatterYear), BindConvert.Current.ShortTime.Format(online));
+                    string format = string.Format(Strings.Resources.formatDateAtTime, online.ToString(Strings.Resources.formatterYear), BindConvert.Current.ShortTime.Format(online));
                     return string.Format("{0} {1}", Strings.Resources.LastSeenDate, format);
                 }
             }
             catch (Exception e)
             {
+                Logs.Logger.Error(Logs.Target.Chat, e.Message, "LastSeenConverter");
                 //FileLog.e(e);
             }
 

@@ -58,9 +58,11 @@ namespace Unigram.Controls.Gallery
 
         #region Unused
 
+        #pragma warning disable CS0067 // This event is never used
         public bool AreVerticalSnapPointsRegular => true;
         public event EventHandler<object> VerticalSnapPointsChanged;
         public IReadOnlyList<float> GetIrregularSnapPoints(Orientation orientation, SnapPointsAlignment alignment) => throw new NotImplementedException();
+        #pragma warning disable CS0067 // This event is never used
 
         #endregion
     }

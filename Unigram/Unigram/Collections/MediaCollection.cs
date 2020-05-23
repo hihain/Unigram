@@ -347,35 +347,6 @@ namespace Unigram.Collections
         protected override void Merge(IList<DateMessageKeyedList> result)
         {
             base.Merge(result);
-            return;
-
-            var last = this.LastOrDefault();
-            if (last == null)
-            {
-                Add(new DateMessageKeyedList(DateTime.Now));
-            }
-
-            foreach (var group in result)
-            {
-                if (last != null && last.Key.Date == group.Key.Date)
-                {
-                    //last.AddRange(group);
-
-                    foreach (var item in group)
-                    {
-                        last.Add(item);
-                    }
-
-                    last.Update();
-                }
-                else
-                {
-                    //if (Count < 1)
-                    {
-                        Add(group);
-                    }
-                }
-            }
         }
 
         private void ProcessFiles(IList<Message> messages, Message parent = null)

@@ -13,7 +13,7 @@ namespace Unigram.Charts.DataView
 
         public bool isTopHourChart;
         //LinearLayout content;
-        Holder[] holdes;
+        //Holder[] holdes;
         //TextView time;
         //TextView hourTime;
         //Drawable background;

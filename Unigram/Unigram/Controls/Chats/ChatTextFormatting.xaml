@@ -17,33 +17,33 @@
             AutomationProperties.Name="{CustomResource Bold}"
             ToolTipService.ToolTip="{CustomResource Bold}"
             AllowFocusOnInteraction="False"
-            CheckedGlyph="&#xE8DD;"
-            UncheckedGlyph="&#xE8DD;"
+            CheckedGlyph="{CustomResource Additional.FormatBoldGlyph}"
+            UncheckedGlyph="{CustomResource Additional.FormatBoldGlyph}"
             CheckedForeground="{ThemeResource TelegramBackgroundAccentBrush}"
             IsOneWay="False"
-            FontSize="16"/>
+            FontSize="{CustomResource Additional.FormatGlyphFontSize}"/>
         <controls:GlyphToggleButton
             x:Name="Italic"
             Click="Italic_Click"
             AutomationProperties.Name="{CustomResource Italic}"
             ToolTipService.ToolTip="{CustomResource Italic}"
             AllowFocusOnInteraction="False"
-            CheckedGlyph="&#xE8DB;"
-            UncheckedGlyph="&#xE8DB;"
+            CheckedGlyph="{CustomResource Additional.FormatItalicGlyph}"
+            UncheckedGlyph="{CustomResource Additional.FormatItalicGlyph}"
             CheckedForeground="{ThemeResource TelegramBackgroundAccentBrush}"
             IsOneWay="False"
-            FontSize="16"/>
+            FontSize="{CustomResource Additional.FormatGlyphFontSize}"/>
         <controls:GlyphToggleButton
             x:Name="Underline"
             Click="Underline_Click"
             AutomationProperties.Name="{CustomResource Underline}"
             ToolTipService.ToolTip="{CustomResource Underline}"
             AllowFocusOnInteraction="False"
-            CheckedGlyph="&#xE8DC;"
-            UncheckedGlyph="&#xE8DC;"
+            CheckedGlyph="{CustomResource Additional.FormatUnderlineGlyph}"
+            UncheckedGlyph="{CustomResource Additional.FormatUnderlineGlyph}"
             CheckedForeground="{ThemeResource TelegramBackgroundAccentBrush}"
             IsOneWay="False"
-            FontSize="16"/>
+            FontSize="{CustomResource Additional.FormatGlyphFontSize}"/>
         <controls:GlyphToggleButton
             x:Name="Strikethrough"
             Click="Strikethrough_Click"
@@ -65,7 +65,7 @@
             AllowFocusOnInteraction="False"
             CheckedGlyph="&#xE943;"
             UncheckedGlyph="&#xE943;"
-            CheckedForeground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+            CheckedForeground="{ThemeResource TelegramBackgroundAccentBrush}"
             IsOneWay="False"
             FontSize="16"/>
 

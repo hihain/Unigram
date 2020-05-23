@@ -22,7 +22,7 @@ namespace Unigram.ViewModels.Supergroups
         {
         }
 
-        private SearchMembersAndUsersCollection _search;
+        private new SearchMembersAndUsersCollection _search;
         public new SearchMembersAndUsersCollection Search
         {
             get

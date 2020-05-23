@@ -135,7 +135,7 @@ namespace Unigram.Controls.Views
             {
                 builder.Add("server=" + Server);
             }
-            if (Port != null)
+            if (Port >= 0)
             {
                 builder.Add("port=" + Port);
             }

@@ -102,10 +102,6 @@ namespace Unigram.Controls.Chats
             {
                 _hitTest.Size = _container.Size = e.NewSize.ToVector2();
             }
-            else
-            {
-                var a = "b";
-            }
         }
 
         private void ConfigureInteractionTracker()

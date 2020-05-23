@@ -1,29 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Telegram.Td.Api;
-using Template10.Common;
-using Template10.Services.NavigationService;
 using Unigram.Collections;
 using Unigram.Common;
 using Unigram.Controls;
+using Unigram.Navigation;
 using Unigram.Services;
-using Unigram.Services.Settings;
+using Unigram.Services.Navigation;
 using Unigram.ViewModels;
 using Unigram.Views.SignIn;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.System.Profile;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
@@ -389,10 +382,6 @@ namespace Unigram.Views.Host
                     {
                         content.FontFamily = new FontFamily("ms-appx:///Assets/Fonts/Telegram.ttf#Telegram");
                     }
-                    else if (destination == RootDestination.Wallet)
-                    {
-                        content.FontFamily = new FontFamily("Segoe UI Emoji");
-                    }
                     else
                     {
                         content.FontFamily = new FontFamily("Segoe MDL2 Assets");
@@ -436,11 +425,6 @@ namespace Unigram.Views.Host
                         content.Glyph = "\uE115";
                         break;
 
-                    case RootDestination.Wallet:
-                        content.Text = Strings.Resources.Wallet;
-                        content.Glyph = "\uD83D\uDC8E";
-                        break;
-
                     case RootDestination.SavedMessages:
                         content.Text = Strings.Resources.SavedMessages;
                         content.Glyph = "\uE907";
@@ -454,7 +438,7 @@ namespace Unigram.Views.Host
             }
         }
 
-        #endregion
+#endregion
 
         private void Expand_Click(object sender, RoutedEventArgs e)
         {
@@ -498,6 +482,7 @@ namespace Unigram.Views.Host
                     Switch(_lifetime.Create(test: confirm == ContentDialogResult.Secondary));
 #else
                     Switch(_lifetime.Create());
+                    await System.Threading.Tasks.Task.CompletedTask;
 #endif
                 }
                 else if (_navigationService?.Frame?.Content is IRootContentPage content)
@@ -600,8 +585,6 @@ namespace Unigram.Views.Host
         Settings,
 
         InviteFriends,
-
-        Wallet,
 
         SavedMessages,
         News,

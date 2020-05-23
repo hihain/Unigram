@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -355,7 +356,7 @@ namespace Unigram.Controls.Messages
                     shown = true;
                 }
             }
-            else if (!light && message.IsChannelPost && chat.Type is ChatTypeSupergroup)
+            else if (!light && message.IsChannelPost && chat.Type is ChatTypeSupergroup && string.IsNullOrEmpty(message.ForwardInfo?.PublicServiceAnnouncementType))
             {
                 var hyperlink = new Hyperlink();
                 hyperlink.Inlines.Add(new Run { Text = message.ProtoService.GetTitle(chat) });
@@ -394,10 +395,17 @@ namespace Unigram.Controls.Messages
 
             if (shown)
             {
-                var title = message.Delegate.GetAdminTitle(message.SenderUserId);
-                if (admin != null && !message.IsOutgoing && message.Delegate != null && !string.IsNullOrEmpty(title))
+                if (message.SenderUserId != 0)
                 {
-                    paragraph.Inlines.Add(new Run { Text = " " + title, Foreground = null });
+                    var title = message.Delegate.GetAdminTitle(message.SenderUserId);
+                    if (admin != null && !message.IsOutgoing && message.Delegate != null && !string.IsNullOrEmpty(title))
+                    {
+                        paragraph.Inlines.Add(new Run { Text = " " + title, Foreground = null });
+                    }
+                }
+                else if (message.ForwardInfo != null && !message.IsChannelPost)
+                {
+                    paragraph.Inlines.Add(new Run { Text = " " + Strings.Resources.DiscussChannel, Foreground = null });
                 }
             }
 
@@ -408,7 +416,31 @@ namespace Unigram.Controls.Messages
                 if (paragraph.Inlines.Count > 0)
                     paragraph.Inlines.Add(new LineBreak());
 
-                paragraph.Inlines.Add(new Run { Text = Strings.Resources.ForwardedMessage, FontWeight = FontWeights.Normal });
+                if (message.ForwardInfo.PublicServiceAnnouncementType.Length > 0)
+                {
+                    var type = LocaleService.Current.GetString("PsaMessage_" + message.ForwardInfo.PublicServiceAnnouncementType);
+                    if (type.Length > 0)
+                    {
+                        paragraph.Inlines.Add(new Run { Text = type, FontWeight = FontWeights.Normal });
+                    }
+                    else
+                    {
+                        paragraph.Inlines.Add(new Run { Text = Strings.Resources.PsaMessageDefault, FontWeight = FontWeights.Normal });
+                    }
+
+                    FindName(nameof(PsaInfo));
+                    PsaInfo.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    paragraph.Inlines.Add(new Run { Text = Strings.Resources.ForwardedMessage, FontWeight = FontWeights.Normal });
+
+                    if (PsaInfo != null)
+                    {
+                        PsaInfo.Visibility = Visibility.Collapsed;
+                    }
+                }
+
                 paragraph.Inlines.Add(new LineBreak());
                 paragraph.Inlines.Add(new Run { Text = Strings.Resources.From + " ", FontWeight = FontWeights.Normal });
 
@@ -437,6 +469,10 @@ namespace Unigram.Controls.Messages
 
                 paragraph.Inlines.Add(hyperlink);
                 forward = true;
+            }
+            else if (PsaInfo != null)
+            {
+                PsaInfo.Visibility = Visibility.Collapsed;
             }
 
             //if (message.HasViaBotId && message.ViaBot != null && !message.ViaBot.IsDeleted && message.ViaBot.HasUsername)
@@ -467,6 +503,11 @@ namespace Unigram.Controls.Messages
                 {
                     admin.Visibility = Visibility.Visible;
                     admin.Text = title;
+                }
+                else if (admin != null && shown && !message.IsChannelPost && message.SenderUserId == 0 && message.ForwardInfo != null)
+                {
+                    admin.Visibility = Visibility.Visible;
+                    admin.Text = Strings.Resources.DiscussChannel;
                 }
                 else if (admin != null)
                 {
@@ -975,7 +1016,14 @@ namespace Unigram.Controls.Messages
                         else
                         {
                             var hyperlink = new Hyperlink();
+                            var original = entities.FirstOrDefault(x => x.Offset <= entity.Offset && x.Offset + x.Length >= entity.End);
+
                             var data = text.Substring(entity.Offset, entity.Length);
+
+                            if (original != null)
+                            {
+                                data = text.Substring(original.Offset, original.Length);
+                            }
 
                             hyperlink.Click += (s, args) => Entity_Click(message, entity.Type, data);
                             hyperlink.Foreground = GetBrush("MessageForegroundLinkBrush");
@@ -1280,6 +1328,24 @@ namespace Unigram.Controls.Messages
         }
 
         #region Actions
+
+        private void PsaInfo_Click(object sender, RoutedEventArgs e)
+        {
+            var message = _message;
+            if (message == null)
+            {
+                return;
+            }
+
+            var type = LocaleService.Current.GetString("PsaMessageInfo_" + message.ForwardInfo.PublicServiceAnnouncementType);
+            if (string.IsNullOrEmpty(type))
+            {
+                type = Strings.Resources.PsaMessageInfoDefault;
+            }
+
+            var entities = message.ProtoService.Execute(new GetTextEntities(type)) as TextEntities;
+            Window.Current.ShowTeachingTip(PsaInfo, new FormattedText(type, entities.Entities), TeachingTipPlacementMode.TopLeft);
+        }
 
         private void Reply_Click(object sender, RoutedEventArgs e)
         {
@@ -1624,7 +1690,7 @@ namespace Unigram.Controls.Messages
                     height = width / (AlbumContent.MAX_WIDTH - AlbumContent.ITEM_MARGIN) * (AlbumContent.MAX_HEIGHT - AlbumContent.ITEM_MARGIN);
                     height = groupedMessages.Height * height;
 
-                    goto Calculate;
+                    goto Calculate; //goto...
                 }
             }
 

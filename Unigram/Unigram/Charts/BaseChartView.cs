@@ -126,7 +126,9 @@ namespace Unigram.Charts
         Paint whiteLinePaint = new Paint();
 
         Rect pickerRect = new Rect();
+#pragma warning disable CS0649 // Never assigned field, always null
         CanvasPathBuilder pathTmp;
+#pragma warning disable CS0649 // Never assigned field, always null
 
         Animator maxValueAnimator;
 
@@ -170,9 +172,9 @@ namespace Unigram.Charts
         public const int TRANSITION_MODE_PARENT = 2;
         public const int TRANSITION_MODE_ALPHA_ENTER = 3;
         public const int TRANSITION_MODE_NONE = 0;
-
+#pragma warning disable CS0649 // Never assigned field, always null - see code in comments
         private int touchSlop;
-
+#pragma warning disable CS0649 // Never assigned field, always null
         public int pikerHeight = 46;
         public int pickerWidth;
         public int chartStart;
@@ -277,13 +279,11 @@ namespace Unigram.Charts
         protected int getMeasuredHeight()
         {
             return (int)canvas.Size.Height;
-            return (int)ActualHeight;
         }
 
         protected int getMeasuredWidth()
         {
             return (int)canvas.Size.Width;
-            return (int)ActualWidth;
         }
 
         private CanvasControl canvas;
@@ -1805,7 +1805,9 @@ namespace Unigram.Charts
 
         protected virtual void updatePickerMinMaxHeight()
         {
+#pragma warning disable CS0162 // Unreachable code detected
             if (!ANIMATE_PICKER_SIZES) return;
+#pragma warning restore CS0162 // Unreachable code detected
             int max = 0;
             int min = int.MaxValue;
             foreach (LineViewData l in lines)

@@ -43,7 +43,7 @@ namespace Unigram.Views
 
             NavigationCacheMode = NavigationCacheMode.Required;
 
-            Diagnostics.Text = $"Unigram " + GetVersion();
+            Diagnostics.Text = Package.Current.DisplayName + " " + GetVersion();
 
             if (ApiInformation.IsEnumNamedValuePresent("Windows.UI.Xaml.Controls.Primitives.FlyoutPlacementMode", "BottomEdgeAlignedRight"))
             {
@@ -60,10 +60,8 @@ namespace Unigram.Views
 
         private string GetVersion()
         {
-            Package package = Package.Current;
-            PackageId packageId = package.Id;
-            PackageVersion version = packageId.Version;
-            return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build, version.Revision);
+            PackageVersion version = Services.SettingsService.GetAppVersion();
+            return $"{version.Major}.{version.Minor}.{version.Build}";
         }
 
         private MasterDetailView _masterDetail;
@@ -186,12 +184,6 @@ namespace Unigram.Views
             MasterDetail.NavigationService.GoBackAt(0, false);
         }
 
-        private void Wallet_Click(object sender, RoutedEventArgs e)
-        {
-            MasterDetail.NavigationService.NavigateToWallet();
-            MasterDetail.NavigationService.GoBackAt(0, false);
-        }
-
         private void Passport_Click(object sender, RoutedEventArgs e)
         {
             MasterDetail.NavigationService.Navigate(typeof(PassportPage));
@@ -201,6 +193,12 @@ namespace Unigram.Views
         private void Questions_Click(object sender, RoutedEventArgs e)
         {
             MasterDetail.NavigationService.NavigateToInstant(Strings.Resources.TelegramFaqUrl);
+            MasterDetail.NavigationService.GoBackAt(0, false);
+        }
+
+        private void PrivacyPolicy_Click(object sender, RoutedEventArgs e)
+        {
+            MasterDetail.NavigationService.NavigateToInstant(Strings.Resources.PrivacyPolicyUrl);
             MasterDetail.NavigationService.GoBackAt(0, false);
         }
 

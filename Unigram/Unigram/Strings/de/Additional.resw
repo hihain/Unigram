@@ -123,8 +123,32 @@
   <data name="CopyImage" xml:space="preserve">
     <value>Bild kopieren</value>
   </data>
+  <data name="Cut" xml:space="preserve">
+    <value>Ausschneiden</value>
+  </data>
   <data name="DeletedMessage" xml:space="preserve">
     <value>Gelöschte Nachricht</value>
+  </data>
+  <data name="EditLink" xml:space="preserve">
+    <value>Link bearbeiten</value>
+  </data>
+  <data name="FormatBoldGlyph" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="FormatItalicGlyph" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Formatting" xml:space="preserve">
+    <value>Formatieren</value>
+  </data>
+  <data name="FormattingHide" xml:space="preserve">
+    <value>Formatierungsoptionen verbergen</value>
+  </data>
+  <data name="FormattingShow" xml:space="preserve">
+    <value>Formatierungsoptionen immer zeigen</value>
+  </data>
+  <data name="FormatUnderlineGlyph" xml:space="preserve">
+    <value></value>
   </data>
   <data name="News" xml:space="preserve">
     <value>Nachrichten</value>
@@ -133,13 +157,93 @@
     <value>original</value>
     <comment>Original message date and time</comment>
   </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Einfügen</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
   <data name="SaveAs" xml:space="preserve">
     <value>Speichern unter…</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
   </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
   <data name="ShowInFolder" xml:space="preserve">
     <value>Im Ordner anzeigen</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Rückgängig</value>
+  </data>
+  <data name="AdaptiveWideSetting" xml:space="preserve">
+    <value>Optimiertes Layout für breite Bildschirme</value>
+    <comment>SettingsAdvancedPage</comment>
+  </data>
+  <data name="CallSettingInput" xml:space="preserve">
+    <value>Eingabegerät wählen</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingOutput" xml:space="preserve">
+    <value>Ausgabegerät wählen</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingsTitle" xml:space="preserve">
+    <value>Anrufeinstellungen</value>
+    <comment>SettingsAdvancesPage</comment>
+  </data>
+  <data name="InputVolume" xml:space="preserve">
+    <value>Eingangslautstärke</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="OutputVolume" xml:space="preserve">
+    <value>Ausgangslautstärke</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="ReplaceEmoji" xml:space="preserve">
+    <value>Emoji ersetzen</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Hell</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="ThemeSystemTheme" xml:space="preserve">
+    <value>Windows-Standard</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="SettingIsTextFormattingVisible" xml:space="preserve">
+    <value>Formatierungsoptionen anzeigen</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="CallSettingInputTitle" xml:space="preserve">
+    <value>Mikrofon</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingOutputTitle" xml:space="preserve">
+    <value>Lautsprecher und Kopfhörer</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="FormatGlyphFontSize" xml:space="preserve">
+    <value>22</value>
+    <comment>Font Size corresponding chosen Symbol</comment>
+  </data>
+  <data name="IPv6ToggleSetting" xml:space="preserve">
+    <value>Über IPv6 verbinden</value>
+    <comment>SettingsAdvancedPage</comment>
+  </data>
+  <data name="SettingPlayStickers" xml:space="preserve">
+    <value>Sticker-Animationen abspielen</value>
+    <comment>SettingStickersPage</comment>
+  </data>
+  <data name="SettingsDisableHighlightWords" xml:space="preserve">
+    <value>Tippfehler-Hervorhebung deaktivieren</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="SettingsDisableAutocorrectWords" xml:space="preserve">
+    <value>Autokorrektur deaktivieren</value>
+    <comment>SettingsAppearancePage</comment>
   </data>
 </root>

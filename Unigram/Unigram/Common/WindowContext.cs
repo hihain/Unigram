@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Td.Api;
-using Template10.Common;
-using Template10.Services.NavigationService;
 using Unigram.Controls;
 using Unigram.Controls.Views;
 using Unigram.Native;
+using Unigram.Navigation;
 using Unigram.Services;
-using Unigram.Services.Settings;
-using Unigram.ViewModels;
+using Unigram.Services.Navigation;
 using Unigram.Views;
 using Unigram.Views.SignIn;
 using Windows.ApplicationModel;
@@ -168,6 +162,18 @@ namespace Unigram.Common
             // Buttons feedback
             titleBar.ButtonPressedBackgroundColor = buttonPressed;
             titleBar.ButtonHoverBackgroundColor = buttonHover;
+
+            // Mobile Status Bar
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var backgroundBrush = Application.Current.Resources["PageHeaderBackgroundBrush"] as SolidColorBrush;
+                var foregroundBrush = Application.Current.Resources["PageHeaderForegroundBrush"] as SolidColorBrush;
+
+                var statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundColor = backgroundBrush.Color;
+                statusBar.ForegroundColor = foregroundBrush.Color;
+                statusBar.BackgroundOpacity = 1;
+            }
         }
 
         #endregion
@@ -533,14 +539,26 @@ namespace Unigram.Common
             });
         }
 
-        private void ShowStatus(string text)
+        private async void ShowStatus(string text)
         {
             Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().Title = text;
+
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                StatusBar.GetForCurrentView().ProgressIndicator.Text = text;
+                await StatusBar.GetForCurrentView().ProgressIndicator.ShowAsync();
+            }
         }
 
-        private void HideStatus()
+        private async void HideStatus()
         {
             Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().Title = string.Empty;
+
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                StatusBar.GetForCurrentView().ProgressIndicator.Text = string.Empty;
+                await StatusBar.GetForCurrentView().ProgressIndicator.HideAsync();
+            }
         }
 
 

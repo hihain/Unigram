@@ -18,7 +18,7 @@ namespace Unigram.Controls
     public class ProgressBarRing : ProgressBar
     {
         private ProgressBarRingSlice Indicator;
-        private RotateTransform Rotation;
+        private new RotateTransform Rotation;
 
         private Storyboard _foreverStoryboard;
         private Storyboard _angleStoryboard;

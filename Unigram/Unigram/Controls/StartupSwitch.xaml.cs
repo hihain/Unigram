@@ -16,8 +16,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace Unigram.Controls
 {
     public sealed partial class StartupSwitch : UserControl
@@ -28,6 +26,10 @@ namespace Unigram.Controls
 
             if (ApiInformation.IsApiContractPresent("Windows.ApplicationModel.StartupTaskContract", 2))
             {
+#if DESKTOP_BRIDGE
+                FindName(nameof(ToggleMinimized));
+#endif
+
                 OnLoaded();
             }
             else
@@ -39,16 +41,25 @@ namespace Unigram.Controls
         private async void OnLoaded()
         {
             Toggle.Toggled -= OnToggled;
-            ToggleMinimized.Toggled -= Minimized_Toggled;
+
+            if (ToggleMinimized != null)
+            {
+                ToggleMinimized.Toggled -= Minimized_Toggled;
+            }
 
             var task = await StartupTask.GetAsync("Telegram");
             if (task.State == StartupTaskState.Enabled)
             {
                 Toggle.IsOn = true;
                 Toggle.IsEnabled = true;
-                ToggleMinimized.IsOn = SettingsService.Current.IsLaunchMinimized;
-                ToggleMinimized.Visibility = Visibility.Visible;
-                Label.Visibility = Visibility.Collapsed;
+
+                if (ToggleMinimized != null)
+                {
+                    ToggleMinimized.IsOn = SettingsService.Current.IsLaunchMinimized;
+                    ToggleMinimized.Visibility = Visibility.Visible;
+                }
+
+                Headered.Footer = string.Empty;
 
                 Visibility = Visibility.Visible;
             }
@@ -56,9 +67,14 @@ namespace Unigram.Controls
             {
                 Toggle.IsOn = false;
                 Toggle.IsEnabled = true;
-                ToggleMinimized.IsOn = false;
-                ToggleMinimized.Visibility = Visibility.Collapsed;
-                Label.Visibility = Visibility.Collapsed;
+
+                if (ToggleMinimized != null)
+                {
+                    ToggleMinimized.IsOn = false;
+                    ToggleMinimized.Visibility = Visibility.Collapsed;
+                }
+
+                Headered.Footer = string.Empty;
 
                 Visibility = Visibility.Visible;
             }
@@ -66,9 +82,14 @@ namespace Unigram.Controls
             {
                 Toggle.IsOn = false;
                 Toggle.IsEnabled = false;
-                ToggleMinimized.IsOn = false;
-                ToggleMinimized.Visibility = Visibility.Collapsed;
-                Label.Visibility = Visibility.Visible;
+
+                if (ToggleMinimized != null)
+                {
+                    ToggleMinimized.IsOn = false;
+                    ToggleMinimized.Visibility = Visibility.Collapsed;
+                }
+
+                Headered.Footer = "You can enable this in the Startup tab in Task Manager.";
 
                 Visibility = Visibility.Visible;
             }
@@ -78,7 +99,11 @@ namespace Unigram.Controls
             }
 
             Toggle.Toggled += OnToggled;
-            ToggleMinimized.Toggled += Minimized_Toggled;
+
+            if (ToggleMinimized != null)
+            {
+                ToggleMinimized.Toggled += Minimized_Toggled;
+            }
         }
 
         private async void OnToggled(object sender, RoutedEventArgs e)
@@ -96,7 +121,7 @@ namespace Unigram.Controls
             OnLoaded();
         }
 
-        private async void Minimized_Toggled(object sender, RoutedEventArgs e)
+        private void Minimized_Toggled(object sender, RoutedEventArgs e)
         {
             SettingsService.Current.IsLaunchMinimized = ToggleMinimized.IsOn;
         }

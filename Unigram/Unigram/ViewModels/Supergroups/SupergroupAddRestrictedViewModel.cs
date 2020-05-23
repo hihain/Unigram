@@ -24,7 +24,7 @@ namespace Unigram.ViewModels.Supergroups
             AddCommand = new RelayCommand<int>(AddExecute);
         }
 
-        private SearchMembersAndUsersCollection _search;
+        private new SearchMembersAndUsersCollection _search;
         public new SearchMembersAndUsersCollection Search
         {
             get

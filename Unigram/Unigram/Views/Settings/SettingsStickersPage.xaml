@@ -36,6 +36,10 @@
                             Command="{x:Bind ViewModel.SuggestCommand}"
                             Badge="{x:Bind ConvertSuggest(ViewModel.SuggestStickers), Mode=OneWay}"/>
                         <ToggleSwitch
+                            IsOn="{x:Bind ViewModel.PlayStickers, Mode=TwoWay}"
+                            Header="{CustomResource Additional.SettingPlayStickers}"
+                            Style="{StaticResource CheckButtonStyle}"/>
+                        <ToggleSwitch
                             IsOn="{x:Bind ViewModel.IsLoopingEnabled, Mode=TwoWay}"
                             Header="{CustomResource LoopAnimatedStickers}"
                             Style="{StaticResource CheckButtonStyle}"/>
@@ -46,12 +50,12 @@
                             BadgeVisibility="{x:Bind ViewModel.FeaturedStickersCount, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </controls:HeaderedControl>
                     
-                    <controls:HeaderedControl
+                    <!--<controls:HeaderedControl
                         Footer="{CustomResource MasksInfo}">
                         <controls:BadgeButton
                             Content="{CustomResource Masks}"
                             Click="Masks_Click"/>
-                    </controls:HeaderedControl>
+                    </controls:HeaderedControl>-->
 
                     <controls:HeaderedControl
                         Footer="{CustomResource ArchivedStickersInfo}"

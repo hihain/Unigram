@@ -33,8 +33,8 @@ namespace Unigram.Collections
             }
 
             index = Array.BinarySearch(Items.ToArray(), item, _comparer);
-            if (index >= 0) ; /*throw new ArgumentException("Cannot insert duplicated items");*/
-            else base.InsertItem(~index, item);
+            if (index < 0)
+                base.InsertItem(~index, item);
         }
 
         public int NextIndexOf(T item)

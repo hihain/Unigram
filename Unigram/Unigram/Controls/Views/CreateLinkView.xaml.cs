@@ -28,6 +28,20 @@ namespace Unigram.Controls.Views
             Title = Strings.Resources.CreateLink;
             PrimaryButtonText = Strings.Resources.OK;
             SecondaryButtonText = Strings.Resources.Cancel;
+
+            Opened += TLContentDialog_Opened;
+        }
+
+        private void TLContentDialog_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
+        {
+            if (string.IsNullOrWhiteSpace(TextField.Text))
+            {
+                TextField.Focus(FocusState.Programmatic);
+            }
+            else
+            {
+                LinkField.Focus(FocusState.Programmatic);
+            }
         }
 
         public string Text
@@ -61,6 +75,10 @@ namespace Unigram.Controls.Views
                 VisualUtilities.ShakeView(TextField);
                 args.Cancel = true;
                 return;
+            }
+
+            if (!Link.TrimStart().StartsWith("http")) {
+                Link = "https://" + Link.TrimStart();
             }
 
             if (IsUrlInvalid(Link))

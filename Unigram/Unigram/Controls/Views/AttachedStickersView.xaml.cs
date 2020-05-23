@@ -1,31 +1,15 @@
-﻿using LinqToVisualTree;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
-using Template10.Utils;
 using Unigram.Common;
-using Unigram.Native;
 using Unigram.ViewModels;
 using Unigram.Views;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Foundation.Metadata;
-using Windows.Storage;
-using Windows.UI;
-using Windows.UI.Composition;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Controls.Views
@@ -98,6 +82,13 @@ namespace Unigram.Controls.Views
             titlebar.ForegroundColor = foregroundBrush.Color;
             //titlebar.ButtonBackgroundColor = backgroundBrush.Color;
             titlebar.ButtonForegroundColor = foregroundBrush.Color;
+
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundColor = backgroundBrush.Color;
+                statusBar.ForegroundColor = foregroundBrush.Color;
+            }
         }
 
         private async void List_ItemClick(object sender, ItemClickEventArgs e)

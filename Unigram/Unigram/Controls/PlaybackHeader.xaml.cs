@@ -1,29 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Windows.Input;
 using Telegram.Td.Api;
-using Template10.Common;
-using Template10.Services.NavigationService;
 using Unigram.Common;
 using Unigram.Controls.Cells;
-using Unigram.Controls.Views;
 using Unigram.Converters;
 using Unigram.Services;
-using Unigram.Views;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Foundation.Metadata;
+using Unigram.Services.Navigation;
 using Windows.Media.Playback;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Controls
 {
@@ -191,7 +179,7 @@ namespace Unigram.Controls
                 }
 
                 TitleLabel.Text = user.Id == _cacheService.Options.MyId ? Strings.Resources.ChatYourSelfName : user.GetFullName();
-                SubtitleLabel.Text = string.Format(Strings.Resources.FormatDateAtTime, BindConvert.Current.ShortDate.Format(date), BindConvert.Current.ShortTime.Format(date));
+                SubtitleLabel.Text = string.Format(Strings.Resources.formatDateAtTime, BindConvert.Current.ShortDate.Format(date), BindConvert.Current.ShortTime.Format(date));
 
                 PreviousButton.Visibility = Visibility.Collapsed;
                 NextButton.Visibility = Visibility.Collapsed;
@@ -201,7 +189,7 @@ namespace Unigram.Controls
 
                 UpdateRate();
 
-                ViewButton.Padding = new Thickness(48 + 6, 0, 96, 0);
+                ViewButton.Padding = new Thickness(48 + 6, 0, 40 * 2 + 48 + 12, 0);
             }
             else if (message.Content is MessageAudio || webPage?.Audio != null)
             {
@@ -228,8 +216,8 @@ namespace Unigram.Controls
                 }
                 else
                 {
-                    TitleLabel.Text = Strings.Resources.AudioUnknownTitle;
-                    SubtitleLabel.Text = Strings.Resources.AudioUnknownArtist;
+                    TitleLabel.Text = audio.FileName;
+                    SubtitleLabel.Text = string.Empty;
                 }
 
                 PreviousButton.Visibility = Visibility.Visible;
@@ -242,13 +230,13 @@ namespace Unigram.Controls
 
                 UpdateRepeat();
 
-                ViewButton.Padding = new Thickness(40 * 3 + 12, 0, 96, 0);
+                ViewButton.Padding = new Thickness(40 * 3 + 12, 0, 40 * 2 + 48 + 12, 0);
             }
         }
 
         private void UpdateRepeat()
         {
-            RepeatButton.IsChecked = _playbackService.IsRepeatEnabled == null;
+            RepeatButton.IsChecked = _playbackService.IsRepeatEnabled;
             Automation.SetToolTip(RepeatButton, _playbackService.IsRepeatEnabled == null
                 ? Strings.Resources.AccDescrRepeatOne
                 : _playbackService.IsRepeatEnabled == true

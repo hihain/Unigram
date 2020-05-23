@@ -23,13 +23,23 @@ namespace Unigram.Controls.Views
 {
     public sealed partial class DeleteChatView : TLContentDialog
     {
-        public DeleteChatView(IProtoService protoService, Chat chat, bool clear)
+        public DeleteChatView(IProtoService protoService, Chat chat, bool clear, bool asOwner = false)
         {
             InitializeComponent();
 
-            Photo.Source = PlaceholderHelper.GetChat(protoService, chat, 72);
+            Photo.Source = PlaceholderHelper.GetChat(protoService, chat, 36);
 
-            Title.Text = clear ? Strings.Resources.ClearHistory : Strings.Resources.DeleteChatUser; // protoService.GetTitle(chat);
+            if (chat.Source is ChatSourcePublicServiceAnnouncement)
+            {
+                TitleDelete.Text = Strings.Resources.PsaHideChatAlertTitle;
+                Subtitle.Text = Strings.Resources.PsaHideChatAlertText;
+                CheckBox.Visibility = Visibility.Collapsed;
+
+                PrimaryButtonText = Strings.Resources.PsaHide;
+                SecondaryButtonText = Strings.Resources.Cancel;
+
+                return;
+            }
 
             var user = protoService.GetUser(chat);
             var basicGroup = protoService.GetBasicGroup(chat);
@@ -120,7 +130,18 @@ namespace Unigram.Controls.Views
             }
             else if (supergroup != null)
             {
-                if (supergroup.IsChannel)
+                if (asOwner)
+                {
+                    if (supergroup.IsChannel)
+                    {
+                        Subtitle.Text = Strings.Resources.ChannelDeleteAlert;
+                    }
+                    else
+                    {
+                        Subtitle.Text = Strings.Resources.MegaDeleteAlert;
+                    }
+                }
+                else if (supergroup.IsChannel)
                 {
                     TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.Resources.ChannelLeaveAlertWithName, chat.Title));
                 }
@@ -142,14 +163,15 @@ namespace Unigram.Controls.Views
             {
                 if (supergroup.IsChannel)
                 {
-                    PrimaryButtonText = Strings.Resources.LeaveChannelMenu;
+                    PrimaryButtonText = asOwner ? Strings.Resources.ChannelDeleteMenu : Strings.Resources.LeaveChannelMenu;
                 }
                 else
                 {
-                    PrimaryButtonText = Strings.Resources.LeaveMegaMenu;
+                    PrimaryButtonText = asOwner ? Strings.Resources.DeleteMegaMenu : Strings.Resources.LeaveMegaMenu;
                 }
             }
 
+            TitleDelete.Text = PrimaryButtonText;
             SecondaryButtonText = Strings.Resources.Cancel;
         }
 

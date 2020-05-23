@@ -101,6 +101,7 @@ namespace Unigram.Charts
 
                         if (USE_LINES)
                         {
+#pragma warning disable CS0162 // Unreachable code detected
                             if (j == 0)
                             {
                                 line.linesPath[j++] = xPoint;
@@ -113,6 +114,7 @@ namespace Unigram.Charts
                                 line.linesPath[j++] = xPoint;
                                 line.linesPath[j++] = yPoint;
                             }
+#pragma warning restore CS0162 // Unreachable code detected
                         }
                         else
                         {
@@ -208,6 +210,7 @@ namespace Unigram.Charts
 
                         if (USE_LINES)
                         {
+#pragma warning disable CS0162 // Unreachable code detected
                             if (j == 0)
                             {
                                 line.linesPathBottom[j++] = xPoint;
@@ -220,6 +223,7 @@ namespace Unigram.Charts
                                 line.linesPathBottom[j++] = xPoint;
                                 line.linesPathBottom[j++] = yPoint;
                             }
+#pragma warning restore CS0162 // Unreachable code detected
                         }
                         else
                         {
@@ -403,7 +407,9 @@ namespace Unigram.Charts
 
         protected override void updatePickerMinMaxHeight()
         {
+#pragma warning disable CS0162 // Unreachable code detected
             if (!ANIMATE_PICKER_SIZES) return;
+#pragma warning restore CS0162 // Unreachable code detected
             if (lines[0].enabled)
             {
                 base.updatePickerMinMaxHeight();

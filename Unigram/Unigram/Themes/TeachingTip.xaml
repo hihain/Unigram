@@ -4,14 +4,13 @@
     xmlns:local="using:Microsoft.UI.Xaml.Controls">
 
     <!-- File to be removed as soon as Microsoft fix their poopoo -->
-    
+
     <Style TargetType="local:TeachingTip" BasedOn="{StaticResource DefaultTeachingTipStyle}" />
 
     <Style x:Key="DefaultTeachingTipStyle" TargetType="local:TeachingTip">
         <Setter Property="Background" Value="{ThemeResource TeachingTipBackgroundBrush}"/>
         <Setter Property="Foreground" Value="{ThemeResource TeachingTipForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{ThemeResource TeachingTipBorderBrush}"/>
-        <!--<contract7Present:Setter Property="CornerRadius" Value="{ThemeResource OverlayCornerRadius}" />-->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:TeachingTip">
@@ -67,7 +66,7 @@
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
-                            <VisualStateGroup x:Name="ContentStates">
+                            <!--<VisualStateGroup x:Name="ContentStates">
                                 <VisualState x:Name="Content">
                                     <VisualState.Setters>
                                         <Setter Target="MainContentPresenter.Margin" Value="{StaticResource TeachingTipMainContentPresentMargin}"/>
@@ -78,7 +77,7 @@
                                         <Setter Target="MainContentPresenter.Margin" Value="{StaticResource TeachingTipMainContentAbsentMargin}"/>
                                     </VisualState.Setters>
                                 </VisualState>
-                            </VisualStateGroup>
+                            </VisualStateGroup>-->
                             <VisualStateGroup x:Name="CloseButtonLocations">
                                 <VisualState x:Name="HeaderCloseButton">
                                     <VisualState.Setters>
@@ -109,15 +108,11 @@
                                 <VisualState x:Name="HeroContentTop">
                                     <VisualState.Setters>
                                         <Setter Target="HeroContentBorder.(Grid.Row)" Value="0"/>
-                                        <!--<contract7Present:Setter Target="HeroContentBorder.CornerRadius" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TopCornerRadiusFilterConverter}}"/>-->
-                                        <Setter Target="HeroContentBorder.CornerRadius" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource TopCornerRadiusFilterConverter}}"/>
                                     </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="HeroContentBottom">
                                     <VisualState.Setters>
                                         <Setter Target="HeroContentBorder.(Grid.Row)" Value="2"/>
-                                        <!--<contract7Present:Setter Target="HeroContentBorder.CornerRadius" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BottomCornerRadiusFilterConverter}}"/>-->
-                                        <Setter Target="HeroContentBorder.CornerRadius" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource BottomCornerRadiusFilterConverter}}"/>
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
@@ -134,10 +129,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="3"/>
-
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TopThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource TopThicknessFilterConverter}}"/>
-
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -161,8 +152,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="3"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BottomThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource BottomThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Visible"/>
                                         <Setter Target="TopTailPolygonHighlight.HorizontalAlignment" Value="Center"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Visible"/>
@@ -187,8 +176,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="4"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="3"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="1"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource LeftThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource LeftThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -212,8 +199,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="0"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="3"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="1"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource RightThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource RightThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -237,8 +222,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="3"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TopThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource TopThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -262,8 +245,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="3"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TopThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource TopThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -287,8 +268,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="3"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BottomThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource BottomThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Visible"/>
                                         <Setter Target="TopTailPolygonHighlight.HorizontalAlignment" Value="Left"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Visible"/>
@@ -313,8 +292,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="3"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BottomThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource BottomThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Visible"/>
                                         <Setter Target="TopTailPolygonHighlight.HorizontalAlignment" Value="Right"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Visible"/>
@@ -339,8 +316,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="4"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="3"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="1"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource LeftThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource LeftThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -364,8 +339,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="4"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="3"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="1"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource LeftThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource LeftThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -389,8 +362,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="0"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="3"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="1"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource RightThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource RightThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -414,8 +385,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="0"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="3"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="1"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource RightThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource RightThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -439,8 +408,6 @@
                                         <Setter Target="TailEdgeBorder.(Grid.Column)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.RowSpan)" Value="1"/>
                                         <Setter Target="TailEdgeBorder.(Grid.ColumnSpan)" Value="3"/>
-                                        <!--<contract7Present:Setter Target="TailEdgeBorder.Margin" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TopThicknessFilterConverter}}"/>-->
-                                        <Setter Target="TailEdgeBorder.Margin" Value="{Binding Source={ThemeResource OverlayCornerRadius}, Converter={StaticResource TopThicknessFilterConverter}}"/>
                                         <Setter Target="TopTailPolygonHighlight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TopHighlightRight.Visibility" Value="Collapsed"/>
                                         <Setter Target="TailPolygon.Visibility" Value="Visible"/>
@@ -534,15 +501,14 @@
                                       Grid.Row="1"
                                       Grid.Column="1"
                                       Grid.ColumnSpan="3"
-                                      Grid.RowSpan="3"
-                                      CornerRadius="{ThemeResource OverlayCornerRadius}">
+                                      Grid.RowSpan="3">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Border x:Name="HeroContentBorder"
-                                            Grid.Row="0"
+                                            Grid.Row="0" 
                                             Child="{TemplateBinding HeroContent}"
                                             Background="{TemplateBinding Background}"/>
                                     <Grid x:Name="NonHeroContentRootGrid" Grid.Row="1">
@@ -557,7 +523,7 @@
                                                     <Border x:Name="IconBorder" Grid.Column="0" Child="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.IconElement}"/>
                                                     <StackPanel x:Name="TitlesStackPanel" Grid.Column="1">
                                                         <!--<TextBlock x:Name="TitleTextBlock" Grid.Column="0" Text="{TemplateBinding Title}" TextWrapping="WrapWholeWords" FontWeight="SemiBold"/>-->
-                                                        <TextBlock x:Name="SubtitleTextBlock" Grid.Row="1" Text="{TemplateBinding Subtitle}" TextWrapping="WrapWholeWords"/>
+                                                        <!--<TextBlock x:Name="SubtitleTextBlock" Grid.Row="1" Text="{TemplateBinding Subtitle}" TextWrapping="WrapWholeWords"/>-->
                                                     </StackPanel>
                                                 </Grid>
                                                 <ContentPresenter x:Name="MainContentPresenter" Grid.Row="1" Content="{TemplateBinding Content}"/>

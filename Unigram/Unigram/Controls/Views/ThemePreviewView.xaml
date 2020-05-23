@@ -91,7 +91,7 @@
             </ListViewItem>
         </ListView>
         
-        <Border x:Name="Shadow" Grid.Column="1" Grid.RowSpan="3"/>
+        <Border x:Name="ShadowBorder" Grid.Column="1" Grid.RowSpan="3"/>
 
         <Border Height="32" Background="{ThemeResource PageHeaderBackgroundBrush}" Grid.Column="1"/>
 
@@ -116,7 +116,7 @@
                             <controls:ProfilePicture x:Name="Photo" Width="{ThemeResource ChatPhotoSize}" Height="{ThemeResource ChatPhotoSize}" Margin="12,0" IsEnabled="False"/>
 
                             <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,-2,0,2" Grid.Column="1">
-                                <TextBlock x:Name="Title"
+                                <TextBlock x:Name="TitleChat"
                                                Foreground="{ThemeResource PageHeaderForegroundBrush}"
                                                Style="{StaticResource BaseTextBlockStyle}"
                                                TextWrapping="NoWrap"

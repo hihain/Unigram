@@ -1,47 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Template10.Common;
+using Telegram.Td.Api;
+using Unigram.Common;
 using Unigram.Converters;
-using Unigram.ViewModels;
+using Unigram.Native.Streaming;
+using Unigram.Navigation;
+using Unigram.Services;
+using Unigram.Services.ViewService;
+using Unigram.ViewModels.Delegates;
+using Unigram.ViewModels.Gallery;
 using Unigram.Views;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
+using Windows.Graphics.Display;
 using Windows.Media.Core;
 using Windows.Media.Playback;
+using Windows.System.Display;
+using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using Windows.UI.Xaml.Shapes;
-using LinqToVisualTree;
-using Windows.Foundation.Metadata;
-using Windows.UI;
-using Microsoft.Graphics.Canvas.Effects;
-using Windows.UI.ViewManagement;
-using Windows.System.Display;
-using Unigram.Common;
-using Windows.Graphics.Display;
-using Telegram.Td.Api;
-using System.Windows.Input;
-using Windows.Storage.Streams;
-using Unigram.Services;
-using Unigram.ViewModels.Delegates;
-using Template10.Services.ViewService;
-using Unigram.ViewModels.Gallery;
-using Unigram.Controls.Gallery;
-using Unigram.Native.Streaming;
 
 namespace Unigram.Controls.Gallery
 {
@@ -265,17 +253,6 @@ namespace Unigram.Controls.Gallery
         public static GalleryView GetForCurrentView()
         {
             return new GalleryView();
-
-            var id = ApplicationView.GetApplicationViewIdForWindow(Window.Current.CoreWindow);
-            if (_windowContext.TryGetValue(id, out WeakReference<GalleryView> reference) && reference.TryGetTarget(out GalleryView value))
-            {
-                return value;
-            }
-
-            var context = new GalleryView();
-            _windowContext[id] = new WeakReference<GalleryView>(context);
-
-            return context;
         }
 
         public IAsyncOperation<ContentDialogResult> ShowAsync(GalleryViewModelBase parameter, Func<FrameworkElement> closing = null)
@@ -283,12 +260,9 @@ namespace Unigram.Controls.Gallery
             return AsyncInfo.Run(async (token) =>
             {
                 _closing = closing;
-
-                if (SettingsService.Current.AreAnimationsEnabled)
-                {
-                    ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", _closing());
-                }
-
+#if !MOBILE
+                ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", _closing());
+#endif
                 if (_compactLifetime != null)
                 {
                     var compact = _compactLifetime;
@@ -338,6 +312,13 @@ namespace Unigram.Controls.Gallery
             titlebar.ForegroundColor = Colors.White;
             //titlebar.ButtonBackgroundColor = Colors.Black;
             titlebar.ButtonForegroundColor = Colors.White;
+
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundColor = Colors.Black;
+                statusBar.ForegroundColor = Colors.White;
+            }
         }
 
         public void OnBackRequesting(HandledRoutedEventArgs e)
@@ -359,7 +340,7 @@ namespace Unigram.Controls.Gallery
             {
                 ApplicationView.GetForCurrentView().ExitFullScreenMode();
             }
-
+#if !MOBILE
             //var container = GetContainer(0);
             //var root = container.Presenter;
             if (ViewModel != null && ViewModel.SelectedItem == ViewModel.FirstItem && _closing != null)
@@ -369,28 +350,21 @@ namespace Unigram.Controls.Gallery
 
                 var root = Preview.Presenter;
 
-                if (SettingsService.Current.AreAnimationsEnabled)
+                var animation = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", root);
+                if (animation != null)
                 {
-                    var animation = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", root);
-                    if (animation != null)
+                    if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Animation.ConnectedAnimation", "Configuration"))
                     {
-                        if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Animation.ConnectedAnimation", "Configuration"))
-                        {
-                            animation.Configuration = new BasicConnectedAnimationConfiguration();
-                        }
+                        animation.Configuration = new BasicConnectedAnimationConfiguration();
+                    }
 
-                        var element = _closing();
-                        if (element.ActualWidth > 0 && animation.TryStart(element))
-                        {
-                            animation.Completed += (s, args) =>
-                            {
-                                Hide();
-                            };
-                        }
-                        else
+                    var element = _closing();
+                    if (element.ActualWidth > 0 && animation.TryStart(element))
+                    {
+                        animation.Completed += (s, args) =>
                         {
                             Hide();
-                        }
+                        };
                     }
                     else
                     {
@@ -411,15 +385,17 @@ namespace Unigram.Controls.Gallery
                 batch.End();
                 batch.Completed += (s, args) =>
                 {
+#endif
                     ScrollingHost.Opacity = 0;
                     Preview.Opacity = 1;
 
                     Hide();
+#if !MOBILE
                 };
             }
 
             _layer.StartAnimation("Opacity", CreateScalarAnimation(1, 0));
-
+#endif
             if (Transport.IsVisible)
             {
                 Transport.Hide();
@@ -455,38 +431,35 @@ namespace Unigram.Controls.Gallery
             Preview.Opacity = 1;
 
             var container = GetContainer(0);
-
-            if (SettingsService.Current.AreAnimationsEnabled)
+#if !MOBILE
+            var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("FullScreenPicture");
+            if (animation != null)
             {
-                var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("FullScreenPicture");
-                if (animation != null)
+                if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Animation.ConnectedAnimation", "Configuration"))
                 {
-                    if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Animation.ConnectedAnimation", "Configuration"))
-                    {
-                        animation.Configuration = new BasicConnectedAnimationConfiguration();
-                    }
+                    animation.Configuration = new BasicConnectedAnimationConfiguration();
+                }
 
-                    _layer.StartAnimation("Opacity", CreateScalarAnimation(0, 1));
+                _layer.StartAnimation("Opacity", CreateScalarAnimation(0, 1));
 
-                    if (animation.TryStart(image.Presenter))
+                if (animation.TryStart(image.Presenter))
+                {
+                    animation.Completed += (s, args) =>
                     {
-                        animation.Completed += (s, args) =>
+                        Transport.Show();
+                        ScrollingHost.Opacity = 1;
+                        Preview.Opacity = 0;
+
+                        if (item.IsVideo && container != null)
                         {
-                            Transport.Show();
-                            ScrollingHost.Opacity = 1;
-                            Preview.Opacity = 0;
+                            Play(container.Presenter, item, item.GetFile());
+                        }
+                    };
 
-                            if (item.IsVideo && container != null)
-                            {
-                                Play(container.Presenter, item, item.GetFile());
-                            }
-                        };
-
-                        return;
-                    }
+                    return;
                 }
             }
-
+#endif
             _layer.Opacity = 1;
 
             Transport.Show();
@@ -509,7 +482,7 @@ namespace Unigram.Controls.Gallery
             return scalar;
         }
 
-        #region Binding
+#region Binding
 
         private string ConvertFrom(object with)
         {
@@ -528,7 +501,7 @@ namespace Unigram.Controls.Gallery
         private string ConvertDate(int value)
         {
             var date = Convert.DateTime(value);
-            return string.Format(Strings.Resources.FormatDateAtTime, Convert.ShortDate.Format(date), Convert.ShortTime.Format(date));
+            return string.Format(Strings.Resources.formatDateAtTime, Convert.ShortDate.Format(date), Convert.ShortTime.Format(date));
         }
 
         private string ConvertOf(int index, int count)
@@ -551,7 +524,7 @@ namespace Unigram.Controls.Gallery
             return Visibility.Collapsed;
         }
 
-        #endregion
+#endregion
 
         private void Play(GalleryContent item, File file)
         {
@@ -756,7 +729,7 @@ namespace Unigram.Controls.Gallery
             ChangeView(args, false);
         }
 
-        #region Flippitiflip
+#region Flippitiflip
 
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -953,9 +926,9 @@ namespace Unigram.Controls.Gallery
             return true;
         }
 
-        #endregion
+#endregion
 
-        #region Context menu
+#region Context menu
 
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)
         {
@@ -1018,9 +991,9 @@ namespace Unigram.Controls.Gallery
             args.ShowAt(flyout, element);
         }
 
-        #endregion
+#endregion
 
-        #region Compact overlay
+#region Compact overlay
 
         private static ViewLifetimeControl _compactLifetime;
         private IViewService _viewService;
@@ -1120,9 +1093,9 @@ namespace Unigram.Controls.Gallery
             OnBackRequestedOverride(this, new HandledRoutedEventArgs());
         }
 
-        #endregion
+#endregion
 
-        #region Swipe to close
+#region Swipe to close
 
         private Visual _layout;
 
@@ -1254,7 +1227,7 @@ namespace Unigram.Controls.Gallery
             e.Handled = true;
         }
 
-        #endregion
+#endregion
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {

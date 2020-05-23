@@ -94,7 +94,7 @@
 
                 <controls:HeaderedControl
                     Header="{CustomResource AutoNightBrightness}"
-                    Footer="{x:Bind ConvertBrightness(5), Mode=OneWay}"
+                    Footer="{x:Bind ConvertBrightness(5), Mode=OneTime}"
                     Visibility="{x:Bind ConvertModeVisibility(ViewModel.Mode, settings:NightMode.Automatic), Mode=OneWay}" Margin="0,24,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>

@@ -165,6 +165,10 @@
                                           Glyph="&#xE783;"
                                           Click="Questions_Click"
                                           Style="{StaticResource TextGlyphButtonStyle}"/>
+                    <controls:BadgeButton Content="{CustomResource PrivacyPolicy}"
+                                          Glyph="&#xE131;"
+                                          Click="PrivacyPolicy_Click"
+                                          Style="{StaticResource TextGlyphButtonStyle}"/>
                 </StackPanel>
                 
                 <Grid>
@@ -174,6 +178,7 @@
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Margin="12,8,12,0"/>
                     <Button Click="Diagnostics_Click" Opacity="0" Style="{StaticResource EmptyButtonStyle}"/>
+                    <HyperlinkButton NavigateUri="https://hihain.github.io/UnigramMobile/privacy" Content="{CustomResource PrivacyPolicy}" HorizontalAlignment="Right" FontSize="12" Margin="0,0,12,0" />
                 </Grid>
             </StackPanel>
         </ScrollViewer>

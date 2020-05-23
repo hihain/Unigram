@@ -82,7 +82,6 @@ namespace Unigram.Charts
             public float end;
 
             ValueAnimator a;
-            ValueAnimator jumpToAnimator;
             public float aValue = 0f;
 
             public CapturesData(Listener view, int state)
@@ -107,7 +106,6 @@ namespace Unigram.Charts
             public void uncapture()
             {
                 if (a != null) a.cancel();
-                if (jumpToAnimator != null) jumpToAnimator.cancel();
             }
         }
 

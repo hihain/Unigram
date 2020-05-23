@@ -1,47 +1,23 @@
-﻿using LinqToVisualTree;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Unigram.Common;
-using Unigram.Views;
-using Unigram.ViewModels;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.System;
-using Windows.UI;
-using Windows.UI.Core;
-using Windows.UI.Text;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Automation.Peers;
-using Windows.UI.Xaml.Automation.Provider;
-using Unigram.Native;
-using System.Collections.ObjectModel;
-using Windows.UI.Xaml.Automation;
-using Unigram.Entities;
+using Telegram.Td;
 using Telegram.Td.Api;
-using Unigram.Services;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unigram.Collections;
-using Template10.Common;
-using System.Windows.Input;
-using Windows.Foundation.Metadata;
-using Windows.UI.Xaml.Controls.Primitives;
+using Unigram.Common;
+using Unigram.Controls.Chats;
 using Unigram.Controls.Views;
 using Unigram.Converters;
-using Unigram.Controls.Chats;
-using Telegram.Td;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
+using Windows.Foundation.Metadata;
+using Windows.Storage.Streams;
+using Windows.System;
+using Windows.UI.Text;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace Unigram.Controls
 {
@@ -150,30 +126,30 @@ namespace Unigram.Controls
             clone.StartOf(TextRangeUnit.Link, true);
             var mention = TryGetUserId(clone, out int userId);
 
-            var formatting = new MenuFlyoutSubItem { Text = "Formatting" };
+            var formatting = new MenuFlyoutSubItem { Text = Strings.Additional.Formatting, Icon = new FontIcon { Glyph = "\uE8D3" } }; // Icons.Fontcolor
             CreateFlyoutItem(formatting.Items, length && format.Bold == FormatEffect.Off, ContextBold_Click, Strings.Resources.Bold, new FontIcon { Glyph = Icons.Bold }, VirtualKey.B);
             CreateFlyoutItem(formatting.Items, length && format.Italic == FormatEffect.Off, ContextItalic_Click, Strings.Resources.Italic, new FontIcon { Glyph = Icons.Italic }, VirtualKey.I);
             CreateFlyoutItem(formatting.Items, length && format.Underline == UnderlineType.None, ContextUnderline_Click, Strings.Resources.Underline, new FontIcon { Glyph = Icons.Underline }, VirtualKey.U);
             CreateFlyoutItem(formatting.Items, length && format.Strikethrough == FormatEffect.Off, ContextStrikethrough_Click, Strings.Resources.Strike, new FontIcon { Glyph = Icons.Strikethrough, FontFamily = App.Current.Resources["TelegramThemeFontFamily"] as FontFamily }, VirtualKey.X, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
             CreateFlyoutItem(formatting.Items, length && format.Name != "Consolas", ContextMonospace_Click, Strings.Resources.Mono, new FontIcon { Glyph = Icons.Monospace }, VirtualKey.M, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
             formatting.Items.Add(new MenuFlyoutSeparator());
-            CreateFlyoutItem(formatting.Items, !mention, ContextLink_Click, clone.Link.Length > 0 ? "Edit link" : Strings.Resources.CreateLink, new FontIcon { Glyph = Icons.Link }, VirtualKey.K);
+            CreateFlyoutItem(formatting.Items, !mention, ContextLink_Click, clone.Link.Length > 0 ? Strings.Additional.EditLink : Strings.Resources.CreateLink, new FontIcon { Glyph = Icons.Link }, VirtualKey.K);
             formatting.Items.Add(new MenuFlyoutSeparator());
             CreateFlyoutItem(formatting.Items, length && !IsDefault(format), ContextPlain_Click, Strings.Resources.Regular, null, VirtualKey.N, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
             formatting.Items.Add(new MenuFlyoutSeparator());
-            CreateFlyoutItem(formatting.Items, true, () => IsFormattingVisible = !_isFormattingVisible, _isFormattingVisible ? "Hide formatting" : "Show formatting", new FontIcon { Glyph = "\uE8D2" });
+            CreateFlyoutItem(formatting.Items, true, () => IsFormattingVisible = !_isFormattingVisible, _isFormattingVisible ? Strings.Additional.FormattingHide : Strings.Additional.FormattingShow, new FontIcon { Glyph = "\uE8D2" });
 
-            CreateFlyoutItem(flyout.Items, Document.CanUndo(), ContextUndo_Click, "Undo", new FontIcon { Glyph = Icons.Undo }, VirtualKey.Z);
-            CreateFlyoutItem(flyout.Items, Document.CanRedo(), ContextRedo_Click, "Redo", new FontIcon { Glyph = Icons.Redo }, VirtualKey.Y);
+            CreateFlyoutItem(flyout.Items, Document.CanUndo(), ContextUndo_Click, Strings.Additional.Undo, new FontIcon { Glyph = Icons.Undo }, VirtualKey.Z);
+            CreateFlyoutItem(flyout.Items, Document.CanRedo(), ContextRedo_Click, Strings.Additional.Redo, new FontIcon { Glyph = Icons.Redo }, VirtualKey.Y);
             flyout.Items.Add(new MenuFlyoutSeparator());
-            CreateFlyoutItem(flyout.Items, length && Document.CanCopy(), ContextCut_Click, "Cut", new FontIcon { Glyph = Icons.Cut }, VirtualKey.X);
-            CreateFlyoutItem(flyout.Items, length && Document.CanCopy(), ContextCopy_Click, "Copy", new FontIcon { Glyph = Icons.Copy }, VirtualKey.C);
-            CreateFlyoutItem(flyout.Items, Document.CanPaste(), ContextPaste_Click, "Paste", new FontIcon { Glyph = Icons.Paste }, VirtualKey.V);
-            CreateFlyoutItem(flyout.Items, length, ContextDelete_Click, "Delete");
+            CreateFlyoutItem(flyout.Items, length && Document.CanCopy(), ContextCut_Click, Strings.Additional.Cut, new FontIcon { Glyph = Icons.Cut }, VirtualKey.X);
+            CreateFlyoutItem(flyout.Items, length && Document.CanCopy(), ContextCopy_Click, Strings.Resources.Copy, new FontIcon { Glyph = Icons.Copy }, VirtualKey.C);
+            CreateFlyoutItem(flyout.Items, Document.CanPaste(), ContextPaste_Click, Strings.Additional.Paste, new FontIcon { Glyph = Icons.Paste }, VirtualKey.V);
+            CreateFlyoutItem(flyout.Items, length, ContextDelete_Click, Strings.Resources.Delete, new FontIcon { Glyph = Icons.Delete });
             flyout.Items.Add(new MenuFlyoutSeparator());
             flyout.Items.Add(formatting);
             flyout.Items.Add(new MenuFlyoutSeparator());
-            CreateFlyoutItem(flyout.Items, !IsEmpty, ContextSelectAll_Click, "Select All", null, VirtualKey.A);
+            CreateFlyoutItem(flyout.Items, !IsEmpty, ContextSelectAll_Click, Strings.Additional.SelectAll, new FontIcon { Glyph = "\uE8B3" }, VirtualKey.A); //Icons.SelectAll
         }
 
         public void ToggleBold()

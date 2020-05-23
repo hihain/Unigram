@@ -19,11 +19,11 @@ namespace Unigram.ViewModels.Payments
 {
     public class PaymentFormStep3ViewModel : PaymentFormViewModelBase
     {
-        private OrderInfo _info;
-        private ValidatedOrderInfo _requestedInfo;
-        private ShippingOption _shipping;
+        //private OrderInfo _info;
+        //private ValidatedOrderInfo _requestedInfo;
+        //private ShippingOption _shipping;
 
-        private string _publishableKey;
+        //private string _publishableKey;
 
         public PaymentFormStep3ViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(protoService, cacheService, settingsService, aggregator)
@@ -274,23 +274,23 @@ namespace Unigram.ViewModels.Payments
                 return;
             }
 
-            IsLoading = true;
+            //IsLoading = true;
+            await Task.CompletedTask;  //TODO: Remove all this dead code
+            //using (var stripe = new StripeClient(_publishableKey))
+            //{
+            //    var token = await stripe.CreateTokenAsync(card);
+            //    if (token != null)
+            //    {
+            //        var title = card.GetBrand() + " *" + card.GetLast4();
+            //        var credentials = string.Format("{{\"type\":\"{0}\", \"id\":\"{1}\"}}", token.Type, token.Id);
 
-            using (var stripe = new StripeClient(_publishableKey))
-            {
-                var token = await stripe.CreateTokenAsync(card);
-                if (token != null)
-                {
-                    var title = card.GetBrand() + " *" + card.GetLast4();
-                    var credentials = string.Format("{{\"type\":\"{0}\", \"id\":\"{1}\"}}", token.Type, token.Id);
-
-                    NavigateToNextStep(title, credentials, _isSave ?? false);
-                }
-                else
-                {
-                    IsLoading = false;
-                }
-            }
+            //        NavigateToNextStep(title, credentials, _isSave ?? false);
+            //    }
+            //    else
+            //    {
+            //        IsLoading = false;
+            //    }
+            //}
 
             //var save = _isSave ?? false;
             //var info = new TLPaymentRequestedInfo();

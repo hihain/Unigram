@@ -157,7 +157,7 @@ namespace Unigram.Views.Passport
                 {
                     item.File = file;
 
-                    var container = Translation.ContainerFromItem(item) as SelectorItem;
+                    var container = Translations.ContainerFromItem(item) as SelectorItem;
                     if (container == null)
                     {
                         return;

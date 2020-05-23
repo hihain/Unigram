@@ -21,7 +21,7 @@ namespace Unigram.Themes
             //}
             //else
             {
-                this["EllipsisButtonPadding"] = new Thickness(16, 23, 16, 0);
+                this["EllipsisButtonPadding"] = new Thickness(12, 19, 12, 0);
                 //this["GlyphButtonFontSize"] = 20d;
                 this["ChatPhotoSize"] = 36d;
 
@@ -60,6 +60,13 @@ namespace Unigram.Themes
                 MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("ms-appx://Microsoft.UI.Xaml.2.1/Microsoft.UI.Xaml/Themes/rs2_themeresources.xaml") });
                 //this["NavigationViewTopPaneHeight"] = 48d;
             }
+
+            // Add named themes for custom controls;
+            // Slightly modified copy of RS1 themes (no big difference to RS2) as UI.XAML 2.1 does not include named styles yet, see:
+            // * https://github.com/microsoft/microsoft-ui-xaml/pull/1300
+            // * https://github.com/microsoft/microsoft-ui-xaml/pull/357
+            MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("ms-appx:///Themes/TextBox_rs1_themeresources.xaml") });
+            MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("ms-appx:///Themes/RichEditBox_rs1_themeresources.xaml") });
         }
     }
 }

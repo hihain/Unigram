@@ -268,7 +268,9 @@ namespace Unigram.Controls
 
 
 
+#pragma warning disable CS0164 // This label has not been referenced
         Calculate:
+#pragma warning restore CS0164 // This label has not been referenced
             if (width > availableWidth || height > availableHeight)
             {
                 var ratioX = availableWidth / width;

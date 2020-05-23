@@ -15,9 +15,6 @@ namespace Unigram.Logs
         {
             get
             {
-#if DEBUG
-                return true;
-#endif
 #if WP81
                 return Windows.ApplicationModel.Package.Current.Id.Name == "TelegramMessengerLLP.TelegramMessengerPrivateBeta";
 #endif

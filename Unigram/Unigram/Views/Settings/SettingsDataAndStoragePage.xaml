@@ -100,8 +100,7 @@
                 </controls:HeaderedControl>
                 
                 <controls:HeaderedControl
-                    Header="{CustomResource AutomaticMediaDownload}"
-                    Footer="{CustomResource AutoDownloadAudioInfo}">
+                    Header="{CustomResource AutomaticMediaDownload}">
                     <ToggleSwitch
                         IsOn="{x:Bind ViewModel.AutoDownloadEnabled, Mode=TwoWay}"
                         Header="{CustomResource AutoDownloadMedia}"
@@ -146,6 +145,17 @@
                     </controls:BadgeButton>
 
                     <controls:BadgeButton
+                        Badge="{x:Bind ConvertAutoDownload(settings:AutoDownloadType.VoiceMessages, ViewModel.AutoDownload.VoiceMessages, 0), Mode=OneWay}"
+                        Command="{x:Bind ViewModel.AutoDownloadCommand}"
+                        IsEnabled="{x:Bind ViewModel.AutoDownloadEnabled, Mode=OneWay}"
+                        Content="{CustomResource AudioAutodownload}"
+                        Style="{StaticResource HyperVerticalDetailButtonStyle}">
+                        <Button.CommandParameter>
+                            <settings:AutoDownloadType>VoiceMessages</settings:AutoDownloadType>
+                        </Button.CommandParameter>
+                    </controls:BadgeButton>
+
+                    <controls:BadgeButton
                         Command="{x:Bind ViewModel.ResetAutoDownloadCommand}"
                         Content="{CustomResource ResetAutomaticMediaDownload}"
                         Foreground="Red"/>
@@ -170,6 +180,14 @@
                     <ToggleSwitch
                         IsOn="{x:Bind ViewModel.IsStreamingEnabled, Mode=TwoWay}"
                         Header="{CustomResource EnableStreaming}"
+                        Style="{StaticResource CheckButtonStyle}"/>
+                </controls:HeaderedControl>
+
+                <controls:HeaderedControl
+                    Header="{CustomResource ChatCamera}">
+                    <ToggleSwitch
+                        IsOn="{x:Bind ViewModel.SaveCameraMediaInGallery, Mode=TwoWay}"
+                        Header="{CustomResource SaveToGallery}"
                         Style="{StaticResource CheckButtonStyle}"/>
                 </controls:HeaderedControl>
                 

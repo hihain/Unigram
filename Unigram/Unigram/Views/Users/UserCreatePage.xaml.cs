@@ -38,8 +38,8 @@ namespace Unigram.Views.Users
         {
             if (e.Key == Windows.System.VirtualKey.Back && string.IsNullOrEmpty(PrimaryInput.Text))
             {
-                PhoneCode.Focus(FocusState.Keyboard);
-                PhoneCode.SelectionStart = PhoneCode.Text.Length;
+                PhoneCodeTextBox.Focus(FocusState.Keyboard);
+                PhoneCodeTextBox.SelectionStart = PhoneCodeTextBox.Text.Length;
                 e.Handled = true;
             }
         }

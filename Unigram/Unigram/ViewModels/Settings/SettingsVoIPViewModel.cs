@@ -24,8 +24,6 @@ namespace Unigram.ViewModels.Settings
 
             Input = new MvxObservableCollection<DeviceInformation>();
             Output = new MvxObservableCollection<DeviceInformation>();
-
-            SystemCommand = new RelayCommand(SystemExecute);
         }
 
         public MvxObservableCollection<DeviceInformation> Input { get; private set; }
@@ -112,12 +110,6 @@ namespace Unigram.ViewModels.Settings
                     _voipService.CurrentVolumeOutput = value;
                 }
             }
-        }
-
-        public RelayCommand SystemCommand { get; }
-        private async void SystemExecute()
-        {
-            await Launcher.LaunchUriAsync(new Uri("ms-settings:sound"));
         }
     }
 }

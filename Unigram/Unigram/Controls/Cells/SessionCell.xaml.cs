@@ -28,11 +28,11 @@ namespace Unigram.Controls.Cells
         {
             if (session.IsOfficialApplication)
             {
-                Name.Text = string.Format("{0} {1}", session.ApplicationName, session.ApplicationVersion);
+                NameApp.Text = string.Format("{0} {1}", session.ApplicationName, session.ApplicationVersion);
             }
             else
             {
-                Name.Text = string.Format("{0} {1} (ID: {2})", session.ApplicationName, session.ApplicationVersion, session.ApiId);
+                NameApp.Text = string.Format("{0} {1} (ID: {2})", session.ApplicationName, session.ApplicationVersion, session.ApiId);
             }
 
             if (string.IsNullOrEmpty(session.Platform))

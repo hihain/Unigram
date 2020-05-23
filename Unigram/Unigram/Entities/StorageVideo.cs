@@ -157,7 +157,7 @@ namespace Unigram.Entities
             }
         }
 
-        private async void LoadPreview()
+        private void LoadPreview()
         {
             //_preview = _thumbnail;
             //_preview = await ImageHelper.GetPreviewBitmapAsync(File);
@@ -224,19 +224,21 @@ namespace Unigram.Entities
 
         private int resultWidth;
         private int resultHeight;
-
+#pragma warning disable CS0649 // Never assigned field, always null
         private int rotationValue;
-
+#pragma warning disable CS0649 // Never assigned field, always null
         private int bitrate;
+#pragma warning disable CS0649 // Never assigned field, always null
         private long audioFramesSize;
+#pragma warning disable CS0649 // Never assigned field, always null
         private long videoFramesSize;
         private double videoDuration;
 
         private int estimatedSize;
         private long estimatedDuration;
 
-        private long startTime;
-        private long endTime;
+        //private long startTime;
+        //private long endTime;
 
         public override string ToString()
         {
@@ -341,17 +343,17 @@ namespace Unigram.Entities
             }
 
             //if (videoTimelineView.getLeftProgress() == 0)
-            {
-                startTime = -1;
-            }
+            //{
+            //    startTime = -1;
+            //}
             //else
             //{
             //    startTime = (long)(videoTimelineView.getLeftProgress() * videoDuration) * 1000;
             //}
             //if (videoTimelineView.getRightProgress() == 1)
-            {
-                endTime = -1;
-            }
+            //{
+            //    endTime = -1;
+            //}
             //else
             //{
             //    endTime = (long)(videoTimelineView.getRightProgress() * videoDuration) * 1000;

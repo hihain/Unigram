@@ -38,6 +38,7 @@ namespace Unigram.Services.Settings
         Photos,
         Videos,
         Documents,
+        VoiceMessages
     }
 
     public enum AutoDownloadChat
@@ -60,6 +61,7 @@ namespace Unigram.Services.Settings
             _disabled = container.GetBoolean("disabled", false);
             _photos = (AutoDownloadMode)container.GetInt32("photos", (int)AutoDownloadMode.All);
             _videos = (AutoDownloadMode)container.GetInt32("videos", (int)AutoDownloadMode.All);
+            VoiceMessages = (AutoDownloadMode)container.GetInt32("VoiceMessages", (int)AutoDownloadMode.All);
             _maximumVideoSize = container.GetInt32("maxVideoSize", 10 * 1024 * 1024);
             _documents = (AutoDownloadMode)container.GetInt32("documents", (int)AutoDownloadMode.All);
             _maximumDocumentSize = container.GetInt32("maxDocumentSize", 3 * 1024 * 1024);
@@ -70,6 +72,7 @@ namespace Unigram.Services.Settings
             container.Values["disabled"] = _disabled;
             container.Values["photos"] = (int)_photos;
             container.Values["videos"] = (int)_videos;
+            container.Values["VoiceMessages"] = (int)VoiceMessages;
             container.Values["maxVideoSize"] = _maximumVideoSize;
             container.Values["documents"] = (int)_documents;
             container.Values["maxDocumentSize"] = _maximumDocumentSize;
@@ -82,6 +85,7 @@ namespace Unigram.Services.Settings
                 var preferences = new AutoDownloadSettings();
                 preferences._photos = AutoDownloadMode.All;
                 preferences._videos = AutoDownloadMode.All;
+                preferences.VoiceMessages = AutoDownloadMode.All;
                 preferences._maximumVideoSize = 10 * 1024 * 1024;
                 preferences._documents = AutoDownloadMode.All;
                 preferences._maximumDocumentSize = 3 * 1024 * 1024;
@@ -95,6 +99,7 @@ namespace Unigram.Services.Settings
             preferences._disabled = !preset.IsAutoDownloadEnabled;
             preferences._photos = AutoDownloadMode.All;
             preferences._videos = AutoDownloadMode.All;
+            preferences.VoiceMessages = AutoDownloadMode.All;
             preferences._maximumVideoSize = preset.MaxVideoFileSize;
             preferences._documents = AutoDownloadMode.All;
             preferences._maximumDocumentSize = preset.MaxOtherFileSize;
@@ -107,6 +112,7 @@ namespace Unigram.Services.Settings
             {
                 return _photos == AutoDownloadMode.All &&
                     _videos == AutoDownloadMode.All &&
+                    VoiceMessages == AutoDownloadMode.All &&
                     _maximumVideoSize == 10 * 1024 * 1024 &&
                     _documents == AutoDownloadMode.All &&
                     _maximumDocumentSize == 3 * 1024 * 1024;
@@ -121,6 +127,8 @@ namespace Unigram.Services.Settings
 
         private AutoDownloadMode _videos;
         public AutoDownloadMode Videos => _videos;
+
+        public AutoDownloadMode VoiceMessages { get; private set; }
 
         private int _maximumVideoSize;
         public int MaximumVideoSize => _maximumVideoSize;
@@ -137,6 +145,7 @@ namespace Unigram.Services.Settings
             preferences._disabled = disabled;
             preferences._photos = _photos;
             preferences._videos = _videos;
+            preferences.VoiceMessages = VoiceMessages;
             preferences._maximumVideoSize = _maximumVideoSize;
             preferences._documents = _documents;
             preferences._maximumDocumentSize = _maximumDocumentSize;
@@ -148,6 +157,19 @@ namespace Unigram.Services.Settings
             var preferences = new AutoDownloadSettings();
             preferences._photos = mode;
             preferences._videos = _videos;
+            preferences.VoiceMessages = VoiceMessages;
+            preferences._maximumVideoSize = _maximumVideoSize;
+            preferences._documents = _documents;
+            preferences._maximumDocumentSize = _maximumDocumentSize;
+            return preferences;
+        }
+
+        public AutoDownloadSettings UpdateVoiceMessagesMode(AutoDownloadMode mode)
+        {
+            var preferences = new AutoDownloadSettings();
+            preferences._photos = _photos;
+            preferences._videos = _videos;
+            preferences.VoiceMessages = mode;
             preferences._maximumVideoSize = _maximumVideoSize;
             preferences._documents = _documents;
             preferences._maximumDocumentSize = _maximumDocumentSize;
@@ -159,6 +181,7 @@ namespace Unigram.Services.Settings
             var preferences = new AutoDownloadSettings();
             preferences._photos = _photos;
             preferences._videos = mode;
+            preferences.VoiceMessages = VoiceMessages;
             preferences._maximumVideoSize = maximumSize;
             preferences._documents = _documents;
             preferences._maximumDocumentSize = _maximumDocumentSize;
@@ -170,6 +193,7 @@ namespace Unigram.Services.Settings
             var preferences = new AutoDownloadSettings();
             preferences._photos = _photos;
             preferences._videos = _videos;
+            preferences.VoiceMessages = VoiceMessages;
             preferences._maximumVideoSize = _maximumVideoSize;
             preferences._documents = mode;
             preferences._maximumDocumentSize = maximumSize;
@@ -229,6 +253,16 @@ namespace Unigram.Services.Settings
             }
 
             return ShouldDownload(_photos, chat, networkType);
+        }
+
+        public bool ShouldDownloadVoiceMessages(AutoDownloadChat chat, NetworkType networkType = null)
+        {
+            if (_disabled)
+            {
+                return false;
+            }
+
+            return ShouldDownload(VoiceMessages, chat, networkType);
         }
 
         public bool ShouldDownloadVideo(AutoDownloadChat chat, int size, NetworkType networkType = null)

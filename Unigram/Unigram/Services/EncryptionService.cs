@@ -73,13 +73,12 @@ namespace Unigram.Services
             CryptographicBuffer.CopyToByteArray(passwordBuffer, out byte[] password);
             CryptographicBuffer.CopyToByteArray(saltBuffer, out byte[] salt);
 
+            await Task.CompletedTask;
             return new ByteTuple(password, salt);
         }
 
         public async Task<bool> EncryptAsync(string publicKey, IList<byte> dataArray, IList<byte> localPassword)
         {
-            IBuffer keyMaterial;
-
             //if (await KeyCredentialManager.IsSupportedAsync())
             //{
             //    var boh = await KeyCredentialManager.RequestCreateAsync(publicKey, KeyCredentialCreationOption.ReplaceExisting);

@@ -282,7 +282,7 @@ namespace Unigram.Controls.Views
             Search_TextChanged(null, null);
         }
 
-        private async void Search_TextChanged(object sender, TextChangedEventArgs e)
+        private void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (SearchField.FocusState == FocusState.Unfocused && string.IsNullOrEmpty(SearchField.Text))
             {
@@ -297,44 +297,6 @@ namespace Unigram.Controls.Views
                 //var items = ViewModel.Contacts.Search = new SearchUsersCollection(ViewModel.ProtoService, SearchField.Text);
                 //await items.LoadMoreItemsAsync(0);
             }
-        }
-
-        private void Search_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            //var activePanel = rpMasterTitlebar.SelectedIndex == 0 ? DialogsPanel : ContactsPanel;
-            //var activeList = rpMasterTitlebar.SelectedIndex == 0 ? DialogsSearchListView : ContactsSearchListView;
-            //var activeResults = rpMasterTitlebar.SelectedIndex == 0 ? ChatsResults : ContactsResults;
-
-            //if (activePanel.Visibility == Visibility.Visible)
-            //{
-            //    return;
-            //}
-
-            //if (e.Key == Windows.System.VirtualKey.Up || e.Key == Windows.System.VirtualKey.Down)
-            //{
-            //    var index = e.Key == Windows.System.VirtualKey.Up ? -1 : 1;
-            //    var next = activeList.SelectedIndex + index;
-            //    if (next >= 0 && next < activeResults.View.Count)
-            //    {
-            //        activeList.SelectedIndex = next;
-            //        activeList.ScrollIntoView(activeList.SelectedItem);
-            //    }
-
-            //    e.Handled = true;
-            //}
-            //else if (e.Key == Windows.System.VirtualKey.Enter)
-            //{
-            //    var index = Math.Max(activeList.SelectedIndex, 0);
-            //    var container = activeList.ContainerFromIndex(index) as ListViewItem;
-            //    if (container != null)
-            //    {
-            //        var peer = new ListViewItemAutomationPeer(container);
-            //        var invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-            //        invokeProv.Invoke();
-            //    }
-
-            //    e.Handled = true;
-            //}
         }
 
         #endregion

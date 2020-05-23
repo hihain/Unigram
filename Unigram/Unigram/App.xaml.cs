@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Td;
 using Telegram.Td.Api;
-using Template10.Common;
-using Template10.Services.NavigationService;
 using Unigram.Common;
 using Unigram.Controls;
+using Unigram.Navigation;
 using Unigram.Services;
-using Unigram.Services.Settings;
+using Unigram.Services.Navigation;
 using Unigram.Views;
 using Unigram.Views.Host;
 using Windows.ApplicationModel;
@@ -95,6 +94,9 @@ namespace Unigram
             UnhandledException += async (s, args) =>
             {
                 args.Handled = true;
+#if !DEBUG
+                Crashes.TrackError(args.Exception);
+#endif
 
                 try
                 {
@@ -114,6 +116,9 @@ namespace Unigram
 
             Analytics.TrackEvent($"{major}.{minor}.{build}");
             Analytics.TrackEvent(AnalyticsInfo.VersionInfo.DeviceFamily);
+
+            TaskScheduler.UnobservedTaskException += OnUnobservedException;
+            UnhandledException += OnUnhandledException;
 #endif
         }
 
@@ -187,17 +192,6 @@ namespace Unigram
                     TLContainer.Current.Passcode.CloseTime = DateTime.MaxValue;
                 }
             }
-
-#if !DEBUG && !PREVIEW
-            if (e.Visible)
-            {
-                var dispatcher = Window.Current.Dispatcher;
-                Execute.BeginOnThreadPool(async () =>
-                {
-                    await new HockeyAppUpdateService().CheckForUpdatesAsync(Constants.HockeyAppId, dispatcher);
-                });
-            }
-#endif
         }
 
         private void HandleActivated(bool active)
@@ -373,7 +367,7 @@ namespace Unigram
             //SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
 
             var dispatcher = Window.Current.Dispatcher;
-            Task.Run(() => OnStartSync(dispatcher));
+            await Task.Run(() => OnStartSync(dispatcher));
             //return Task.CompletedTask;
         }
 
@@ -440,13 +434,7 @@ namespace Unigram
             }
             catch { }
 
-#if !DEBUG && !PREVIEW
-            Execute.BeginOnThreadPool(async () =>
-            {
-                await new HockeyAppUpdateService().CheckForUpdatesAsync(Constants.HockeyAppId, dispatcher);
-            });
-#endif
-
+#if DESKTOP_BRIDGE
             if (ApiInformation.IsTypePresent("Windows.ApplicationModel.FullTrustProcessLauncher"))
             {
                 try
@@ -458,6 +446,7 @@ namespace Unigram
                     // The app has been compiled without desktop bridge
                 }
             }
+#endif
 
             if (_extendedSession == null && AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Desktop")
             {
@@ -496,5 +485,19 @@ namespace Unigram
 
             return base.OnSuspendingAsync(s, e, prelaunchActivated);
         }
+
+#if !DEBUG
+        private void OnUnobservedException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            Crashes.TrackError(e.Exception);
+            e.SetObserved();
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Crashes.TrackError(e.Exception);
+            e.Handled = true;
+        }
+#endif
     }
 }

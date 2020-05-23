@@ -13,7 +13,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Loaded="OnLoaded"
-    Unloaded="OnUnloaded">
+    Unloaded="OnUnloaded"
+    SizeChanged="OnSizeChanged">
 
     <!--<Page.Transitions>
         <TransitionCollection>
@@ -340,6 +341,7 @@
                         <Setter Target="StickersPanel.MinHeight" Value="0"/>
                         <Setter Target="StickersPanel.MaxHeight" Value="3600"/>
                         <Setter Target="StickersPanel.Margin" Value="0"/>
+                        <Setter Target="btnExpand.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="FilledState">
@@ -350,6 +352,7 @@
                         <Setter Target="StickersPanel.MinHeight" Value="0"/>
                         <Setter Target="StickersPanel.MaxHeight" Value="3600"/>
                         <Setter Target="StickersPanel.Margin" Value="0,48,0,0"/>
+                        <Setter Target="btnExpand.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -554,6 +557,10 @@
             </Grid>
         </controls:ContentPageHeader>
 
+        <Border Visibility="{x:Bind StickersPanel.Visibility, Mode=OneWay}" IsHitTestVisible="False">
+            <Border x:Name="HeaderOverlay" Background="#99000000" Visibility="Collapsed"/>
+        </Border>
+
         <Grid x:Name="Clipper" Canvas.ZIndex="2" Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -607,7 +614,7 @@
                         Visibility="Collapsed"
                         HorizontalAlignment="Center"
                         SizeChanged="DateHeaderPanel_SizeChanged">
-                    <messages:MessageService x:Name="DateHeader" Click="Date_Click" BorderThickness="0,4,0,4" Style="{StaticResource ServiceButtonStyle}">
+                    <messages:MessageService x:Name="DateHeader" BorderThickness="0,4,0,4" Style="{StaticResource ServiceButtonStyle}">
                         <TextBlock x:Name="DateHeaderLabel" Text="31 dicembre 2017" Foreground="White" TextAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}"/>
                     </messages:MessageService>
                 </Border>
@@ -853,22 +860,20 @@
                 </StackPanel>
             </StackPanel>
 
-            <Grid SizeChanged="InlinePanel_SizeChanged"
+            <Grid x:Name="InlinePanel"
+                  SizeChanged="InlinePanel_SizeChanged"
                   VerticalAlignment="Bottom"
                   Visibility="{x:Bind ViewModel.Search, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}"
                   Margin="12,0,12,-12"
                   CornerRadius="8,8,0,0">
                 <views:InlineBotResultsView
-                    x:Name="InlinePanel"
+                    x:Name="ListInline"
                     Visibility="{x:Bind ViewModel.InlineBotResultsVisibility, Mode=OneWay}"
                     ItemClick="InlineBotResults_ItemClick"
                     VerticalAlignment="Bottom"/>
                 <controls:OrientableListView
                     x:Name="ListAutocomplete"
                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                    ItemsSource="{x:Bind ViewModel.Autocomplete, Mode=OneWay}"
-                    Orientation="{x:Bind ViewModel.Autocomplete.Orientation, Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.Autocomplete, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}"
                     ItemTemplateSelector="{StaticResource AutocompleteTemplate}"
                     ContainerContentChanging="Autocomplete_ContainerContentChanging"
                     AllowFocusOnInteraction="False"
@@ -903,7 +908,7 @@
         </ScrollViewer>
 
         <Grid x:Name="KeyboardItems" Grid.Row="4">
-            <views:StickersView x:Name="StickersPanel" Visibility="Collapsed" Height="260" MaxHeight="360" MinHeight="260"/>
+            <controls:StickerPanel x:Name="StickersPanel" Visibility="Collapsed" Height="260" MaxHeight="360" MinHeight="260"/>
         </Grid>
 
         <!-- Input pane -->
@@ -973,8 +978,8 @@
                         MinHeight="{StaticResource TelegramToolBarHeight}"
                         MaxHeight="192"
                         TextChanged="TextField_TextChanged"
-                        LostFocus="TextField_LostFocus"
                         Capture="TextField_Tapped"
+                        Sending="TextField_Sending"
                         ShowFormatting="TextField_Formatting"
                         HideFormatting="TextField_Formatting"/>
                 </Border>
@@ -1016,6 +1021,16 @@
                                         <FontIcon Glyph="&#xEB9F;"/>
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
+                                <!--
+                                <MenuFlyoutItem
+                                    x:Name="AttachCamera"
+                                    Text="{CustomResource ChatCamera}"
+                                    Command="{x:Bind ViewModel.SendCameraCommand}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE722;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                -->
                                 <MenuFlyoutItem
                                     x:Name="AttachDocument"
                                     Text="{x:Bind ConvertSelectedCount(ViewModel.MediaLibrary.SelectedCount, x:False), Mode=OneWay}"
@@ -1164,8 +1179,8 @@
                         Glyph="&#xF4AA;"
                         VerticalAlignment="Bottom"
                         AutomationProperties.Name="{CustomResource AccDescrEmojiButton}"
-                        ToolTipService.ToolTip="{CustomResource AccDescrEmojiButton}"
                         Grid.Column="1"/>
+                        <!--ToolTipService.ToolTip="{CustomResource AccDescrEmojiButton}"-->
 
                     <Grid x:Name="ButtonRecord" VerticalAlignment="Bottom" Grid.Column="2" Canvas.ZIndex="1000">
                         <Ellipse x:Name="Ellipse" Fill="{ThemeResource SystemControlBackgroundAccentBrush}" Width="96" Height="96" Margin="-24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -1206,7 +1221,21 @@
                         Visibility="Collapsed"/>
                 </Grid>
 
-                <Border Grid.Column="1" Grid.Row="2">
+                <Border x:Name="btnExpand"
+                        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                        HorizontalAlignment="Right"
+                        Grid.Column="3"
+                        Grid.Row="1">
+                    <controls:GlyphButton x:Name="ButtonExpand"
+                                          Visibility="{x:Bind StickersPanel.Visibility, Mode=OneWay}"
+                                          VerticalAlignment="Bottom"
+                                          Click="Expand_Click"
+                                          Glyph="&#xE010;"
+                                          AllowFocusOnInteraction="False"
+                                          Padding="0,2,0,0"/>
+                </Border>
+
+                <Border Grid.ColumnSpan="4" Grid.Row="2" HorizontalAlignment="Center">
                     <chats:ChatTextFormatting
                         x:Name="TextFormatting"
                         TextBox="{x:Bind TextField}"

@@ -18,9 +18,6 @@ namespace Unigram.ViewModels.BasicGroups
 {
     public class BasicGroupCreateStep1ViewModel : TLViewModelBase
     {
-        private bool _uploadingPhoto;
-        private Action _uploadingCallback;
-
         public BasicGroupCreateStep1ViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(protoService, cacheService, settingsService, aggregator)
         {
@@ -103,7 +100,7 @@ namespace Unigram.ViewModels.BasicGroups
         public RelayCommand<StorageFile> EditPhotoCommand { get; }
         private async void EditPhotoExecute(StorageFile file)
         {
-            _uploadingPhoto = true;
+            await Task.CompletedTask;
         }
 
         private void ContinueUploadingPhoto()

@@ -844,12 +844,12 @@
                                       Visibility="{x:Bind SelectedItem.IsCropped, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                                       AutomationProperties.Name="{CustomResource CropImage}"
                                       ToolTipService.ToolTip="{CustomResource CropImage}"/>
-                <controls:GlyphButton
+                <!--<controls:GlyphButton
                     Glyph="&#xEE56;"
                     IsEnabled="False"
                     AutomationProperties.Name="{CustomResource AccDescrPhotoEditor}"
                     ToolTipService.ToolTip="{CustomResource AccDescrPhotoEditor}"
-                    Grid.Column="1"/>
+                    Grid.Column="1"/>-->
                 <controls:GlyphButton Click="Compress_Click"
                                       Glyph="{Binding SelectedItem.Compression, Mode=OneWay, Converter={StaticResource CompressionToGlyphConverter}}"
                                       Visibility="{x:Bind SelectedItem.IsVideo, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -858,14 +858,14 @@
                                       AutomationProperties.Name="{CustomResource AccDescrVideoQuality}"
                                       ToolTipService.ToolTip="{CustomResource AccDescrVideoQuality}"
                                       Grid.Column="2"/>
-                <controls:GlyphButton
+                <!--<controls:GlyphButton
                     Visibility="{x:Bind SelectedItem.IsPhoto, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Glyph="&#xE614;"
                     IsEnabled="False"
                     FontFamily="{StaticResource TelegramThemeFontFamily}"
                     AutomationProperties.Name="{CustomResource AccDescrPhotoAdjust}"
                     ToolTipService.ToolTip="{CustomResource AccDescrPhotoAdjust}"
-                    Grid.Column="2"/>
+                    Grid.Column="2"/>-->
                 <controls:GlyphButton
                     x:Name="TTLSeconds"
                     Click="TTLSeconds_Click"
@@ -884,6 +884,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
+                <!--
                 <controls:GlyphButton Glyph="&#xE909;"
                                       FontFamily="{StaticResource TelegramThemeFontFamily}"
                                       AutomationProperties.Name="{CustomResource AccDescrRotate}"
@@ -892,6 +893,7 @@
                                       FontFamily="{StaticResource TelegramThemeFontFamily}"
                                       IsEnabled="False"
                                       Grid.Column="1"/>
+                -->
                 <controls:GlyphButton Click="Proportions_Click"
                                       Glyph="&#xE90A;"
                                       Visibility="{x:Bind ConvertProportions(SelectedItem.CropProportions, x:False), Mode=OneWay}"

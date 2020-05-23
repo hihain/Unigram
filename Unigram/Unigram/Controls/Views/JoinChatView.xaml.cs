@@ -30,7 +30,7 @@ namespace Unigram.Controls.Views
 
             Photo.Source = PlaceholderHelper.GetChat(protoService, info, 72);
 
-            Title.Text = info.Title;
+            TitleChat.Text = info.Title;
             Subtitle.Text = ConvertCount(info.MemberCount, info.MemberUserIds.Count == 0);
 
             PrimaryButtonText = Strings.Resources.ChannelJoin;

@@ -490,7 +490,7 @@ namespace Unigram.Common
                 totalWidth = _maxSizeWidth;
                 totalHeight = y / maxSizeHeight;
             }
-            int avatarOffset = 108;
+            //int avatarOffset = 108;
             for (int a = 0; a < count; a++)
             {
                 GroupedMessagePosition pos = _posArray[a];

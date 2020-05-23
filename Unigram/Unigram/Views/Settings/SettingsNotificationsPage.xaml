@@ -36,7 +36,6 @@
                             <controls:HeaderedControl
                                 Header="{x:Bind Title}">
                                 <CheckBox
-                                    x:Name="Alert"
                                     Click="{x:Bind SendExecute}"
                                     IsChecked="{x:Bind Alert, Mode=TwoWay}"
                                     Content="{CustomResource Alert}"
@@ -44,7 +43,6 @@
                                 <Rectangle Fill="{ThemeResource TelegramSeparatorMediumBrush}" Height="1" Margin="12,6,0,6"/>
                                 
                                 <CheckBox
-                                    x:Name="Preview"
                                     Click="{x:Bind SendExecute}"
                                     IsChecked="{x:Bind Preview, Mode=TwoWay}"
                                     Content="{CustomResource MessagePreview}"
@@ -67,12 +65,6 @@
                 
                 <controls:HeaderedControl
                     Header="{CustomResource InAppNotifications}">
-                    <CheckBox
-                        IsChecked="{x:Bind ViewModel.InAppFlash, Mode=TwoWay}"
-                        Content="Flash window when receiving a notification"
-                        Margin="12,6,12,0"/>
-                    <Rectangle Fill="{ThemeResource TelegramSeparatorMediumBrush}" Height="1" Margin="12,6,0,6"/>
-                    
                     <CheckBox
                         IsChecked="{x:Bind ViewModel.InAppSounds, Mode=TwoWay}"
                         Content="{CustomResource InAppSounds}"

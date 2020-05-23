@@ -80,11 +80,11 @@ namespace Unigram.Controls
                     _videoProperties = storageFile.Properties.GetVideoPropertiesAsync().AsTask().Result;
                     if (_videoProperties == null) return;
 
-                    Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        Left.IsHitTestVisible = true;
-                        Right.IsHitTestVisible = true;
-                    });
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                     {
+                         Left.IsHitTestVisible = true;
+                         Right.IsHitTestVisible = true;
+                     });
 
                     _composition = new MediaComposition();
                     var clip = await MediaClip.CreateFromFileAsync(storageFile);
@@ -214,10 +214,10 @@ namespace Unigram.Controls
                             VideoFramePrecision.NearestFrame);
 
                         processedPosition = position.Value;
-                        Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                        {
-                            RaiseThumbnailChanged(new ThumbnailChangedEventArgs { Thumbnail = photo });
-                        });
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                         {
+                             RaiseThumbnailChanged(new ThumbnailChangedEventArgs { Thumbnail = photo });
+                         });
                     }
 
 //#if DEBUG

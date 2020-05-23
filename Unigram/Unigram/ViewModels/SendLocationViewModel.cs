@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
-using Template10.Utils;
-using Unigram.Services;
-using Windows.Devices.Geolocation;
-using Windows.UI.Xaml.Navigation;
 using Unigram.Collections;
+using Unigram.Services;
+using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.ViewModels
 {
@@ -23,7 +17,9 @@ namespace Unigram.ViewModels
             _locationService = foursquareService;
 
             Items = new MvxObservableCollection<Venue>();
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             OnNavigatedToAsync(null, NavigationMode.New, null);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)

@@ -16,9 +16,9 @@ namespace Unigram.ViewModels.Payments
 {
     public class PaymentFormStep5ViewModel : PaymentFormViewModelBase
     {
-        private ValidatedOrderInfo _requestedInfo;
-        private string _credentials;
-        private bool _save;
+        //private ValidatedOrderInfo _requestedInfo;
+        //private string _credentials;
+        //private bool _save;
 
         public PaymentFormStep5ViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(protoService, cacheService, settingsService, aggregator)

@@ -104,7 +104,7 @@ namespace Unigram.Views.Settings
             {
                 builder.Length = 0;
 
-                if (type == AutoDownloadType.Photos)
+                if (type == AutoDownloadType.Photos || type == AutoDownloadType.VoiceMessages)
                 {
                     builder.Append(Strings.Resources.AutoDownloadOnAllChats);
                 }
@@ -119,7 +119,7 @@ namespace Unigram.Views.Settings
             }
             else
             {
-                if (type == AutoDownloadType.Photos)
+                if (type == AutoDownloadType.Photos || type == AutoDownloadType.VoiceMessages)
                 {
                     builder = new StringBuilder(string.Format(Strings.Resources.AutoDownloadOnFor, builder.ToString()));
                 }

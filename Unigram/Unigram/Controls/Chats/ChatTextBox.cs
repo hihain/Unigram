@@ -1,49 +1,35 @@
-﻿using LinqToVisualTree;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Telegram.Td.Api;
+using Unigram.Collections;
 using Unigram.Common;
-using Unigram.Views;
+using Unigram.Entities;
+using Unigram.Services;
 using Unigram.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Text;
+using Windows.UI.Text.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
+using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Automation.Peers;
-using Windows.UI.Xaml.Automation.Provider;
-using Unigram.Native;
-using System.Collections.ObjectModel;
-using Windows.UI.Xaml.Automation;
-using Unigram.Entities;
-using Telegram.Td.Api;
-using Unigram.Services;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unigram.Collections;
-using Template10.Common;
-using System.Windows.Input;
-using Windows.Foundation.Metadata;
-using Windows.UI.Xaml.Controls.Primitives;
-using Unigram.Controls.Views;
-using Unigram.Converters;
-using Windows.Graphics.Imaging;
-using System.Collections;
-using System.Globalization;
-using Windows.UI.Text.Core;
 
 namespace Unigram.Controls.Chats
 {
@@ -77,6 +63,8 @@ namespace Unigram.Controls.Chats
 
             base.OnApplyTemplate();
         }
+
+        public event EventHandler Sending;
 
         public void InsertText(string text, bool allowPreceding = true, bool allowTrailing = true)
         {
@@ -762,6 +750,8 @@ namespace Unigram.Controls.Chats
 
         public async Task SendAsync(bool disableNotification = false)
         {
+            Sending?.Invoke(this, EventArgs.Empty);
+
             var options = new SendMessageOptions(disableNotification, false, null);
 
             var text = GetFormattedText(true);
@@ -770,6 +760,8 @@ namespace Unigram.Controls.Chats
 
         public async Task ScheduleAsync()
         {
+            Sending?.Invoke(this, EventArgs.Empty);
+
             var options = await ViewModel.PickSendMessageOptionsAsync(true);
             if (options == null)
             {

@@ -19,7 +19,6 @@ namespace Unigram.ViewModels.Chats
         private readonly DisposableMutex _loadMoreLock = new DisposableMutex();
         //private readonly TLInputPeerBase _peer;
 
-        private int _lastMaxId;
         private readonly long _chatId;
 
         public ChatPhotosViewModel(IProtoService protoService, IEventAggregator aggregator, Chat chat)
@@ -94,7 +93,7 @@ namespace Unigram.ViewModels.Chats
                 }
             }
         }
-
+        /*
         protected override async void LoadPrevious()
         {
             //using (await _loadMoreLock.WaitAsync())
@@ -168,7 +167,7 @@ namespace Unigram.ViewModels.Chats
             //    }
             //}
         }
-
+        */
         public override int Position => TotalItems - (Items.Count - base.Position);
 
         public override MvxObservableCollection<GalleryContent> Group => this.Items;

@@ -1,28 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Telegram.Td.Api;
+using Unigram.Collections;
 using Unigram.Common;
 using Unigram.Services;
-using Windows.UI.Popups;
-using Template10.Utils;
-using Template10.Mvvm;
-using System.ComponentModel;
-using System.Collections.Specialized;
-using Windows.Storage;
-using System.Runtime.CompilerServices;
-using Telegram.Td.Api;
-using Windows.UI.Xaml.Data;
 using Windows.Foundation;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unigram.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.ViewManagement;
-using Unigram.Native;
+using Windows.Storage;
 using Windows.UI.Text.Core;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Data;
 
 namespace Unigram.ViewModels.Dialogs
 {
@@ -32,10 +22,10 @@ namespace Unigram.ViewModels.Dialogs
         private StickerSetViewModel _favoriteSet;
         private SupergroupStickerSetViewModel _groupSet;
 
-        private bool _recentGifs;
-        private bool _recentStickers;
-        private bool _favedStickers;
-        private bool _featured;
+        //private bool _recentGifs;
+        //private bool _recentStickers;
+        //private bool _favedStickers;
+        //private bool _featured;
         private bool _stickers;
 
         public DialogStickersViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
@@ -71,13 +61,13 @@ namespace Unigram.ViewModels.Dialogs
             Aggregator.Subscribe(this);
 
             SavedGifs = new MvxObservableCollection<MosaicMediaRow>();
-            FeaturedStickers = new MvxObservableCollection<TLFeaturedStickerSet>();
+            //FeaturedStickers = new MvxObservableCollection<TLFeaturedStickerSet>();
             SavedStickers = new StickerSetCollection();
 
             //SyncStickers();
             //SyncGifs();
 
-            InstallCommand = new RelayCommand<TLFeaturedStickerSet>(InstallExecute);
+            //InstallCommand = new RelayCommand<TLFeaturedStickerSet>(InstallExecute);
         }
 
         private static Dictionary<int, Dictionary<int, DialogStickersViewModel>> _windowContext = new Dictionary<int, Dictionary<int, DialogStickersViewModel>>();
@@ -173,7 +163,7 @@ namespace Unigram.ViewModels.Dialogs
                 }
             });
         }
-
+        /*
         private void ProcessRecentGifs()
         {
             //var recent = _stickersService.GetRecentGifs();
@@ -297,10 +287,10 @@ namespace Unigram.ViewModels.Dialogs
             //    }
             //}
         }
-
+        */
         public MvxObservableCollection<MosaicMediaRow> SavedGifs { get; private set; }
 
-        public MvxObservableCollection<TLFeaturedStickerSet> FeaturedStickers { get; private set; }
+        //public MvxObservableCollection<TLFeaturedStickerSet> FeaturedStickers { get; private set; }
 
         public StickerSetCollection SavedStickers { get; private set; }
 
@@ -348,7 +338,7 @@ namespace Unigram.ViewModels.Dialogs
             }
         }
 
-        public async void FindAnimations(string query)
+        public void FindAnimations(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
@@ -539,7 +529,7 @@ namespace Unigram.ViewModels.Dialogs
                 Set(ref _featuredUnreadCount, value);
             }
         }
-
+        /*
         public RelayCommand<TLFeaturedStickerSet> InstallCommand { get; }
         private async void InstallExecute(TLFeaturedStickerSet featured)
         {
@@ -564,7 +554,7 @@ namespace Unigram.ViewModels.Dialogs
             //    NavigationService.GoBack();
             //}
         }
-
+        */
         //protected override void BeginOnUIThread(Action action)
         //{
         //    // This is somehow needed because this viewmodel requires a Dispatcher

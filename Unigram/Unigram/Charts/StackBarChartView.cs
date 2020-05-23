@@ -31,7 +31,7 @@ namespace Unigram.Charts
             return new StackBarViewData(line);
         }
 
-        protected void drawChart(CanvasDrawingSession canvas)
+        protected override void drawChart(CanvasDrawingSession canvas)
         {
             if (chartData == null) return;
             float fullWidth = (chartWidth / (pickerDelegate.pickerEnd - pickerDelegate.pickerStart));
@@ -321,7 +321,9 @@ namespace Unigram.Charts
 
         protected override void updatePickerMinMaxHeight()
         {
+#pragma warning disable CS0162 // Unreachable code detected
             if (!ANIMATE_PICKER_SIZES) return;
+#pragma warning restore CS0162 // Unreachable code detected
             int max = 0;
 
             int n = chartData.x.Length;

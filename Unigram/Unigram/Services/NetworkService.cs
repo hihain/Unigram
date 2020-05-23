@@ -22,12 +22,21 @@ namespace Unigram.Services
             _protoService = protoService;
 
             NetworkInformation.NetworkStatusChanged += OnNetworkStatusChanged;
-            Update(NetworkInformation.GetInternetConnectionProfile());
+
+            try
+            {
+                Update(NetworkInformation.GetInternetConnectionProfile());
+            }
+            catch { }
         }
 
         private void OnNetworkStatusChanged(object sender)
         {
-            Update(NetworkInformation.GetInternetConnectionProfile());
+            try
+            {
+                Update(NetworkInformation.GetInternetConnectionProfile());
+            }
+            catch { }
         }
 
         private void Update(ConnectionProfile profile)
@@ -39,13 +48,15 @@ namespace Unigram.Services
         {
             if (profile == null)
             {
-                return new NetworkTypeNone();
+                //return new NetworkTypeNone();
+                return new NetworkTypeWiFi();
             }
 
             var level = profile.GetNetworkConnectivityLevel();
             if (level == NetworkConnectivityLevel.LocalAccess || level == NetworkConnectivityLevel.None)
             {
-                return new NetworkTypeNone();
+                //return new NetworkTypeNone();
+                return new NetworkTypeWiFi();
             }
 
             var cost = profile.GetConnectionCost();

@@ -1,29 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Unigram.Common;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Telegram.Td.Api;
-using Template10.Common;
+using Unigram.Navigation;
 using Unigram.Services;
 using Unigram.ViewModels;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Foundation.Metadata;
 using Windows.System.Display;
 using Windows.UI.Composition;
-using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Controls.Gallery
 {
@@ -31,14 +23,12 @@ namespace Unigram.Controls.Gallery
     {
         private Func<FrameworkElement> _closing;
 
-        private DisplayRequest _request;
-        private MediaPlayerElement _mediaPlayerElement;
         private WebView _surface;
         private AppWindow _window;
 
         private WebPage _webPage;
 
-        private Visual _layer;
+        //private Visual _layer;
 
         public EmbedUrlView()
         {
@@ -57,17 +47,6 @@ namespace Unigram.Controls.Gallery
         public static EmbedUrlView GetForCurrentView()
         {
             return new EmbedUrlView();
-
-            var id = ApplicationView.GetApplicationViewIdForWindow(Window.Current.CoreWindow);
-            if (_windowContext.TryGetValue(id, out WeakReference<EmbedUrlView> reference) && reference.TryGetTarget(out EmbedUrlView value))
-            {
-                return value;
-            }
-
-            var context = new EmbedUrlView();
-            _windowContext[id] = new WeakReference<EmbedUrlView>(context);
-
-            return context;
         }
 
         public IAsyncOperation<ContentDialogResult> ShowAsync(MessageViewModel message, WebPage parameter, Func<FrameworkElement> closing = null)
@@ -76,11 +55,9 @@ namespace Unigram.Controls.Gallery
             {
                 _closing = closing;
 
-                if (SettingsService.Current.AreAnimationsEnabled)
-                {
-                    ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", _closing());
-                }
-
+#if !MOBILE
+                ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", _closing());
+#endif
                 Load(message, parameter);
 
                 //if (_compactLifetime != null)
@@ -151,31 +128,24 @@ namespace Unigram.Controls.Gallery
             {
                 Presenter.Opacity = 0;
                 Preview.Opacity = 1;
-
+#if !MOBILE
                 var root = Preview.Presenter;
 
-                if (SettingsService.Current.AreAnimationsEnabled)
+                var animation = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", root);
+                if (animation != null)
                 {
-                    var animation = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", root);
-                    if (animation != null)
+                    if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Animation.ConnectedAnimation", "Configuration"))
                     {
-                        if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Animation.ConnectedAnimation", "Configuration"))
-                        {
-                            animation.Configuration = new BasicConnectedAnimationConfiguration();
-                        }
+                        animation.Configuration = new BasicConnectedAnimationConfiguration();
+                    }
 
-                        var element = _closing();
-                        if (element.ActualWidth > 0 && animation.TryStart(element))
-                        {
-                            animation.Completed += (s, args) =>
-                            {
-                                Hide();
-                            };
-                        }
-                        else
+                    var element = _closing();
+                    if (element.ActualWidth > 0 && animation.TryStart(element))
+                    {
+                        animation.Completed += (s, args) =>
                         {
                             Hide();
-                        }
+                        };
                     }
                     else
                     {
@@ -184,8 +154,10 @@ namespace Unigram.Controls.Gallery
                 }
                 else
                 {
+#endif
                     Hide();
                 }
+#if !MOBILE
             }
             else
             {
@@ -212,36 +184,35 @@ namespace Unigram.Controls.Gallery
 
             //Unload();
             //Dispose();
-
-            e.Handled = true;
+#endif
+                e.Handled = true;
         }
 
         private void Preview_ImageOpened(object sender, RoutedEventArgs e)
         {
-            if (SettingsService.Current.AreAnimationsEnabled)
+#if !MOBILE
+            var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("FullScreenPicture");
+            if (animation != null)
             {
-                var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("FullScreenPicture");
-                if (animation != null)
+                if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Animation.ConnectedAnimation", "Configuration"))
                 {
-                    if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Animation.ConnectedAnimation", "Configuration"))
+                    animation.Configuration = new BasicConnectedAnimationConfiguration();
+                }
+
+                //_layer.StartAnimation("Opacity", CreateScalarAnimation(0, 1));
+
+                if (animation.TryStart(Preview.Presenter))
+                {
+                    animation.Completed += (s, args) =>
                     {
-                        animation.Configuration = new BasicConnectedAnimationConfiguration();
-                    }
+                        Presenter.Opacity = 1;
+                        Preview.Opacity = 0;
+                    };
 
-                    //_layer.StartAnimation("Opacity", CreateScalarAnimation(0, 1));
-
-                    if (animation.TryStart(Preview.Presenter))
-                    {
-                        animation.Completed += (s, args) =>
-                        {
-                            Presenter.Opacity = 1;
-                            Preview.Opacity = 0;
-                        };
-
-                        return;
-                    }
+                    return;
                 }
             }
+#endif
         }
 
         private async void Compact_Click(object sender, RoutedEventArgs e)

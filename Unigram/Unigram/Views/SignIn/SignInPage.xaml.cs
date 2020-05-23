@@ -38,7 +38,7 @@ namespace Unigram.Views.SignIn
 
             Transitions = ApiInfo.CreateSlideTransition();
 
-            Diagnostics.Text = $"Unigram " + GetVersion();
+            Diagnostics.Text = Package.Current.DisplayName + " " + GetVersion();
 
             ViewModel.PropertyChanged += OnPropertyChanged;
 
@@ -50,10 +50,8 @@ namespace Unigram.Views.SignIn
 
         private string GetVersion()
         {
-            Package package = Package.Current;
-            PackageId packageId = package.Id;
-            PackageVersion version = packageId.Version;
-            return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build, version.Revision);
+            PackageVersion version = Services.SettingsService.GetAppVersion();
+            return $"{version.Major}.{version.Minor}.{version.Build}";
         }
 
         private void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -61,7 +59,7 @@ namespace Unigram.Views.SignIn
             switch (e.PropertyName)
             {
                 case "PHONE_CODE_INVALID":
-                    VisualUtilities.ShakeView(PhoneCode);
+                    VisualUtilities.ShakeView(PhoneCodeTextBox);
                     break;
                 case "PHONE_NUMBER_INVALID":
                     VisualUtilities.ShakeView(PrimaryInput);
@@ -83,8 +81,8 @@ namespace Unigram.Views.SignIn
             }
             else if (e.Key == Windows.System.VirtualKey.Back && string.IsNullOrEmpty(PrimaryInput.Text))
             {
-                PhoneCode.Focus(FocusState.Keyboard);
-                PhoneCode.SelectionStart = PhoneCode.Text.Length;
+                PhoneCodeTextBox.Focus(FocusState.Keyboard);
+                PhoneCodeTextBox.SelectionStart = PhoneCodeTextBox.Text.Length;
                 e.Handled = true;
             }
         }
@@ -115,16 +113,6 @@ namespace Unigram.Views.SignIn
             }
 
             return builder.ToString();
-        }
-
-        private ImageSource ConvertToken(string token)
-        {
-            if (token != null)
-            {
-                return PlaceholderHelper.GetQr(token);
-            }
-
-            return null;
         }
 
         #endregion
@@ -305,13 +293,13 @@ namespace Unigram.Views.SignIn
         {
             if (mode == QrCodeMode.Loading)
             {
-                Loading.IsActive = true;
+                LoadingVisualization.IsActive = true;
                 TokenPanel.Visibility = Visibility.Collapsed;
                 PhonePanel.Visibility = Visibility.Collapsed;
             }
             else if (mode == QrCodeMode.Disabled || mode == QrCodeMode.Secondary)
             {
-                Loading.IsActive = false;
+                LoadingVisualization.IsActive = false;
                 TokenPanel.Visibility = Visibility.Collapsed;
                 PhonePanel.Visibility = Visibility.Visible;
                 Switch2.Visibility = mode == QrCodeMode.Secondary
@@ -320,7 +308,7 @@ namespace Unigram.Views.SignIn
             }
             else if (mode == QrCodeMode.Primary)
             {
-                Loading.IsActive = false;
+                LoadingVisualization.IsActive = false;
                 TokenPanel.Visibility = Visibility.Visible;
                 PhonePanel.Visibility = Visibility.Collapsed;
                 Switch2.Visibility = Visibility.Visible;

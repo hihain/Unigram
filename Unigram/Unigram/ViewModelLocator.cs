@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Telegram.Td;
-using Template10.Services.ViewService;
-using Unigram.Common;
+using Unigram.Services.ViewService;
 using Unigram.Services;
 using Unigram.Services.Factories;
 using Unigram.ViewModels;
 using Unigram.ViewModels.BasicGroups;
 using Unigram.ViewModels.Channels;
 using Unigram.ViewModels.Chats;
-using Unigram.ViewModels.Dialogs;
 using Unigram.ViewModels.Folders;
 using Unigram.ViewModels.Passport;
 using Unigram.ViewModels.Payments;
@@ -21,9 +18,6 @@ using Unigram.ViewModels.Settings.Privacy;
 using Unigram.ViewModels.SignIn;
 using Unigram.ViewModels.Supergroups;
 using Unigram.ViewModels.Users;
-#if INCLUDE_WALLET
-using Unigram.ViewModels.Wallet;
-#endif
 using Unigram.Views;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
@@ -99,12 +93,6 @@ namespace Unigram
                     .WithParameter("online", session == SettingsService.Current.ActiveSession)
                     .As<IProtoService, ICacheService>()
                     .SingleInstance();
-#if INCLUDE_WALLET
-                builder.RegisterType<TonService>()
-                    .WithParameter("session", session)
-                    .As<ITonService>()
-                    .SingleInstance();
-#endif
                 builder.RegisterType<EncryptionService>()
                     .WithParameter("session", session)
                     .As<IEncryptionService>()
@@ -132,6 +120,11 @@ namespace Unigram
                     .As<IEmojiSetService>()
                     .SingleInstance()
                     .AutoActivate();
+
+                builder.RegisterType<ShortcutsService>()
+                    .As<IShortcutsService>()
+                    .SingleInstance()
+                    .AutoActivate();
                 //builder.RegisterType<OptionsService>()
                 //    .As<IOptionsService>()
                 //    .SingleInstance()
@@ -147,7 +140,6 @@ namespace Unigram
                 builder.RegisterType<LocationService>().As<ILocationService>().SingleInstance();
                 //builder.RegisterType<HardwareService>().As<IHardwareService>().SingleInstance();
                 builder.RegisterType<PlaybackService>().As<IPlaybackService>().SingleInstance();
-                builder.RegisterType<HockeyUpdateService>().As<IHockeyUpdateService>().SingleInstance();
                 builder.RegisterType<ThemeService>().As<IThemeService>().SingleInstance();
 
                 builder.RegisterType<MessageFactory>().As<IMessageFactory>().SingleInstance();
@@ -160,12 +152,12 @@ namespace Unigram
                 //    container.ContainerBuilder.RegisterType<VibrationService>().As<IVibrationService>().SingleInstance();
                 //}
                 //else
-                //if (ApiInformation.IsTypePresent("Windows.Phone.Devices.Notification.VibrationDevice"))
-                //{
-                //    // To keep vibration compatibility with Anniversary Update
-                //    builder.RegisterType<WindowsPhoneVibrationService>().As<IVibrationService>().SingleInstance();
-                //}
-                //else
+                if (ApiInformation.IsTypePresent("Windows.Phone.Devices.Notification.VibrationDevice"))
+                {
+                    // To keep vibration compatibility with Anniversary Update
+                    builder.RegisterType<WindowsPhoneVibrationService>().As<IVibrationService>().SingleInstance();
+                }
+                else
                 {
                     builder.RegisterType<FakeVibrationService>().As<IVibrationService>().SingleInstance();
                 }
@@ -262,7 +254,7 @@ namespace Unigram
                 builder.RegisterType<SettingsVoIPViewModel>();
                 builder.RegisterType<BackgroundViewModel>();
                 builder.RegisterType<AttachedStickersViewModel>();
-                builder.RegisterType<ViewModels.StickerSetViewModel>();
+                builder.RegisterType<StickerSetViewModel>();
                 builder.RegisterType<PaymentFormStep1ViewModel>();
                 builder.RegisterType<PaymentFormStep2ViewModel>();
                 builder.RegisterType<PaymentFormStep3ViewModel>();
@@ -276,21 +268,6 @@ namespace Unigram
                 builder.RegisterType<ChatsNearbyViewModel>();
                 builder.RegisterType<FoldersViewModel>();
                 builder.RegisterType<FolderViewModel>();
-
-#if INCLUDE_WALLET
-                builder.RegisterType<WalletViewModel>();
-                builder.RegisterType<WalletSettingsViewModel>();
-                builder.RegisterType<WalletCreateViewModel>();
-                builder.RegisterType<WalletTestViewModel>();
-                builder.RegisterType<WalletImportViewModel>();
-                builder.RegisterType<WalletExportViewModel>();
-                builder.RegisterType<WalletReceiveViewModel>();
-                builder.RegisterType<WalletInvoiceViewModel>();
-                builder.RegisterType<WalletSendViewModel>();
-                builder.RegisterType<WalletSendingViewModel>();
-                builder.RegisterType<WalletTransactionViewModel>();
-                builder.RegisterType<WalletInfoViewModel>();
-#endif
 
                 return builder.Build();
             });

@@ -13,7 +13,7 @@ namespace Unigram.Services
     public interface ISettingsService
     {
         int Session { get; }
-        ulong Version { get; }
+        ulong VersionLastStart { get; }
 
         void UpdateVersion();
 
@@ -21,9 +21,6 @@ namespace Unigram.Services
         NotificationsSettings Notifications { get; }
         StickersSettings Stickers { get; }
         EmojiSettings Emoji { get; }
-#if INCLUDE_WALLET
-        WalletSettings Wallet { get; }
-#endif
         AutoDownloadSettings AutoDownload { get; set; }
         AppearanceSettings Appearance { get; }
         FiltersSettings Filters { get; }
@@ -57,10 +54,12 @@ namespace Unigram.Services
         bool IsSendGrouped { get; set; }
         bool IsAccountsSelectorExpanded { get; set; }
         bool IsAllAccountsNotifications { get; set; }
+        bool SaveCameraMediaInGallery { get; set; }
 
         DistanceUnits DistanceUnits { get; set; }
 
-        bool AreAnimationsEnabled { get; set; }
+        bool AutocorrectWords { get; set; }
+        bool HighlightWords { get; set; }
 
         bool IsStreamingEnabled { get; set; }
         double VolumeLevel { get; set; }
@@ -92,6 +91,12 @@ namespace Unigram.Services
     public class SettingsServiceBase
     {
         protected readonly ApplicationDataContainer _container;
+
+        public SettingsServiceBase(string key)
+            : this(ApplicationData.Current.LocalSettings.CreateContainer(key, ApplicationDataCreateDisposition.Always))
+        {
+
+        }
 
         public SettingsServiceBase(ApplicationDataContainer container = null)
         {
@@ -187,37 +192,54 @@ namespace Unigram.Services
 
         public ApplicationDataContainer Container => _container;
 
-#region App version
+        #region App version
 
-        public const ulong CurrentVersion = (3UL << 48) | (15UL << 32) | (3073UL << 16);
-        public const string CurrentChangelog = "Quizzes 2.0\r\n• Add explanations that appear after users respond to a quiz question. \r\n• See how much time you have left to answer a question from @QuizBot with the new countdown animation.\r\n\r\nAnimated Darts\r\n• Send a single dart 🎯 emoji to see if you hit bullseye.";
+        //public const ulong CurrentVersion = (3UL << 48) | (15UL << 32) | (3073UL << 16);
+        public static readonly string CurrentChangelog = $"Beta Build {GetAppVersion().Build}. Thanks for taking the risk and time testing this beta release. Please use the beta group for any feedback: https://t.me/joinchat/E_I5AhukKgSSXf4Acp8nbA";
         public const bool CurrentMedia = false;
 
         public int Session => _session;
 
-        private ulong? _version;
-        public ulong Version
+        private ulong? _versionLastStart;
+        public ulong VersionLastStart
         {
             get
             {
-                if (_version == null)
-                    _version = GetValueOrDefault("LongVersion", 0UL);
+                if (_versionLastStart == null)
+                    _versionLastStart = GetValueOrDefault("LongVersion", 0UL);
 
-                return _version ?? 0;
+                return _versionLastStart ?? 0;
             }
             private set
             {
-                _version = value;
+                _versionLastStart = value;
                 AddOrUpdateValue("LongVersion", value);
             }
         }
 
         public void UpdateVersion()
         {
-            Version = CurrentVersion;
+            var version = GetAppVersion();
+            VersionLastStart = ((ulong)version.Major << 48) | ((ulong)version.Minor << 32);
         }
 
-#endregion
+        public static ulong CurrentVersion
+        {
+            get
+            {
+                var version = GetAppVersion();
+                return ((ulong)version.Major << 48) | ((ulong)version.Minor << 32);
+            }
+        }
+
+        public static Windows.ApplicationModel.PackageVersion GetAppVersion()
+        {
+            Windows.ApplicationModel.Package package = Windows.ApplicationModel.Package.Current;
+            Windows.ApplicationModel.PackageId packageId = package.Id;
+            return packageId.Version;
+        }
+
+        #endregion
 
         private ChatSettingsBase _chats;
         public ChatSettingsBase Chats
@@ -255,17 +277,6 @@ namespace Unigram.Services
                 // c# 8.0: return _emoji ??= new EmojiSettings();
             }
         }
-
-#if INCLUDE_WALLET
-        private WalletSettings _wallet;
-        public WalletSettings Wallet
-        {
-            get
-            {
-                return _wallet = _wallet ?? new WalletSettings(_own);
-            }
-        }
-#endif
 
         private AutoDownloadSettings _autoDownload;
         public AutoDownloadSettings AutoDownload
@@ -444,6 +455,23 @@ namespace Unigram.Services
             }
         }
 
+        private bool? _isSidebarOpen;
+        public bool IsSidebarOpen
+        {
+            get
+            {
+                if (_isSidebarOpen == null)
+                    _isSidebarOpen = GetValueOrDefault(_local, "IsSidebarOpen", true);
+
+                return _isSidebarOpen ?? true;
+            }
+            set
+            {
+                _isSidebarOpen = value;
+                AddOrUpdateValue(_local, "IsSidebarOpen", value);
+            }
+        }
+
         private static bool? _isAdaptiveWideEnabled;
         public bool IsAdaptiveWideEnabled
         {
@@ -563,20 +591,37 @@ namespace Unigram.Services
             }
         }
 
-        private static bool? _areAnimationsEnabled;
-        public bool AreAnimationsEnabled
+        private static bool? _autocorrectWords;
+        public bool AutocorrectWords
         {
             get
             {
-                if (_areAnimationsEnabled == null)
-                    _areAnimationsEnabled = GetValueOrDefault(_local, "AreAnimationsEnabled", ApiInfo.IsFullExperience);
+                if (_autocorrectWords == null)
+                    _autocorrectWords = GetValueOrDefault(_local, "AutocorrectWords", true);
 
-                return _areAnimationsEnabled ?? ApiInfo.IsFullExperience;
+                return _autocorrectWords ?? true;
             }
             set
             {
-                _areAnimationsEnabled = value;
-                AddOrUpdateValue(_local, "AreAnimationsEnabled", value);
+                _autocorrectWords = value;
+                AddOrUpdateValue(_local, "AutocorrectWords", value);
+            }
+        }
+
+        private static bool? _highlightWords;
+        public bool HighlightWords
+        {
+            get
+            {
+                if (_highlightWords == null)
+                    _highlightWords = GetValueOrDefault(_local, "HighlightWords", true);
+
+                return _highlightWords ?? true;
+            }
+            set
+            {
+                _highlightWords = value;
+                AddOrUpdateValue(_local, "HighlightWords", value);
             }
         }
 
@@ -961,6 +1006,23 @@ namespace Unigram.Services
             {
                 _useLessData = value;
                 AddOrUpdateValue("UseLessData", (int)value);
+            }
+        }
+
+        private bool? _saveCameraMediaInGallery;
+        public bool SaveCameraMediaInGallery
+        {
+            get
+            {
+                if (_saveCameraMediaInGallery == null)
+                    _saveCameraMediaInGallery = GetValueOrDefault("SaveCameraMediaInGallery", true);
+
+                return _saveCameraMediaInGallery ?? true;
+            }
+            set
+            {
+                _saveCameraMediaInGallery = value;
+                AddOrUpdateValue("SaveCameraMediaInGallery", value);
             }
         }
 

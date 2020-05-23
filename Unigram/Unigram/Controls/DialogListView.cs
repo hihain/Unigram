@@ -86,7 +86,7 @@ namespace Unigram.Controls
         private int _originalIndex;
         private double _drag;
 
-        private async void OnDrop(object sender, DragEventArgs e)
+        private void OnDrop(object sender, DragEventArgs e)
         {
             for (int i = 0; i < 5; i++)
             {

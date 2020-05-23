@@ -325,7 +325,7 @@
 
         <DataTemplate x:Key="MediaItemTemplate" x:DataType="entities:StorageMedia">
             <Grid>
-                <Image x:Name="Preview" Source="{x:Bind Preview, Mode=OneWay}"/>
+                <Image Source="{x:Bind Preview, Mode=OneWay}"/>
 
                 <Border Width="48" Height="48" CornerRadius="24" Background="{ThemeResource MessageMediaBackgroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <!--<controls:FileButton x:Name="Button" Style="{StaticResource InlineFileButtonStyle}"/>-->
