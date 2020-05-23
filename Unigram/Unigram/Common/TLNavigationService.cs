@@ -12,7 +12,7 @@ using Unigram.Views.Settings;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 using Windows.UI.Core;
-using Windows.UI.WindowManagement;
+//using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -22,7 +22,7 @@ namespace Unigram.Common
     {
         private readonly IPasscodeService _passcodeService;
 
-        private Dictionary<string, AppWindow> _instantWindows = new Dictionary<string, AppWindow>();
+        //private Dictionary<string, AppWindow> _instantWindows = new Dictionary<string, AppWindow>();
         public TLNavigationService(IProtoService protoService, Frame frame, int session, string id)
             : base(frame, session, id)
         {
