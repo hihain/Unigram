@@ -1017,9 +1017,11 @@
                                     x:Name="AttachMedia"
                                     Text="{x:Bind ConvertSelectedCount(ViewModel.MediaLibrary.SelectedCount, x:True), Mode=OneWay}"
                                     Command="{x:Bind ViewModel.SendMediaCommand}">
+                                    <!--
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xEB9F;"/>
                                     </MenuFlyoutItem.Icon>
+                                    -->
                                 </MenuFlyoutItem>
                                 <!--
                                 <MenuFlyoutItem
@@ -1035,44 +1037,54 @@
                                     x:Name="AttachDocument"
                                     Text="{x:Bind ConvertSelectedCount(ViewModel.MediaLibrary.SelectedCount, x:False), Mode=OneWay}"
                                     Command="{x:Bind ViewModel.SendDocumentCommand}">
+                                    <!--
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE160;"/>
                                     </MenuFlyoutItem.Icon>
+                                    -->
                                 </MenuFlyoutItem>
                                 <MenuFlyoutItem
                                     x:Name="AttachLocation"
                                     Text="{CustomResource ChatLocation}"
                                     IsEnabled="{x:Bind ViewModel.MediaLibrary.SelectedCount, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}"
                                     Command="{x:Bind ViewModel.SendLocationCommand}">
+                                    <!--
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE1C4;"/>
                                     </MenuFlyoutItem.Icon>
+                                    -->
                                 </MenuFlyoutItem>
                                 <MenuFlyoutItem
                                     x:Name="AttachPoll"
                                     Text="{CustomResource Poll}"
                                     IsEnabled="{x:Bind ViewModel.MediaLibrary.SelectedCount, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}"
                                     Command="{x:Bind ViewModel.SendPollCommand}">
+                                    <!--
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE91F;" FontFamily="{StaticResource TelegramThemeFontFamily}"/>
                                     </MenuFlyoutItem.Icon>
+                                    -->
                                 </MenuFlyoutItem>
                                 <MenuFlyoutItem
                                     x:Name="AttachContact"
                                     Text="{CustomResource AttachContact}"
                                     IsEnabled="{x:Bind ViewModel.MediaLibrary.SelectedCount, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}"
                                     Command="{x:Bind ViewModel.SendContactCommand}">
+                                    <!--
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE77B;"/>
                                     </MenuFlyoutItem.Icon>
+                                    -->
                                 </MenuFlyoutItem>
                                 <MenuFlyoutItem
                                     x:Name="AttachCurrent"
                                     Text="{CustomResource Edit}"
                                     Command="{x:Bind ViewModel.EditCurrentCommand}">
+                                    <!--
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE7A8;"/>
                                     </MenuFlyoutItem.Icon>
+                                    -->
                                 </MenuFlyoutItem>
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>

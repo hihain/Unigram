@@ -34,9 +34,11 @@
                         <MenuFlyout x:Name="MenuFlyout">
                             <MenuFlyoutItem Text="{CustomResource CreateNewThemeMenu}"
                                     Command="{x:Bind ViewModel.NewThemeCommand}">
+                                <!--
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon Glyph="&#xE2B1;"/>
                                 </MenuFlyoutItem.Icon>
+                                -->
                             </MenuFlyoutItem>
                         </MenuFlyout>
                     </Button.Flyout>

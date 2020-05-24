@@ -161,16 +161,20 @@
                                             <MenuFlyoutItem
                                                 Click="EditName_Click"
                                                 Text="{CustomResource EditName}">
+                                                <!--
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xE104;"/>
                                                 </MenuFlyoutItem.Icon>
+                                                -->
                                             </MenuFlyoutItem>
                                             <MenuFlyoutItem
                                                 Click="LogOut_Click"
                                                 Text="{CustomResource LogOut}">
+                                                <!--
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xF3B1;"/>
                                                 </MenuFlyoutItem.Icon>
+                                                -->
                                             </MenuFlyoutItem>
                                         </MenuFlyout>
                                     </Button.Flyout>
