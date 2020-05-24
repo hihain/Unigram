@@ -2,7 +2,6 @@
     x:Class="Unigram.Views.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:contract7Present="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
     xmlns:local="using:Unigram.Views"
     xmlns:common="using:Unigram.Common"
     xmlns:controls="using:Unigram.Controls"
@@ -85,14 +84,11 @@
         <controls:MasterDetailView x:Name="MasterDetail" ViewStateChanged="OnStateChanged" Update="OnUpdate">
             <controls:MasterDetailView.Header>
                 <Grid x:Name="TitleBarrr" Background="{ThemeResource PageTitleBackgroundBrush}">
-                    <contract7Present:Grid.BackgroundTransition>
-                        <contract7Present:BrushTransition/>
-                    </contract7Present:Grid.BackgroundTransition>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <microsoft:ProgressBar x:Name="Status" VerticalAlignment="Top" Background="Transparent" Grid.ColumnSpan="2"/>
+                    <ProgressBar x:Name="Status" VerticalAlignment="Top" Background="Transparent" Grid.ColumnSpan="2"/>
                     <TextBlock x:Name="StatusLabel"
                                VerticalAlignment="Center"
                                TextLineBounds="TrimToCapHeight"
@@ -117,9 +113,6 @@
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                <contract7Present:Grid.BackgroundTransition>
-                    <BrushTransition/>
-                </contract7Present:Grid.BackgroundTransition>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -496,7 +489,7 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <Border x:Name="ChatTabs" x:Load="False">
+                                    <Border x:Name="ChatTabs">
                                         <Grid x:Name="ChatTabsView">
                                             <controls:TopNavView
                                                 x:Name="ChatFilters"
@@ -810,7 +803,6 @@
 
         <controls:ConfettiView
             x:Name="Confetti"
-            x:Load="False"
             Completed="Confetti_Completed"
             IsHitTestVisible="False"/>
     </Grid>
