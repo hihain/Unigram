@@ -67,6 +67,8 @@ namespace Unigram.Themes
             // * https://github.com/microsoft/microsoft-ui-xaml/pull/357
             MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("ms-appx:///Themes/TextBox_rs1_themeresources.xaml") });
             MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("ms-appx:///Themes/RichEditBox_rs1_themeresources.xaml") });
+            // WinUI 2.2 Theme:
+            MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("ms-appx:///Themes/CornerRadius_themeresources.xaml") });
         }
     }
 }
