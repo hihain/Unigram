@@ -92,9 +92,6 @@
         </Grid.ColumnDefinitions>
 
         <Grid x:Name="TitleBarrr" Height="32" Background="{ThemeResource PageTitleBackgroundBrush}" Grid.ColumnSpan="2">
-            <contract7Present:Grid.BackgroundTransition>
-                <contract7Present:BrushTransition/>
-            </contract7Present:Grid.BackgroundTransition>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
@@ -446,9 +443,6 @@
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                <contract7Present:Grid.BackgroundTransition>
-                    <contract7Present:BrushTransition/>
-                </contract7Present:Grid.BackgroundTransition>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
