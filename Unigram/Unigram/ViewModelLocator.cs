@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Unigram.Services.ViewService;
+using Unigram.Common;
 using Unigram.Services;
 using Unigram.Services.Factories;
+using Unigram.Services.ViewService;
 using Unigram.ViewModels;
 using Unigram.ViewModels.BasicGroups;
 using Unigram.ViewModels.Channels;
 using Unigram.ViewModels.Chats;
+using Unigram.ViewModels.Drawers;
 using Unigram.ViewModels.Folders;
-using Unigram.ViewModels.Passport;
 using Unigram.ViewModels.Payments;
 using Unigram.ViewModels.Settings;
 using Unigram.ViewModels.Settings.Password;
@@ -118,13 +119,15 @@ namespace Unigram
                     .AutoActivate();
                 builder.RegisterType<EmojiSetService>()
                     .As<IEmojiSetService>()
-                    .SingleInstance()
-                    .AutoActivate();
-
+                    .SingleInstance();
+#if CLOUDUPDATES
+                builder.RegisterType<CloudUpdateService>()
+                    .As<ICloudUpdateService>()
+                    .SingleInstance();
+#endif
                 builder.RegisterType<ShortcutsService>()
                     .As<IShortcutsService>()
-                    .SingleInstance()
-                    .AutoActivate();
+                    .SingleInstance();
                 //builder.RegisterType<OptionsService>()
                 //    .As<IOptionsService>()
                 //    .SingleInstance()
@@ -139,10 +142,18 @@ namespace Unigram
                 builder.RegisterType<ContactsService>().As<IContactsService>().SingleInstance();
                 builder.RegisterType<LocationService>().As<ILocationService>().SingleInstance();
                 //builder.RegisterType<HardwareService>().As<IHardwareService>().SingleInstance();
-                builder.RegisterType<PlaybackService>().As<IPlaybackService>().SingleInstance();
                 builder.RegisterType<ThemeService>().As<IThemeService>().SingleInstance();
 
                 builder.RegisterType<MessageFactory>().As<IMessageFactory>().SingleInstance();
+
+                //if (ApiInfo.IsMediaSupported)
+                {
+                    builder.RegisterType<PlaybackService>().As<IPlaybackService>().SingleInstance();
+                }
+                //else
+                //{
+                //    builder.RegisterType<DummyPlaybackService>().As<IPlaybackService>().SingleInstance();
+                //}
 
                 // Disabled due to crashes on Mobile: 
                 // The RPC server is unavailable.
@@ -181,6 +192,8 @@ namespace Unigram
                 builder.RegisterType<ChatsViewModel>();//.SingleInstance();
                 builder.RegisterType<DialogViewModel>(); //.WithParameter((a, b) => a.Name == "dispatcher", (a, b) => WindowWrapper.Current().Dispatcher);
                 builder.RegisterType<DialogScheduledViewModel>();
+                builder.RegisterType<AnimationDrawerViewModel>();
+                builder.RegisterType<StickerDrawerViewModel>();
                 builder.RegisterType<ProfileViewModel>();
                 builder.RegisterType<UserCommonChatsViewModel>();
                 builder.RegisterType<UserCreateViewModel>();
@@ -252,18 +265,16 @@ namespace Unigram
                 builder.RegisterType<SettingsNightModeViewModel>().SingleInstance();
                 builder.RegisterType<SettingsBackgroundsViewModel>();//.SingleInstance();
                 builder.RegisterType<SettingsVoIPViewModel>();
+                builder.RegisterType<SettingsShortcutsViewModel>();
                 builder.RegisterType<BackgroundViewModel>();
                 builder.RegisterType<AttachedStickersViewModel>();
-                builder.RegisterType<StickerSetViewModel>();
+                builder.RegisterType<ViewModels.StickerSetViewModel>();
                 builder.RegisterType<PaymentFormStep1ViewModel>();
                 builder.RegisterType<PaymentFormStep2ViewModel>();
                 builder.RegisterType<PaymentFormStep3ViewModel>();
                 builder.RegisterType<PaymentFormStep4ViewModel>();
                 builder.RegisterType<PaymentFormStep5ViewModel>();
                 builder.RegisterType<PaymentReceiptViewModel>();
-                builder.RegisterType<PassportViewModel>();
-                builder.RegisterType<PassportDocumentViewModelBase>();
-                builder.RegisterType<PassportAddressViewModel>();
                 builder.RegisterType<InviteViewModel>();
                 builder.RegisterType<ChatsNearbyViewModel>();
                 builder.RegisterType<FoldersViewModel>();

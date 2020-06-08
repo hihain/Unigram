@@ -1,4 +1,4 @@
-<Page
+<local:HostedPage
     x:Class="Unigram.Views.DiagnosticsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,28 +10,31 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource PageBackgroundDarkBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+    <local:HostedPage.Header>
         <controls:PageHeader Text="Diagnostics"/>
-
+    </local:HostedPage.Header>
+    
+    <Grid Background="{ThemeResource PageBackgroundDarkBrush}">
         <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      VerticalScrollMode="Auto"
-                      Grid.Row="1">
+                      VerticalScrollMode="Auto">
             <StackPanel>
                 <controls:HeaderedControl
                     Header="Experimental">
                     <ToggleSwitch
-                        x:Name="PlayStickers"
-                        IsOn="{x:Bind ViewModel.PlayStickers, Mode=TwoWay}"
-                        Header="Play animated stickers"
+                        IsOn="{x:Bind ViewModel.BubbleMeasureAlpha, Mode=TwoWay}"
+                        Header="Bubble measure"
                         Style="{StaticResource CheckButtonStyle}"/>
                     <ToggleSwitch
-                        x:Name="CacheStickers"
-                        IsOn="{x:Bind ViewModel.CacheStickers, Mode=TwoWay}"
-                        Header="Cache animated stickers"
+                        IsOn="{x:Bind ViewModel.BubbleKnockout, Mode=TwoWay}"
+                        Header="Bubble knockout"
+                        Style="{StaticResource CheckButtonStyle}"/>
+                </controls:HeaderedControl>
+                
+                <controls:HeaderedControl
+                    Header="For Desktop">
+                    <ToggleSwitch
+                        IsOn="{x:Bind ViewModel.ShowFilesInFolder, Mode=TwoWay}"
+                        Header="{CustomResource Additional.ShowInFolder}"
                         Style="{StaticResource CheckButtonStyle}"/>
                 </controls:HeaderedControl>
 
@@ -87,4 +90,4 @@
             </StackPanel>
         </ScrollViewer>
     </Grid>
-</Page>
+</local:HostedPage>

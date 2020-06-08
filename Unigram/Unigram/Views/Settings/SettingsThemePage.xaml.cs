@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Views.Settings
 {
-    public sealed partial class SettingsThemePage : Page
+    public sealed partial class SettingsThemePage : HostedPage
     {
         private ThemeGroup _group;
         private ThemeCustomInfo _theme;
@@ -26,7 +26,7 @@ namespace Unigram.Views.Settings
         {
             this.InitializeComponent();
 
-            if (ApiInformation.IsEnumNamedValuePresent("Windows.UI.Xaml.Controls.Primitives.FlyoutPlacementMode", "BottomEdgeAlignedRight"))
+            if (ApiInfo.CanUseNewFlyoutPlacementMode)
             {
                 MenuFlyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedRight;
             }
@@ -342,7 +342,7 @@ namespace Unigram.Views.Settings
                 picker.PreviousColor = part.Value;
                 picker.Margin = new Thickness(12, 12, 12, 0);
 
-                var dialog = new TLContentDialog();
+                var dialog = new ContentPopup();
                 dialog.PrimaryButtonText = Strings.Resources.Save;
                 dialog.SecondaryButtonText = part.IsDefault ? string.Empty : Strings.Resources.Default;
                 dialog.CloseButtonText = Strings.Resources.Cancel;

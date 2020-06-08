@@ -3,12 +3,11 @@ using Unigram.Common;
 using Unigram.Navigation;
 using Unigram.ViewModels;
 using Unigram.ViewModels.Delegates;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Views
 {
-    public sealed partial class ChatPage : Page, INavigablePage, ISearchablePage, IDisposable
+    public sealed partial class ChatPage : HostedPage, INavigablePage, ISearchablePage, IDisposable
     {
         public DialogViewModel ViewModel => DataContext as DialogViewModel;
         public ChatView View => Content as ChatView;
@@ -18,6 +17,7 @@ namespace Unigram.Views
             InitializeComponent();
 
             Content = new ChatView(deleg => (DataContext = TLContainer.Current.Resolve<DialogViewModel, IDialogDelegate>(deleg)) as DialogViewModel);
+            Header = View.Header;
             NavigationCacheMode = NavigationCacheMode.Required;
         }
 

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
-using Unigram.Controls.Messages.Content;
+using Unigram.Entities;
 using Unigram.ViewModels;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -72,6 +69,11 @@ namespace Unigram.Controls
             {
                 width = 640;
                 height = 520;
+            }
+            else if (Constraint is StorageMedia media)
+            {
+                width = media.Width;
+                height = media.Height;
             }
 
             #region MessageContent
@@ -266,7 +268,11 @@ namespace Unigram.Controls
                 height = 1600;
             }
 
-
+            if (width == 0 && height == 0)
+            {
+                width = int.MaxValue;
+                height = int.MaxValue;
+            }
 
 #pragma warning disable CS0164 // This label has not been referenced
         Calculate:

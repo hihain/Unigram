@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
-using Unigram.Controls.Views;
 using Unigram.Services;
 using Unigram.Services.Settings;
+using Unigram.Views.Popups;
 using Unigram.Views.Settings;
 using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
@@ -141,7 +141,7 @@ namespace Unigram.ViewModels.Settings
                 new SelectRadioItem(libtgvoip.DataSavingMode.Always, Strings.Resources.UseLessDataAlways, UseLessData == libtgvoip.DataSavingMode.Always),
             };
 
-            var dialog = new SelectRadioView(items);
+            var dialog = new SelectRadioPopup(items);
             dialog.Title = Strings.Resources.VoipUseLessData;
             dialog.PrimaryButtonText = Strings.Resources.OK;
             dialog.SecondaryButtonText = Strings.Resources.Cancel;
@@ -156,7 +156,7 @@ namespace Unigram.ViewModels.Settings
         public RelayCommand DownloadLocationCommand { get; }
         private async void DownloadLocationExecute()
         {
-            var dialog = new TLContentDialog();
+            var dialog = new ContentPopup();
             var stack = new StackPanel();
             stack.Margin = new Thickness(12, 16, 12, 0);
             stack.Children.Add(new RadioButton { Tag = 1, Content = "Temp folder, cleared on logout or uninstall", IsChecked = FilesDirectory == null });
@@ -221,7 +221,7 @@ namespace Unigram.ViewModels.Settings
         public RelayCommand ResetAutoDownloadCommand { get; }
         private async void ResetAutoDownloadExecute()
         {
-            var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.ResetAutomaticMediaDownloadAlert, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(Strings.Resources.ResetAutomaticMediaDownloadAlert, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
             if (confirm == ContentDialogResult.Primary)
             {
                 var response = await ProtoService.SendAsync(new GetAutoDownloadSettingsPresets());

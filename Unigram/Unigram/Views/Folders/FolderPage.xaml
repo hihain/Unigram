@@ -1,25 +1,24 @@
-﻿<Page
+﻿<local:HostedPage
     x:Class="Unigram.Views.Folders.FolderPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Unigram.Views.Folders"
+    xmlns:local="using:Unigram.Views"
     xmlns:controls="using:Unigram.Controls"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Loaded="OnLoaded">
 
-    <Grid Background="{ThemeResource PageBackgroundDarkBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <local:HostedPage.Header>
         <controls:ButtonPageHeader
-            Text="{CustomResource FilterNew}"
+            Text="{x:Bind ConvertTitle(ViewModel.Filter), Mode=OneWay}"
             Command="{x:Bind ViewModel.SendCommand}"
             Glyph="&#xE10B;"/>
-
-        <muxc:ItemsRepeaterScrollHost Grid.Row="1">
+    </local:HostedPage.Header>
+    
+    <Grid Background="{ThemeResource PageBackgroundDarkBrush}">
+        <muxc:ItemsRepeaterScrollHost>
             <ScrollViewer
                 VerticalScrollBarVisibility="Auto"
                 VerticalScrollMode="Auto">
@@ -41,12 +40,16 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBox
+                                x:Name="TitleField"
                                 Text="{x:Bind ViewModel.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                MaxLength="12"
                                 Margin="12,8,0,8"/>
 
-                            <controls:AnimatedGlyphButton
+                            <controls:AnimatedBitmapButton
                                 x:Name="EmojiButton"
-                                Glyph="{x:Bind ConvertEmoji(ViewModel.Emoji), Mode=OneWay}"
+                                FontFamily="{StaticResource TelegramThemeFontFamily}"
+                                UriSource="{x:Bind ConvertEmoji(ViewModel.Icon), Mode=OneWay}"
                                 Click="Emoji_Click"
                                 Grid.Column="1">
                                 <FlyoutBase.AttachedFlyout>
@@ -54,16 +57,21 @@
                                         <GridView
                                             x:Name="EmojiList"
                                             ItemClick="EmojiList_ItemClick"
-                                            DisplayMemberPath="Glyph"
+                                            ContainerContentChanging="EmojiList_ContainerContentChanging"
                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                             ScrollViewer.HorizontalScrollMode="Disabled"
                                             SelectionMode="Single"
                                             IsItemClickEnabled="True"
                                             Margin="0,0,-4,-14"
                                             Width="258">
+                                            <GridView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <BitmapIcon Width="36" Height="36"/>
+                                                </DataTemplate>
+                                            </GridView.ItemTemplate>
                                             <GridView.ItemContainerStyle>
                                                 <Style TargetType="GridViewItem">
-                                                    <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}" />
+                                                    <Setter Property="FontFamily" Value="{StaticResource TelegramThemeFontFamily}" />
                                                     <Setter Property="FontSize" Value="16"/>
                                                     <Setter Property="MinWidth" Value="0"/>
                                                     <Setter Property="MinHeight" Value="0"/>
@@ -81,7 +89,7 @@
                                         </GridView>
                                     </Flyout>
                                 </FlyoutBase.AttachedFlyout>
-                            </controls:AnimatedGlyphButton>
+                            </controls:AnimatedBitmapButton>
                         </Grid>
                     </controls:HeaderedControl>
 
@@ -90,7 +98,8 @@
                         Footer="{CustomResource FilterIncludeInfo}">
                         <controls:BadgeButton
                             Command="{x:Bind ViewModel.AddIncludeCommand}"
-                            Content="{CustomResource FilterAddChats}"/>
+                            Content="{CustomResource FilterAddChats}"
+                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
                         <muxc:ItemsRepeater
                             ItemsSource="{x:Bind ViewModel.Include}"
                             ElementPrepared="OnElementPrepared">
@@ -122,7 +131,8 @@
                         Footer="{CustomResource FilterExcludeInfo}">
                         <controls:BadgeButton
                             Command="{x:Bind ViewModel.AddExcludeCommand}"
-                            Content="{CustomResource FilterAddChats}"/>
+                            Content="{CustomResource FilterAddChats}"
+                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
                         <muxc:ItemsRepeater
                             ItemsSource="{x:Bind ViewModel.Exclude}"
                             ElementPrepared="OnElementPrepared">
@@ -152,4 +162,4 @@
             </ScrollViewer>
         </muxc:ItemsRepeaterScrollHost>
     </Grid>
-</Page>
+</local:HostedPage>

@@ -9,6 +9,7 @@ using Unigram.Controls;
 using Unigram.Navigation;
 using Unigram.Services;
 using Unigram.Services.Navigation;
+using Unigram.Services.Updates;
 using Unigram.Views;
 using Unigram.Views.Host;
 using Windows.ApplicationModel;
@@ -19,7 +20,6 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.ApplicationModel.ExtendedExecution;
 using Windows.Foundation;
-using Windows.Foundation.Metadata;
 using Windows.Media;
 using Windows.Networking.PushNotifications;
 using Windows.Storage;
@@ -30,11 +30,6 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Resources;
-#if !DEBUG
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-#endif
 
 namespace Unigram
 {
@@ -77,11 +72,11 @@ namespace Unigram
 
             try
             {
-                if (!string.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Desktop"))
+                if (!ApiInfo.IsFullExperience)
                 {
                     _mediaExtensionManager = new MediaExtensionManager();
-                    _mediaExtensionManager.RegisterByteStreamHandler("Unigram.Native.OpusByteStreamHandler", ".ogg", "audio/ogg");
-                    _mediaExtensionManager.RegisterByteStreamHandler("Unigram.Native.OpusByteStreamHandler", ".oga", "audio/ogg");
+                    _mediaExtensionManager.RegisterByteStreamHandler("Unigram.Native.Media.OpusByteStreamHandler", ".ogg", "audio/ogg");
+                    _mediaExtensionManager.RegisterByteStreamHandler("Unigram.Native.Media.OpusByteStreamHandler", ".oga", "audio/ogg");
                 }
             }
             catch
@@ -95,18 +90,20 @@ namespace Unigram
             {
                 args.Handled = true;
 #if !DEBUG
-                Crashes.TrackError(args.Exception);
+                Microsoft.AppCenter.Crashes.Crashes.TrackError(args.Exception);
 #endif
 
                 try
                 {
-                    await new TLMessageDialog(args.Exception?.ToString() ?? string.Empty, "Unhandled exception").ShowQueuedAsync();
+                    await new MessagePopup(args.Exception?.ToString() ?? string.Empty, "Unhandled exception").ShowQueuedAsync();
                 }
                 catch { }
             };
 
 #if !DEBUG
-            AppCenter.Start(Constants.AppCenterId, typeof(Analytics), typeof(Crashes));
+            Microsoft.AppCenter.AppCenter.Start(Constants.AppCenterId,
+                typeof(Microsoft.AppCenter.Analytics.Analytics),
+                typeof(Microsoft.AppCenter.Crashes.Crashes));
 
             string deviceFamilyVersion = AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
             ulong version = ulong.Parse(deviceFamilyVersion);
@@ -114,8 +111,8 @@ namespace Unigram
             ulong minor = (version & 0x0000FFFF00000000L) >> 32;
             ulong build = (version & 0x00000000FFFF0000L) >> 16;
 
-            Analytics.TrackEvent($"{major}.{minor}.{build}");
-            Analytics.TrackEvent(AnalyticsInfo.VersionInfo.DeviceFamily);
+            Microsoft.AppCenter.Analytics.Analytics.TrackEvent($"{major}.{minor}.{build}");
+            Microsoft.AppCenter.Analytics.Analytics.TrackEvent(AnalyticsInfo.VersionInfo.DeviceFamily);
 
             TaskScheduler.UnobservedTaskException += OnUnobservedException;
             UnhandledException += OnUnhandledException;
@@ -199,7 +196,7 @@ namespace Unigram
             var aggregator = TLContainer.Current.Resolve<IEventAggregator>();
             if (aggregator != null)
             {
-                aggregator.Publish(active ? "Window_Activated" : "Window_Deactivated");
+                aggregator.Publish(new UpdateWindowActivated(active));
             }
 
             var cacheService = TLContainer.Current.Resolve<ICacheService>();
@@ -448,7 +445,7 @@ namespace Unigram
             }
 #endif
 
-            if (_extendedSession == null && AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Desktop")
+            if (_extendedSession == null && ApiInfo.IsFullExperience)
             {
                 var session = new ExtendedExecutionSession { Reason = ExtendedExecutionReason.Unspecified };
                 var result = await session.RequestExtensionAsync();
@@ -489,13 +486,13 @@ namespace Unigram
 #if !DEBUG
         private void OnUnobservedException(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            Crashes.TrackError(e.Exception);
+            Microsoft.AppCenter.Crashes.Crashes.TrackError(e.Exception);
             e.SetObserved();
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Crashes.TrackError(e.Exception);
+            Microsoft.AppCenter.Crashes.Crashes.TrackError(e.Exception);
             e.Handled = true;
         }
 #endif

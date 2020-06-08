@@ -1,56 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
-using System.Threading.Tasks;
+using Telegram.Td.Api;
+using Unigram.Common;
+using Unigram.Controls;
+using Unigram.Controls.Chats;
+using Unigram.Controls.Gallery;
+using Unigram.Controls.Messages;
 using Unigram.Converters;
-using Unigram.Views;
+using Unigram.Services;
 using Unigram.ViewModels;
+using Unigram.ViewModels.Gallery;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Globalization.DateTimeFormatting;
-using Windows.Storage;
-using Windows.Storage.FileProperties;
-using Windows.Storage.Pickers;
-using Windows.Storage.Search;
-using Windows.Storage.Streams;
-using Windows.System;
-using Windows.UI;
-using Windows.UI.Composition;
 using Windows.UI.Core;
-using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
-using Windows.UI.Xaml.Shapes;
-using Unigram.Controls;
-using Windows.Media.Core;
-using Windows.Media.Playback;
-using Unigram.Common;
-using Unigram.Controls.Messages;
-using LinqToVisualTree;
-using Telegram.Td.Api;
-using Windows.Foundation.Metadata;
-using Unigram.Controls.Chats;
-using Unigram.ViewModels.Gallery;
-using Unigram.Controls.Gallery;
-using Windows.Devices.Input;
 
 namespace Unigram.Views
 {
-    public partial class ChatView : UserControl
+    public partial class ChatView
     {
         private void OnViewSizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -123,7 +95,7 @@ namespace Unigram.Views
                 {
                     messages.AddRange(album.Layout.Messages.Keys);
                 }
-                else
+                else if (message.SendingState is MessageSendingStatePending == false)
                 {
                     messages.Add(message.Id);
                     animations.Add(message);
@@ -146,14 +118,14 @@ namespace Unigram.Views
             foreach (var item in _old.Values)
             {
                 var presenter = item.Presenter;
-                if (presenter != null && presenter.MediaPlayer != null)
+                if (presenter != null /*&& presenter.MediaPlayer != null*/)
                 {
-                    try
-                    {
-                        presenter.MediaPlayer.Dispose();
-                        presenter.MediaPlayer = null;
-                    }
-                    catch { }
+                    //try
+                    //{
+                    //    presenter.MediaPlayer.Dispose();
+                    //    presenter.MediaPlayer = null;
+                    //}
+                    //catch { }
 
                     try
                     {
@@ -188,10 +160,18 @@ namespace Unigram.Views
                 return;
             }
 
+            var top = 0d;
+            var bottom = 0d;
+
+            var knockout = SettingsService.Current.Diagnostics.BubbleKnockout;
+            var start = knockout ? panel.FirstCacheIndex : panel.FirstVisibleIndex;
+            var end = knockout ? panel.LastCacheIndex : panel.LastVisibleIndex;
+
+            var minKnock = knockout;
             var minItem = true;
             var minDate = true;
 
-            for (int i = panel.FirstVisibleIndex; i <= panel.LastVisibleIndex; i++)
+            for (int i = start; i <= end; i++)
             {
                 var container = Messages.ContainerFromIndex(i) as SelectorItem;
                 if (container == null)
@@ -205,7 +185,18 @@ namespace Unigram.Views
                     continue;
                 }
 
-                if (minItem)
+                if (minKnock)
+                {
+                    var negative = Messages.TransformToVisual(container);
+                    var relative = negative.TransformPoint(new Point());
+
+                    top = relative.Y;
+                    bottom = relative.Y + Messages.ActualHeight;
+
+                    minKnock = false;
+                }
+
+                if (minItem && i >= panel.FirstVisibleIndex)
                 {
                     var transform = container.TransformToVisual(DateHeaderRelative);
                     var point = transform.TransformPoint(new Point());
@@ -229,7 +220,7 @@ namespace Unigram.Views
                     }
                 }
 
-                if (message.Content is MessageHeaderDate && minDate)
+                if (message.Content is MessageHeaderDate && minDate && i >= panel.FirstVisibleIndex)
                 {
                     var transform = container.TransformToVisual(DateHeaderRelative);
                     var point = transform.TransformPoint(new Point());
@@ -260,6 +251,14 @@ namespace Unigram.Views
                 {
                     container.Opacity = 1;
                 }
+
+                if (knockout && container.ContentTemplateRoot is MessageBubble bubble)
+                {
+                    bubble.UpdateKnockout(top / container.ActualHeight, bottom / container.ActualHeight);
+                }
+
+                top -= container.ActualHeight;
+                bottom -= container.ActualHeight;
             }
 
             _dateHeaderTimer.Stop();
@@ -271,7 +270,7 @@ namespace Unigram.Views
         {
             public File File { get; set; }
             public Grid Container { get; set; }
-            public MediaPlayerView Presenter { get; set; }
+            public AnimationView Presenter { get; set; }
             public bool Watermark { get; set; }
             public bool Clip { get; set; }
         }
@@ -292,47 +291,48 @@ namespace Unigram.Views
             // If autoplay is enabled and the message contains a video note, then we want a different behavior
             if (ViewModel.Settings.IsAutoPlayAnimationsEnabled && (message.Content is MessageVideoNote || text?.WebPage != null && text.WebPage.Video != null))
             {
-                if (_old.TryGetValue(message.Id, out MediaPlayerItem item))
-                {
-                    if (item.Presenter == null || item.Presenter.MediaPlayer == null)
-                    {
-                        return;
-                    }
+                ViewModel.PlaybackService.Enqueue(message.Get());
+                //if (_old.TryGetValue(message.Id, out MediaPlayerItem item))
+                //{
+                //    if (item.Presenter == null || item.Presenter.MediaPlayer == null)
+                //    {
+                //        return;
+                //    }
 
-                    // If the video player is muted, then let's play the video again with audio turned on
-                    if (item.Presenter.MediaPlayer.IsMuted)
-                    {
-                        TypedEventHandler<MediaPlayer, object> handler = null;
-                        handler = (player, args) =>
-                        {
-                            player.MediaEnded -= handler;
-                            player.IsMuted = true;
-                            player.IsLoopingEnabled = true;
-                            player.Play();
-                        };
+                //    // If the video player is muted, then let's play the video again with audio turned on
+                //    if (item.Presenter.MediaPlayer.IsMuted)
+                //    {
+                //        TypedEventHandler<MediaPlayer, object> handler = null;
+                //        handler = (player, args) =>
+                //        {
+                //            player.MediaEnded -= handler;
+                //            player.IsMuted = true;
+                //            player.IsLoopingEnabled = true;
+                //            player.Play();
+                //        };
 
-                        item.Presenter.MediaPlayer.MediaEnded += handler;
-                        item.Presenter.MediaPlayer.IsMuted = false;
-                        item.Presenter.MediaPlayer.IsLoopingEnabled = false;
-                        item.Presenter.MediaPlayer.PlaybackSession.Position = TimeSpan.Zero;
+                //        item.Presenter.MediaPlayer.MediaEnded += handler;
+                //        item.Presenter.MediaPlayer.IsMuted = false;
+                //        item.Presenter.MediaPlayer.IsLoopingEnabled = false;
+                //        item.Presenter.MediaPlayer.PlaybackSession.Position = TimeSpan.Zero;
 
-                        // Mark it as viewed if needed
-                        if (message.Content is MessageVideoNote videoNote && !message.IsOutgoing && !videoNote.IsViewed)
-                        {
-                            ViewModel.ProtoService.Send(new OpenMessageContent(message.ChatId, message.Id));
-                        }
-                    }
-                    // If the video player is paused, then resume playback
-                    else if (item.Presenter.MediaPlayer.PlaybackSession.PlaybackState == MediaPlaybackState.Paused)
-                    {
-                        item.Presenter.MediaPlayer.Play();
-                    }
-                    // And last, if the video player can be pause, then pause it
-                    else if (item.Presenter.MediaPlayer.PlaybackSession.CanPause)
-                    {
-                        item.Presenter.MediaPlayer.Pause();
-                    }
-                }
+                //        // Mark it as viewed if needed
+                //        if (message.Content is MessageVideoNote videoNote && !message.IsOutgoing && !videoNote.IsViewed)
+                //        {
+                //            ViewModel.ProtoService.Send(new OpenMessageContent(message.ChatId, message.Id));
+                //        }
+                //    }
+                //    // If the video player is paused, then resume playback
+                //    else if (item.Presenter.MediaPlayer.PlaybackSession.PlaybackState == MediaPlaybackState.Paused)
+                //    {
+                //        item.Presenter.MediaPlayer.Play();
+                //    }
+                //    // And last, if the video player can be pause, then pause it
+                //    else if (item.Presenter.MediaPlayer.PlaybackSession.CanPause)
+                //    {
+                //        item.Presenter.MediaPlayer.Pause();
+                //    }
+                //}
             }
             else if (ViewModel.Settings.IsAutoPlayAnimationsEnabled && (message.Content is MessageAnimation || (text?.WebPage != null && text.WebPage.Animation != null) || (message.Content is MessageGame game && game.Game.Animation != null)))
             {
@@ -453,11 +453,11 @@ namespace Unigram.Views
             foreach (var item in _old.Keys.Except(news.Keys).ToList())
             {
                 var presenter = _old[item].Presenter;
-                if (presenter != null && presenter.MediaPlayer != null)
-                {
-                    presenter.MediaPlayer.Dispose();
-                    presenter.MediaPlayer = null;
-                }
+                //if (presenter != null && presenter.MediaPlayer != null)
+                //{
+                //    presenter.MediaPlayer.Dispose();
+                //    presenter.MediaPlayer = null;
+                //}
 
                 var container = _old[item].Container;
                 if (container != null && presenter != null)
@@ -482,17 +482,11 @@ namespace Unigram.Views
 
                 if (news.TryGetValue(item, out MediaPlayerItem data) && data.Container != null && data.Container.Children.Count < 5)
                 {
-                    var player = new MediaPlayer();
-                    player.AutoPlay = true;
-                    player.IsMuted = !audio;
-                    player.IsLoopingEnabled = true;
-                    player.CommandManager.IsEnabled = false;
-                    player.Source = MediaSource.CreateFromUri(new Uri("file:///" + data.File.Local.Path));
-
-                    var presenter = new MediaPlayerView();
-                    presenter.MediaPlayer = player;
+                    var presenter = new AnimationView();
+                    presenter.AutoPlay = true;
+                    presenter.IsLoopingEnabled = true;
                     presenter.IsHitTestVisible = false;
-                    presenter.Constraint = data.Container.Tag;
+                    presenter.Source = new Uri("file:///" + data.File.Local.Path);
 
                     //if (data.Clip && ApiInformation.IsTypePresent("Windows.UI.Composition.CompositionGeometricClip"))
                     //{

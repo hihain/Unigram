@@ -7,8 +7,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Unigram.Common;
 using Windows.Foundation;
+using Windows.Graphics.DirectX;
 using Windows.Storage;
+using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -20,14 +23,13 @@ namespace Unigram.Controls
     public class LottieView : Control
     {
         private CanvasControl _canvas;
-        private string CanvasPartName = "Canvas";
-
         private CanvasBitmap _bitmap;
 
         private Image _thumbnail;
+        private bool _hideThumbnail = true;
 
         private string _source;
-        private CachedAnimation _animation;
+        private LottieAnimation _animation;
 
         private bool _animationShouldCache;
         private bool _animationIsCaching;
@@ -41,21 +43,31 @@ namespace Unigram.Controls
         // Detect from hardware?
         private bool _limitFps = true;
 
+        private bool _skipFrame;
+
         private int _index;
         private bool _backward;
 
         private bool _isLoopingEnabled = true;
         private bool _isCachingEnabled = true;
 
-        private bool _hideThumbnail = true;
-
-        private LottieLoopThread _thread = LottieLoopThread.Current;
+        private LoopThread _thread;
+        private LoopThread _threadUI;
         private bool _subscribed;
 
         private ICanvasResourceCreator _device;
 
         public LottieView()
+            : this(CompositionCapabilities.GetForCurrentView().AreEffectsFast())
         {
+        }
+
+        public LottieView(bool fullFps)
+        {
+            _limitFps = !fullFps;
+            _thread = fullFps ? LoopThread.Chats : LoopThreadPool.Stickers.Get();
+            _threadUI = fullFps ? LoopThread.Chats : LoopThread.Stickers;
+
             DefaultStyleKey = typeof(LottieView);
         }
 
@@ -66,7 +78,7 @@ namespace Unigram.Controls
 
         protected override void OnApplyTemplate()
         {
-            var canvas = GetTemplateChild(CanvasPartName) as CanvasControl;
+            var canvas = GetTemplateChild("Canvas") as CanvasControl;
             if (canvas == null)
             {
                 return;
@@ -76,10 +88,6 @@ namespace Unigram.Controls
             _canvas.CreateResources += OnCreateResources;
             _canvas.Draw += OnDraw;
             _canvas.Unloaded += OnUnloaded;
-
-            //_canvas.SwapChain = _swapChain;
-            //_canvas.CreateResources += OnCreateResources;
-            //_canvas.RegionsInvalidated += OnRegionsInvalidated;
 
             _thumbnail = (Image)GetTemplateChild("Thumbnail");
 
@@ -139,6 +147,7 @@ namespace Unigram.Controls
         private void OnCreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
         {
             _device = sender;
+            _bitmap = CanvasBitmap.CreateFromBytes(sender, new byte[256 * 256 * 4], 256, 256, DirectXPixelFormat.B8G8R8A8UIntNormalized);
 
             if (args.Reason == CanvasCreateResourcesReason.FirstTime)
             {
@@ -166,7 +175,7 @@ namespace Unigram.Controls
         public void Invalidate()
         {
             var animation = _animation;
-            if (animation == null || _animationIsCaching || _canvas == null || _device == null)
+            if (animation == null || _animationIsCaching || _canvas == null || _bitmap == null)
             {
                 return;
             }
@@ -174,28 +183,37 @@ namespace Unigram.Controls
             var index = _index;
             var framesPerUpdate = _limitFps ? _animationFrameRate < 60 ? 1 : 2 : 1;
 
-            _bitmap = animation.RenderSync(_device, index, 256, 256);
+            if (_animationFrameRate < 60 && !_limitFps)
+            {
+                if (_skipFrame)
+                {
+                    _skipFrame = false;
+                    return;
+                }
+
+                _skipFrame = true;
+            }
+
+            animation.RenderSync(_bitmap, index);
 
             if (_animationShouldCache)
             {
                 _animationShouldCache = false;
                 _animationIsCaching = true;
-#if !MOBILE
-                ThreadPool.QueueUserWorkItem(state =>
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                Windows.System.Threading.ThreadPool.RunAsync(state =>
                 {
-#endif
-                if (animation is CachedAnimation cached)
-                {
-                    _cachingSemaphone.Wait();
+                    if (animation is LottieAnimation cached)
+                    {
+                        _cachingSemaphone.Wait();
 
                     cached.CreateCache(256, 256);
 
                     _animationIsCaching = false;
                     _cachingSemaphone.Release();
                 }
-#if !MOBILE
-                }, animation);
-#endif
+                });
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
             IndexChanged?.Invoke(this, index);
@@ -291,7 +309,7 @@ namespace Unigram.Controls
                 return;
             }
 
-            var animation = CachedAnimation.LoadFromFile(newValue, _isCachingEnabled, _limitFps, ColorReplacements);
+            var animation = LottieAnimation.LoadFromFile(newValue, _isCachingEnabled, ColorReplacements);
             if (animation == null)
             {
                 // The app can't access the file specified
@@ -301,7 +319,7 @@ namespace Unigram.Controls
             _source = newValue;
             _animation = animation;
 
-            _animationShouldCache = !animation.IsCached;
+            _animationShouldCache = animation.ShouldCache;
             _animationFrameRate = animation.FrameRate;
             _animationTotalFrame = animation.TotalFrame;
 
@@ -376,12 +394,12 @@ namespace Unigram.Controls
             _subscribed = subscribe;
 
             _thread.Tick -= OnTick;
-            _thread.Invalidate -= OnInvalidate;
+            _threadUI.Invalidate -= OnInvalidate;
 
             if (subscribe)
             {
                 _thread.Tick += OnTick;
-                _thread.Invalidate += OnInvalidate;
+                _threadUI.Invalidate += OnInvalidate;
             }
         }
 
@@ -496,80 +514,5 @@ namespace Unigram.Controls
         public event EventHandler<int> IndexChanged;
 
         public IReadOnlyDictionary<uint, uint> ColorReplacements { get; set; }
-    }
-
-    public class LottieLoopThread
-    {
-        private readonly Timer _timerTick;
-        private readonly DispatcherTimer _timerInvalidate;
-
-        private bool _dropTick;
-        private bool _dropInvalidate;
-
-        public LottieLoopThread()
-        {
-            _timerTick = new Timer(OnTick, null, Timeout.Infinite, Timeout.Infinite);
-
-            _timerInvalidate = new DispatcherTimer();
-            _timerInvalidate.Interval = TimeSpan.FromMilliseconds(1000 / 30);
-            _timerInvalidate.Tick += OnInvalidate;
-        }
-
-        private static LottieLoopThread _current;
-        public static LottieLoopThread Current => _current = _current ?? new LottieLoopThread();
-
-        private void OnTick(object state)
-        {
-            if (_dropTick)
-            {
-                return;
-            }
-
-            _dropTick = true;
-            _tick?.Invoke(this, EventArgs.Empty);
-            _dropTick = false;
-        }
-
-        private void OnInvalidate(object sender, object e)
-        {
-            if (_dropInvalidate)
-            {
-                return;
-            }
-
-            _dropInvalidate = true;
-            _invalidate?.Invoke(this, EventArgs.Empty);
-            _dropInvalidate = false;
-        }
-
-        private event EventHandler _tick;
-        public event EventHandler Tick
-        {
-            add
-            {
-                if (_tick == null) _timerTick.Change(TimeSpan.Zero, TimeSpan.FromMilliseconds(1000 / 30));
-                _tick += value;
-            }
-            remove
-            {
-                _tick -= value;
-                if (_tick == null) _timerTick.Change(Timeout.Infinite, Timeout.Infinite);
-            }
-        }
-
-        private event EventHandler _invalidate;
-        public event EventHandler Invalidate
-        {
-            add
-            {
-                if (_invalidate == null) _timerInvalidate.Start();
-                _invalidate += value;
-            }
-            remove
-            {
-                _invalidate -= value;
-                if (_invalidate == null) _timerInvalidate.Stop();
-            }
-        }
     }
 }

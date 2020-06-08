@@ -26,7 +26,7 @@ namespace Unigram.ViewModels.Settings
 
         //private TLAccountPassword _passwordBase;
 
-        public SettingsPasswordViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator) 
+        public SettingsPasswordViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(protoService, cacheService, settingsService, aggregator)
         {
             Input = new InputViewModel(this, protoService, cacheService, settingsService, aggregator);
@@ -105,7 +105,7 @@ namespace Unigram.ViewModels.Settings
 
             //if (_password == null)
             //{
-            //    await TLMessageDialog.ShowAsync("Please enter your password.");
+            //    await MessagePopup.ShowAsync("Please enter your password.");
             //    return;
             //}
 
@@ -160,7 +160,7 @@ namespace Unigram.ViewModels.Settings
                 message += Environment.NewLine + Environment.NewLine + Strings.Resources.TurnPasswordOffPassport;
             }
 
-            var confirm = await TLMessageDialog.ShowAsync(message, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(message, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
@@ -238,7 +238,7 @@ namespace Unigram.ViewModels.Settings
                 if (!string.Equals(password, passwordRetype))
                 {
                     // Error
-                    await TLMessageDialog.ShowAsync(Strings.Resources.PasswordDoNotMatch, Strings.Resources.AppName, Strings.Resources.OK);
+                    await MessagePopup.ShowAsync(Strings.Resources.PasswordDoNotMatch, Strings.Resources.AppName, Strings.Resources.OK);
                     return;
                 }
 
@@ -247,7 +247,7 @@ namespace Unigram.ViewModels.Settings
                     emailValid = false;
                     emailAddress = string.Empty;
 
-                    var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.YourEmailSkipWarningText, Strings.Resources.YourEmailSkipWarning, Strings.Resources.YourEmailSkip, Strings.Resources.Cancel);
+                    var confirm = await MessagePopup.ShowAsync(Strings.Resources.YourEmailSkipWarningText, Strings.Resources.YourEmailSkipWarning, Strings.Resources.YourEmailSkip, Strings.Resources.Cancel);
                     if (confirm != ContentDialogResult.Primary)
                     {
                         return;

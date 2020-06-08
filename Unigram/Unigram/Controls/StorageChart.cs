@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Windows.Foundation;
 using Windows.UI;
@@ -65,7 +63,7 @@ namespace Unigram.Controls
         /// <typeparam name="T"></typeparam>
         /// <param name="array"></param>
         /// <param name="value"></param>
-        public static void Fill<T>(T[] array, T value)
+        private static void Fill<T>(T[] array, T value)
         {
             if (array == null)
             {
@@ -116,63 +114,63 @@ namespace Unigram.Controls
 
         public void Update(int index, bool v)
         {
-            var (previous, previousOne) = Snapshot();
+            var (prev, prevOne) = Snapshot();
 
             _visible[index] = v;
 
             _visual.Shapes.Remove(_shapes[index]);
             _visual.Shapes.Insert(0, _shapes[index]);
 
-            var (current, currentOne) = Snapshot();
+            var (next, nextOne) = Snapshot();
 
-            previous = Shrink(previous);
-            current = Shrink(current);
+            prev = Shrink(prev);
+            next = Shrink(next);
 
-            var previousStart = 0f;
-            var currentStart = 0f;
+            var prevStart = 0f;
+            var nextStart = 0f;
 
             for (int i = 0; i < _values.Length; i++)
             {
-                var previousValue = previous[i] / previous.Sum();
-                var currentValue = current[i] / current.Sum();
+                var prevValue = prev[i] / prev.Sum();
+                var nextValue = next[i] / next.Sum();
 
-                var previousOffset = previousStart;
-                var previousEnd = previousValue - PAD_TRIM;
+                var prevOffset = prevStart;
+                var prevEnd = prevValue - PAD_TRIM;
 
-                var currentOffset = currentStart;
-                var currentEnd = currentValue - PAD_TRIM;
+                var nextOffset = nextStart;
+                var nextEnd = nextValue - PAD_TRIM;
 
-                if (currentOne == i)
+                if (nextOne == i)
                 {
-                    currentOffset = 0;
-                    currentEnd = 1;
+                    nextOffset = 0;
+                    nextEnd = 1;
                 }
-                else if (previousOne == i)
+                else if (prevOne == i)
                 {
-                    previousOffset = 0;
-                    previousEnd = 1;
+                    prevOffset = 0;
+                    prevEnd = 1;
                 }
-                else if (current[i] == 0)
+                else if (next[i] == 0)
                 {
-                    currentOffset = currentStart - PAD_TRIM;
-                    currentEnd = 0;
+                    nextOffset = nextStart - PAD_TRIM;
+                    nextEnd = 0;
                 }
-                else if (previous[i] == 0)
+                else if (prev[i] == 0)
                 {
-                    previousOffset = previousStart - PAD_TRIM;
-                    previousEnd = 0;
+                    prevOffset = prevStart - PAD_TRIM;
+                    prevEnd = 0;
                 }
 
                 var trimStart = Window.Current.Compositor.CreateScalarKeyFrameAnimation();
-                trimStart.InsertKeyFrame(0, previousOffset);
-                trimStart.InsertKeyFrame(1, currentOffset);
+                trimStart.InsertKeyFrame(0, prevOffset);
+                trimStart.InsertKeyFrame(1, nextOffset);
 
                 var trimEnd = Window.Current.Compositor.CreateScalarKeyFrameAnimation();
-                trimEnd.InsertKeyFrame(0, previousEnd);
-                trimEnd.InsertKeyFrame(1, currentEnd);
+                trimEnd.InsertKeyFrame(0, prevEnd);
+                trimEnd.InsertKeyFrame(1, nextEnd);
 
-                previousStart += previousValue;
-                currentStart += currentValue;
+                prevStart += prevValue;
+                nextStart += nextValue;
 
                 _geometries[i].StartAnimation("TrimOffset", trimStart);
                 _geometries[i].StartAnimation("TrimEnd", trimEnd);
@@ -216,15 +214,15 @@ namespace Unigram.Controls
 
         private (float[], int) Snapshot()
         {
-            var previous = new float[_values.Length];
-            var previousOne = SingleIndex(_visible);
+            var values = new float[_values.Length];
+            var valuesOne = SingleIndex(_visible);
 
             for (int i = 0; i < _values.Length; i++)
             {
-                previous[i] = _visible[i] ? _values[i] : 0;
+                values[i] = _visible[i] ? _values[i] : 0;
             }
 
-            return (previous, previousOne);
+            return (values, valuesOne);
         }
 
         private int SingleIndex(bool[] p)

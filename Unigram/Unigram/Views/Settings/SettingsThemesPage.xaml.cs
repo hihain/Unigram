@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Unigram.Views.Settings
 {
-    public sealed partial class SettingsThemesPage : Page
+    public sealed partial class SettingsThemesPage : HostedPage
     {
         public SettingsThemesViewModel ViewModel => DataContext as SettingsThemesViewModel;
 
@@ -21,7 +21,7 @@ namespace Unigram.Views.Settings
             InitializeComponent();
             DataContext = TLContainer.Current.Resolve<SettingsThemesViewModel>();
 
-            if (ApiInformation.IsEnumNamedValuePresent("Windows.UI.Xaml.Controls.Primitives.FlyoutPlacementMode", "BottomEdgeAlignedRight"))
+            if (ApiInfo.CanUseNewFlyoutPlacementMode)
             {
                 MenuFlyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedRight;
             }

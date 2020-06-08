@@ -1,8 +1,8 @@
-﻿<Page
+﻿<local:HostedPage
     x:Class="Unigram.Views.Chats.ChatStatisticsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Unigram.Views.Chats"
+    xmlns:local="using:Unigram.Views"
     xmlns:controls="using:Unigram.Controls"
     xmlns:dataView="using:Unigram.Charts.DataView"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
@@ -323,11 +323,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="{ThemeResource PageBackgroundDarkBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <local:HostedPage.Header>
         <controls:ContentPageHeader>
             <Grid x:Name="Header">
                 <Grid.ColumnDefinitions>
@@ -350,8 +346,10 @@
                 </StackPanel>
             </Grid>
         </controls:ContentPageHeader>
-
-        <ListView ItemsSource="{x:Bind ViewModel.Items}" ContainerContentChanging="OnContainerContentChanging" SelectionMode="None" Grid.Row="1">
+    </local:HostedPage.Header>
+    
+    <Grid Background="{ThemeResource PageBackgroundDarkBrush}">
+        <ListView ItemsSource="{x:Bind ViewModel.Items}" ContainerContentChanging="OnContainerContentChanging" SelectionMode="None">
             <ListView.Header>
                 <controls:HeaderedControl Header="{CustomResource StatisticOverview}">
                     <Grid>
@@ -403,4 +401,4 @@
             </ListView.Footer>
         </ListView>
     </Grid>
-</Page>
+</local:HostedPage>

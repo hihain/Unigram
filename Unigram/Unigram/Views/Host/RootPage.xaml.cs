@@ -95,7 +95,6 @@ namespace Unigram.Views.Host
             _navigationViewSelected = RootDestination.Chats;
             NavigationViewList.ItemsSource = _navigationViewItems;
 
-            InitializeTitleBar();
             InitializeNavigation(_navigationService.Frame);
             InitializeLocalization();
 
@@ -104,42 +103,16 @@ namespace Unigram.Views.Host
 
         private void InitializeTitleBar()
         {
+            if (ApiInfo.IsFullExperience &&
+                UIViewSettings.GetForCurrentView().UserInteractionMode == UserInteractionMode.Mouse) return;
             var sender = CoreApplication.GetCurrentView().TitleBar;
-
-            if (string.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Desktop") && UIViewSettings.GetForCurrentView().UserInteractionMode == UserInteractionMode.Mouse)
-            {
-                // If running on PC and tablet mode is disabled, then titlebar is most likely visible
-                // So we're going to force it
-                Navigation.Padding = new Thickness(0, 32, 0, 0);
-            }
-            else
-            {
-                Navigation.Padding = new Thickness(0, sender.IsVisible ? sender.Height : 0, 0, 0);
-            }
-
-            sender.ExtendViewIntoTitleBar = true;
-            sender.IsVisibleChanged += CoreTitleBar_LayoutMetricsChanged;
-            sender.LayoutMetricsChanged += CoreTitleBar_LayoutMetricsChanged;
+            Navigation.Padding = new Thickness(0, sender.IsVisible ? sender.Height : 0, 0, 0);
         }
 
         public Thickness TopPadding
         {
             get { return Navigation.TopPadding; }
             set { Navigation.TopPadding = value; }
-        }
-
-        private void CoreTitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
-        {
-            Navigation.Padding = new Thickness(0, sender.IsVisible ? sender.Height : 0, 0, 0);
-
-            var popups = VisualTreeHelper.GetOpenPopups(Window.Current);
-            foreach (var popup in popups)
-            {
-                if (popup.Child is OverlayPage contentDialog)
-                {
-                    contentDialog.Padding = new Thickness(0, sender.IsVisible ? sender.Height : 0, 0, 0);
-                }
-            }
         }
 
         public void Create()
@@ -197,19 +170,26 @@ namespace Unigram.Views.Host
             Navigation.Content = service.Frame;
         }
 
-        private void Destroy(NavigationService service)
+        private void Destroy(NavigationService master)
         {
-            if (service.Frame.Content is IRootContentPage content)
+            if (master.Frame.Content is IRootContentPage content)
             {
                 content.Root = null;
                 content.Dispose();
             }
 
-            service.Frame.Navigating -= OnNavigating;
-            service.Frame.Navigated -= OnNavigated;
+            master.Frame.Navigating -= OnNavigating;
+            master.Frame.Navigated -= OnNavigated;
+            master.Frame.Navigate(typeof(BlankPage));
 
-            WindowContext.GetForCurrentView().NavigationServices.Remove(service);
-            WindowContext.GetForCurrentView().NavigationServices.RemoveByFrameId($"Main{service.FrameFacade.FrameId}");
+            var detail = WindowContext.GetForCurrentView().NavigationServices.GetByFrameId($"Main{master.FrameFacade.FrameId}");
+            if (detail != null)
+            {
+                detail.Navigate(typeof(BlankPage));
+            }
+
+            WindowContext.GetForCurrentView().NavigationServices.Remove(master);
+            WindowContext.GetForCurrentView().NavigationServices.Remove(detail);
         }
 
         private void OnNavigating(object sender, NavigatingCancelEventArgs e)
@@ -409,7 +389,7 @@ namespace Unigram.Views.Host
                         break;
 
                     case RootDestination.Chats:
-                        content.Text = "Chats";
+                        content.Text = Strings.Resources.FilterChats;
                         content.Glyph = "\uE8BD";
                         break;
                     case RootDestination.Contacts:
@@ -431,14 +411,14 @@ namespace Unigram.Views.Host
                         break;
 
                     case RootDestination.News:
-                        content.Text = "News";
+                        content.Text = Strings.Additional.News;
                         content.Glyph = "\uE789";
                         break;
                 }
             }
         }
 
-#endregion
+        #endregion
 
         private void Expand_Click(object sender, RoutedEventArgs e)
         {
@@ -466,7 +446,7 @@ namespace Unigram.Views.Host
                 if (destination == RootDestination.AddAccount)
                 {
 #if DEBUG
-                    var dialog = new TLMessageDialog();
+                    var dialog = new MessagePopup();
                     dialog.Title = "Environment";
                     dialog.Message = "Choose your environment";
                     dialog.PrimaryButtonText = "Live";
@@ -500,7 +480,7 @@ namespace Unigram.Views.Host
             }
         }
 
-#region Exposed
+        #region Exposed
 
         public void SetPaneToggleButtonVisibility(Visibility value)
         {
@@ -526,7 +506,7 @@ namespace Unigram.Views.Host
             SetChecked(RootDestination.Settings, value);
         }
 
-#endregion
+        #endregion
 
         public void ShowEditor(ThemeCustomInfo theme)
         {

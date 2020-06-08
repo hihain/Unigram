@@ -2,7 +2,7 @@
     x:Class="Unigram.Controls.Drawers.EmojiDrawer"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Unigram.Controls.Views"
+    xmlns:local="using:Unigram.Controls.Drawers"
     xmlns:common="using:Unigram.Common"
     xmlns:controls="using:Unigram.Controls"
     xmlns:selectors="using:Unigram.Selectors"
@@ -264,9 +264,10 @@
                                 <Setter Property="Foreground" Value="{ThemeResource ListViewItemForeground}" />
                                 <Setter Property="TabNavigation" Value="Local" />
                                 <Setter Property="IsHoldingEnabled" Value="True" />
-                                <Setter Property="Padding" Value="0" />
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                                 <!--<Setter Property="Width" Value="{ThemeResource AppBarThemeCompactHeight}"/>-->
                                 <Setter Property="Height" Value="{ThemeResource AppBarThemeCompactHeight}"/>
                                 <Setter Property="MinWidth" Value="0" />
@@ -283,36 +284,37 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="ListViewItem">
                                             <ListViewItemPresenter
-                                                ContentTransitions="{TemplateBinding ContentTransitions}"
-                                                Control.IsTemplateFocusTarget="True"
-                                                FocusVisualMargin="{TemplateBinding FocusVisualMargin}"
-                                                FocusVisualPrimaryBrush="{TemplateBinding FocusVisualPrimaryBrush}"
-                                                FocusVisualPrimaryThickness="{TemplateBinding FocusVisualPrimaryThickness}"
-                                                FocusVisualSecondaryBrush="{TemplateBinding FocusVisualSecondaryBrush}"
-                                                FocusVisualSecondaryThickness="{TemplateBinding FocusVisualSecondaryThickness}"
-                                                SelectionCheckMarkVisualEnabled="{ThemeResource ListViewItemSelectionCheckMarkVisualEnabled}"
-                                                CheckBrush="{ThemeResource ListViewItemCheckBrush}"
-                                                CheckBoxBrush="{ThemeResource ListViewItemCheckBoxBrush}"
-                                                DragBackground="{ThemeResource ListViewItemDragBackground}"
-                                                DragForeground="{ThemeResource ListViewItemDragForeground}"
-                                                FocusBorderBrush="{ThemeResource ListViewItemFocusBorderBrush}"
-                                                FocusSecondaryBorderBrush="{ThemeResource ListViewItemFocusSecondaryBorderBrush}"
-                                                PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackground}"
-                                                PointerOverBackground="{ThemeResource ListViewItemBackgroundPointerOver}"
-                                                PointerOverForeground="{ThemeResource ListViewItemForegroundPointerOver}"
-                                                SelectedBackground="{ThemeResource ListViewItemBackground}"
-                                                SelectedForeground="{ThemeResource SystemControlForegroundAccentBrush}"
-                                                SelectedPointerOverBackground="{ThemeResource ListViewItemBackgroundPointerOver}"
-                                                PressedBackground="{ThemeResource ListViewItemBackgroundPressed}"
-                                                SelectedPressedBackground="{ThemeResource ListViewItemBackgroundPressed}"
-                                                DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
-                                                DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
-                                                ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
-                                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                ContentMargin="{TemplateBinding Padding}"
-                                                CheckMode="{ThemeResource ListViewItemCheckMode}"
-                                                CornerRadius="{StaticResource GlyphButtonCornerRadius}"/>
+                                            ContentTransitions="{TemplateBinding ContentTransitions}"
+                                            Control.IsTemplateFocusTarget="True"
+                                            FocusVisualMargin="{TemplateBinding FocusVisualMargin}"
+                                            FocusVisualPrimaryBrush="{TemplateBinding FocusVisualPrimaryBrush}"
+                                            FocusVisualPrimaryThickness="{TemplateBinding FocusVisualPrimaryThickness}"
+                                            FocusVisualSecondaryBrush="{TemplateBinding FocusVisualSecondaryBrush}"
+                                            FocusVisualSecondaryThickness="{TemplateBinding FocusVisualSecondaryThickness}"
+                                            SelectionCheckMarkVisualEnabled="{ThemeResource ListViewItemSelectionCheckMarkVisualEnabled}"
+                                            CheckBrush="{ThemeResource ListViewItemCheckBrush}"
+                                            CheckBoxBrush="{ThemeResource ListViewItemCheckBoxBrush}"
+                                            DragBackground="{ThemeResource ListViewItemDragBackground}"
+                                            DragForeground="{ThemeResource ListViewItemDragForeground}"
+                                            FocusBorderBrush="{ThemeResource ListViewItemFocusBorderBrush}"
+                                            FocusSecondaryBorderBrush="{ThemeResource ListViewItemFocusSecondaryBorderBrush}"
+                                            PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackground}"
+                                            PointerOverBackground="{ThemeResource ListViewItemBackgroundPointerOver}"
+                                            PointerOverForeground="{ThemeResource ListViewItemForegroundPointerOver}"
+                                            SelectedBackground="{ThemeResource ListViewItemBackgroundSelected}"
+                                            SelectedForeground="{ThemeResource ListViewItemForegroundSelected}"
+                                            SelectedPointerOverBackground="{ThemeResource ListViewItemBackgroundSelectedPointerOver}"
+                                            PressedBackground="{ThemeResource ListViewItemBackgroundPressed}"
+                                            SelectedPressedBackground="{ThemeResource ListViewItemBackgroundSelectedPressed}"
+                                            DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
+                                            DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
+                                            ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
+                                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            ContentMargin="{TemplateBinding Padding}"
+                                            CheckMode="{ThemeResource ListViewItemCheckMode}"
+                                            CornerRadius="{StaticResource GlyphButtonCornerRadius}"
+                                            Margin="0 4"/>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>

@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Collections;
 using Unigram.Common;
-using Unigram.Controls;
-using Unigram.Controls.Views;
+using Unigram.Converters;
 using Unigram.Services;
-using Unigram.Views;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
+using Unigram.Views.Popups;
 using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.ViewModels.Folders
@@ -52,6 +47,7 @@ namespace Unigram.ViewModels.Folders
                 if (response is ChatFilter result)
                 {
                     Id = id;
+                    Filter = result;
                     filter = result;
                 }
                 else
@@ -61,7 +57,12 @@ namespace Unigram.ViewModels.Folders
             }
             else
             {
+                Id = null;
+                Filter = null;
                 filter = new ChatFilter();
+                filter.PinnedChatIds = new List<long>();
+                filter.IncludedChatIds = new List<long>();
+                filter.ExcludedChatIds = new List<long>();
             }
 
             if (filter == null)
@@ -69,22 +70,32 @@ namespace Unigram.ViewModels.Folders
                 return;
             }
 
+            if (state != null && state.TryGet("included_chat_id", out long includedChatId))
+            {
+                filter.IncludedChatIds.Add(includedChatId);
+            }
+
+            _pinnedChatIds = filter.PinnedChatIds;
+
+            _iconPicked = !string.IsNullOrEmpty(filter.IconName);
+
             Title = filter.Title;
-            Emoji = filter.Emoji ?? ChatFilterIcon.Default;
+            Icon = Icons.ParseFilter(filter);
 
             Include.Clear();
             Exclude.Clear();
 
-            if (filter.IncludeContacts)    Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeContacts });
+            if (filter.IncludeContacts) Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeContacts });
             if (filter.IncludeNonContacts) Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeNonContacts });
-            if (filter.IncludeGroups)      Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeGroups });
-            if (filter.IncludeChannels)    Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeChannels });
-            if (filter.IncludeBots)        Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeBots });
-            if (filter.ExcludeMuted)       Exclude.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeMuted});
-            if (filter.ExcludeRead)        Exclude.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeRead });
-            if (filter.ExcludeArchived)    Exclude.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeArchived });
+            if (filter.IncludeGroups) Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeGroups });
+            if (filter.IncludeChannels) Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeChannels });
+            if (filter.IncludeBots) Include.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeBots });
 
-            foreach (var chatId in filter.IncludeChatIds)
+            if (filter.ExcludeMuted) Exclude.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeMuted });
+            if (filter.ExcludeRead) Exclude.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeRead });
+            if (filter.ExcludeArchived) Exclude.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeArchived });
+
+            foreach (var chatId in filter.PinnedChatIds.Union(filter.IncludedChatIds))
             {
                 var chat = CacheService.GetChat(chatId);
                 if (chat == null)
@@ -95,7 +106,7 @@ namespace Unigram.ViewModels.Folders
                 Include.Add(new FilterChat { Chat = chat });
             }
 
-            foreach (var chatId in filter.ExcludeChatIds)
+            foreach (var chatId in filter.ExcludedChatIds)
             {
                 var chat = CacheService.GetChat(chatId);
                 if (chat == null)
@@ -105,9 +116,18 @@ namespace Unigram.ViewModels.Folders
 
                 Exclude.Add(new FilterChat { Chat = chat });
             }
+
+            UpdateIcon();
         }
 
         public int? Id { get; set; }
+
+        private ChatFilter _filter;
+        public ChatFilter Filter
+        {
+            get => _filter;
+            set => Set(ref _filter, value);
+        }
 
         private string _title;
         public string Title
@@ -120,12 +140,32 @@ namespace Unigram.ViewModels.Folders
             }
         }
 
-        private string _emoji;
-        public string Emoji
+        private bool _iconPicked;
+
+        private ChatFilterIcon _icon;
+        public ChatFilterIcon Icon
         {
-            get => _emoji;
-            set => Set(ref _emoji, value);
+            get => _icon;
+            private set => Set(ref _icon, value);
         }
+
+        public void SetIcon(ChatFilterIcon icon)
+        {
+            _iconPicked = true;
+            Icon = icon;
+        }
+
+        private void UpdateIcon()
+        {
+            if (_iconPicked)
+            {
+                return;
+            }
+
+            Icon = Icons.ParseFilter(GetFilter());
+        }
+
+        private IList<long> _pinnedChatIds;
 
         public MvxObservableCollection<ChatFilterElement> Include { get; private set; }
         public MvxObservableCollection<ChatFilterElement> Exclude { get; private set; }
@@ -135,212 +175,117 @@ namespace Unigram.ViewModels.Folders
         public RelayCommand AddIncludeCommand { get; }
         private async void AddIncludeExecute()
         {
-            var flags = new List<FilterFlag>();
-            flags.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeContacts });
-            flags.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeNonContacts });
-            flags.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeGroups });
-            flags.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeChannels });
-            flags.Add(new FilterFlag { Flag = ChatListFilterFlags.IncludeBots });
+            await AddIncludeAsync();
+            UpdateIcon();
+        }
 
-            var header = new ListView();
-            header.SelectionMode = ListViewSelectionMode.Multiple;
-            header.ItemsSource = flags;
-            header.ItemTemplate = App.Current.Resources["FolderPickerTemplate"] as DataTemplate;
-            header.ItemContainerStyle = App.Current.Resources["DefaultListViewItemStyle"] as Style;
-            header.ContainerContentChanging += Header_ContainerContentChanging;
-
-            foreach (var filter in Include.OfType<FilterFlag>())
+        public async Task AddIncludeAsync()
+        {
+            var result = await SharePopup.AddExecute(true, Include.ToList());
+            if (result != null)
             {
-                var already = flags.FirstOrDefault(x => x.Flag == filter.Flag);
-                if (already != null)
+                foreach (var item in result.OfType<FilterChat>())
                 {
-                    header.SelectedItems.Add(already);
+                    var already = Exclude.OfType<FilterChat>().FirstOrDefault(x => x.Chat.Id == item.Chat.Id);
+                    if (already != null)
+                    {
+                        Exclude.Remove(already);
+                    }
                 }
-            }
 
-            var panel = new StackPanel();
-            panel.Children.Add(new Border
-            {
-                Background = App.Current.Resources["PageBackgroundDarkBrush"] as Brush,
-                Child = new TextBlock
+                var flags = result.OfType<FilterFlag>().Cast<ChatFilterElement>();
+                var chats = result.OfType<FilterChat>().OrderBy(x =>
                 {
-                    Text = Strings.Resources.FilterChatTypes,
-                    Padding = new Thickness(12, 0, 0, 0),
-                    Style = App.Current.Resources["SettingsGroupTextBlockStyle"] as Style
-                }
-            });
-            panel.Children.Add(header);
-            panel.Children.Add(new Border
-            {
-                Background = App.Current.Resources["PageBackgroundDarkBrush"] as Brush,
-                Child = new TextBlock
-                {
-                    Text = Strings.Resources.FilterChats,
-                    Padding = new Thickness(12, 0, 0, 0),
-                    Style = App.Current.Resources["SettingsGroupTextBlockStyle"] as Style
-                }
-            });
+                    var index = _pinnedChatIds.IndexOf(x.Chat.Id);
+                    if (index != -1)
+                    {
+                        return index;
+                    }
 
-            var dialog = ShareView.GetForCurrentView();
-            dialog.ViewModel.Title = Strings.Resources.FilterAlwaysShow;
-            dialog.Header = panel;
+                    return int.MaxValue;
+                });
 
-            var confirm = await dialog.PickAsync(Include.OfType<FilterChat>().Select(x => x.Chat.Id).ToArray(), SearchChatsType.All);
-            if (confirm != ContentDialogResult.Primary)
-            {
-                return;
-            }
-
-            Include.Clear();
-
-            foreach (var filter in header.SelectedItems.OfType<FilterFlag>())
-            {
-                Include.Add(filter);
-            }
-
-            foreach (var chat in dialog.ViewModel.SelectedItems)
-            {
-                Include.Add(new FilterChat { Chat = chat });
+                Include.ReplaceWith(flags.Union(chats));
             }
         }
 
         public RelayCommand AddExcludeCommand { get; }
         private async void AddExcludeExecute()
         {
-            var flags = new List<FilterFlag>();
-            flags.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeMuted });
-            flags.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeRead });
-            flags.Add(new FilterFlag { Flag = ChatListFilterFlags.ExcludeArchived });
-
-            var header = new ListView();
-            header.SelectionMode = ListViewSelectionMode.Multiple;
-            header.ItemsSource = flags;
-            header.ItemTemplate = App.Current.Resources["FolderPickerTemplate"] as DataTemplate;
-            header.ItemContainerStyle = App.Current.Resources["DefaultListViewItemStyle"] as Style;
-            header.ContainerContentChanging += Header_ContainerContentChanging;
-
-            foreach (var filter in Exclude.OfType<FilterFlag>())
-            {
-                var already = flags.FirstOrDefault(x => x.Flag == filter.Flag);
-                if (already != null)
-                {
-                    header.SelectedItems.Add(already);
-                }
-            }
-
-            var panel = new StackPanel();
-            panel.Children.Add(new Border
-            {
-                Background = App.Current.Resources["PageBackgroundDarkBrush"] as Brush,
-                Child = new TextBlock
-                {
-                    Text = Strings.Resources.FilterChatTypes,
-                    Padding = new Thickness(12, 0, 0, 0),
-                    Style = App.Current.Resources["SettingsGroupTextBlockStyle"] as Style
-                }
-            });
-            panel.Children.Add(header);
-            panel.Children.Add(new Border
-            {
-                Background = App.Current.Resources["PageBackgroundDarkBrush"] as Brush,
-                Child = new TextBlock
-                {
-                    Text = Strings.Resources.FilterChats,
-                    Padding = new Thickness(12, 0, 0, 0),
-                    Style = App.Current.Resources["SettingsGroupTextBlockStyle"] as Style
-                }
-            });
-
-            var dialog = ShareView.GetForCurrentView();
-            dialog.ViewModel.Title = Strings.Resources.FilterNeverShow;
-            dialog.Header = panel;
-
-            var confirm = await dialog.PickAsync(Exclude.OfType<FilterChat>().Select(x => x.Chat.Id).ToArray(), SearchChatsType.All);
-            if (confirm != ContentDialogResult.Primary)
-            {
-                return;
-            }
-
-            Exclude.Clear();
-
-            foreach (var filter in header.SelectedItems.OfType<FilterFlag>())
-            {
-                Exclude.Add(filter);
-            }
-
-            foreach (var chat in dialog.ViewModel.SelectedItems)
-            {
-                Exclude.Add(new FilterChat { Chat = chat });
-            }
+            await AddExcludeAsync();
+            UpdateIcon();
         }
 
-        private void Header_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        public async Task AddExcludeAsync()
         {
-            if (args.InRecycleQueue)
+            var result = await SharePopup.AddExecute(false, Exclude.ToList());
+            if (result != null)
             {
-                return;
+                foreach (var item in result.OfType<FilterChat>())
+                {
+                    var already = Include.OfType<FilterChat>().FirstOrDefault(x => x.Chat.Id == item.Chat.Id);
+                    if (already != null)
+                    {
+                        Include.Remove(already);
+                    }
+                }
+
+                Exclude.ReplaceWith(result);
             }
-
-            var filter = args.Item as FilterFlag;
-            var content = args.ItemContainer.ContentTemplateRoot as Grid;
-
-            var title = content.Children[1] as TextBlock;
-            //title.Text = Enum.GetName(typeof(ChatListFilterFlags), filter.Flag);
-
-            switch (filter.Flag)
-            {
-                case ChatListFilterFlags.IncludeContacts:
-                    title.Text = Strings.Resources.FilterContacts;
-                    break;
-                case ChatListFilterFlags.IncludeNonContacts:
-                    title.Text = Strings.Resources.FilterNonContacts;
-                    break;
-                case ChatListFilterFlags.IncludeGroups:
-                    title.Text = Strings.Resources.FilterGroups;
-                    break;
-                case ChatListFilterFlags.IncludeChannels:
-                    title.Text = Strings.Resources.FilterChannels;
-                    break;
-                case ChatListFilterFlags.IncludeBots:
-                    title.Text = Strings.Resources.FilterBots;
-                    break;
-
-                case ChatListFilterFlags.ExcludeMuted:
-                    title.Text = Strings.Resources.FilterMuted;
-                    break;
-                case ChatListFilterFlags.ExcludeRead:
-                    title.Text = Strings.Resources.FilterRead;
-                    break;
-                case ChatListFilterFlags.ExcludeArchived:
-                    title.Text = Strings.Resources.FilterArchived;
-                    break;
-            }
-
-            var photo = content.Children[0] as ProfilePicture;
-            photo.Source = PlaceholderHelper.GetGlyph(MainPage.GetFilterIcon(filter.Flag), (int)filter.Flag, 36);
         }
 
         public RelayCommand<ChatFilterElement> RemoveIncludeCommand { get; }
         private void RemoveIncludeExecute(ChatFilterElement chat)
         {
             Include.Remove(chat);
+            UpdateIcon();
         }
 
         public RelayCommand<ChatFilterElement> RemoveExcludeCommand { get; }
         private void RemoveExcludeExecute(ChatFilterElement chat)
         {
             Exclude.Remove(chat);
+            UpdateIcon();
         }
 
         public RelayCommand SendCommand { get; }
         private async void SendExecute()
         {
-            var include = new List<long>();
-            var exclude = new List<long>();
+            var response = await SendAsync();
+            if (response is Ok)
+            {
+                NavigationService.GoBack();
+            }
+        }
 
+        public Task<BaseObject> SendAsync()
+        {
+            Function function;
+            if (Id is int id)
+            {
+                function = new EditChatFilter(id, GetFilter());
+            }
+            else
+            {
+                function = new CreateChatFilter(GetFilter());
+            }
+
+            return ProtoService.SendAsync(function);
+        }
+
+        private bool SendCanExecute()
+        {
+            return !string.IsNullOrEmpty(Title) && Include.Count > 0;
+        }
+
+        private ChatFilter GetFilter()
+        {
             var filter = new ChatFilter();
             filter.Title = Title;
-            filter.Emoji = Emoji;
+            filter.IconName = _iconPicked ? Enum.GetName(typeof(ChatFilterIcon), Icon) : string.Empty;
+            filter.PinnedChatIds = new List<long>();
+            filter.IncludedChatIds = new List<long>();
+            filter.ExcludedChatIds = new List<long>();
 
             foreach (var item in Include)
             {
@@ -367,11 +312,18 @@ namespace Unigram.ViewModels.Folders
                 }
                 else if (item is FilterChat chat)
                 {
-                    include.Add(chat.Chat.Id);
+                    if (_pinnedChatIds.Contains(chat.Chat.Id))
+                    {
+                        filter.PinnedChatIds.Add(chat.Chat.Id);
+                    }
+                    else
+                    {
+                        filter.IncludedChatIds.Add(chat.Chat.Id);
+                    }
                 }
             }
 
-            foreach (var item in Include)
+            foreach (var item in Exclude)
             {
                 if (item is FilterFlag flag)
                 {
@@ -390,39 +342,11 @@ namespace Unigram.ViewModels.Folders
                 }
                 else if (item is FilterChat chat)
                 {
-                    exclude.Add(chat.Chat.Id);
+                    filter.ExcludedChatIds.Add(chat.Chat.Id);
                 }
             }
 
-            filter.IncludeChatIds = include;
-            filter.ExcludeChatIds = exclude;
-
-            Function function;
-            if (Id is int id)
-            {
-                function = new EditChatFilter(id, filter);
-            }
-            else
-            {
-                function = new CreateChatFilter(filter);
-            }
-
-            var response = await ProtoService.SendAsync(function);
-            if (response is Ok)
-            {
-                NavigationService.GoBack();
-            }
-            else
-            {
-
-            }
-        }
-
-        private bool SendCanExecute()
-        {
-            return !string.IsNullOrEmpty(Title) &&
-                Include.Count > 0 ||
-                Exclude.Count > 0;
+            return filter;
         }
     }
 

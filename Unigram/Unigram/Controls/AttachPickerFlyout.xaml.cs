@@ -1,24 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Unigram.Collections;
 using Unigram.Entities;
 using Unigram.ViewModels;
-using Unigram.Views;
-using Windows.Devices.Enumeration;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Media.Capture;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Controls
 {
@@ -29,31 +16,40 @@ namespace Unigram.Controls
         public AttachPickerFlyout()
         {
             InitializeComponent();
-
+            SelectedItems = new System.Collections.Generic.List<StorageMedia>();
             Library.ItemsSource = MediaLibraryCollection.GetForCurrentView();
+        }
+
+        private System.Collections.Generic.IList<StorageMedia> SelectedItems
+        {
+            get;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            UpdateView(Window.Current.Bounds.Width);
-            Window.Current.SizeChanged += OnSizeChanged;
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            Window.Current.SizeChanged -= OnSizeChanged;
-        }
-
-        private void OnSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
-        {
-            UpdateView(e.Size.Width);
-        }
-
-        private void UpdateView(double width)
-        {
-            //Library.MaxWidth = width < 500 ? width - 16 - 2 : 360;
-            Library.MaxWidth = width < 500 ? width - 16 - 2 : 360;
+            SelectedItems.Clear();
+            Library.MaxWidth = Window.Current.Bounds.Width - 24;
             Library.MinWidth = Library.MaxWidth;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is StorageMedia sm)
+                SelectedItems.Remove(sm);
+            ItemSelectionChanged?.Invoke(this, new MediaSelectedItemsEventArgs(SelectedItems));
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is StorageMedia sm)
+                SelectedItems.Add(sm);
+            ItemSelectionChanged?.Invoke(this, new MediaSelectedItemsEventArgs(SelectedItems));
+        }
+
+        private void CheckBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox cb)
+                cb.IsChecked = false;
         }
 
         private void Library_ItemClick(object sender, ItemClickEventArgs e)
@@ -87,6 +83,7 @@ namespace Unigram.Controls
         }
 
         public event EventHandler<MediaSelectedEventArgs> ItemClick;
+        public event EventHandler<MediaSelectedItemsEventArgs> ItemSelectionChanged;
     }
 
     public class MediaSelectedEventArgs
@@ -99,6 +96,16 @@ namespace Unigram.Controls
         {
             Item = item;
             IsLocal = local;
+        }
+    }
+
+    public class MediaSelectedItemsEventArgs
+    {
+        public System.Collections.Generic.IList<StorageMedia> SelectedItems { get; private set; }
+
+        public MediaSelectedItemsEventArgs(System.Collections.Generic.IList<StorageMedia> selectedItems)
+        {
+            SelectedItems = selectedItems;
         }
     }
 }

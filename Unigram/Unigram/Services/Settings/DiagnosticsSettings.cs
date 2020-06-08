@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Storage;
-
-namespace Unigram.Services.Settings
+﻿namespace Unigram.Services.Settings
 {
     public class DiagnosticsSettings : SettingsServiceBase
     {
@@ -14,37 +7,54 @@ namespace Unigram.Services.Settings
         {
         }
 
-        private bool? _playStickers;
-        public bool PlayStickers
+        private bool? _showFilesInFolder;
+        public bool ShowFilesInFolder
         {
             get
             {
-                if (_playStickers == null)
-                    _playStickers = GetValueOrDefault("PlayStickers", true);
+                if (_showFilesInFolder == null)
+                    _showFilesInFolder = GetValueOrDefault("ShowFilesInFolder", false);
 
-                return _playStickers ?? true;
+                return _showFilesInFolder ?? false;
             }
             set
             {
-                _playStickers = value;
-                AddOrUpdateValue("PlayStickers", value);
+                _showFilesInFolder = value;
+                AddOrUpdateValue("ShowFilesInFolder", value);
             }
         }
 
-        private bool? _cacheStickers;
-        public bool CacheStickers
+        private bool? _bubbleMeasureAlpha;
+        public bool BubbleMeasureAlpha
         {
             get
             {
-                if (_cacheStickers == null)
-                    _cacheStickers = GetValueOrDefault("CacheStickers", true);
+                if (_bubbleMeasureAlpha == null)
+                    _bubbleMeasureAlpha = GetValueOrDefault("BubbleMeasureAlpha", true);
 
-                return _cacheStickers ?? true;
+                return _bubbleMeasureAlpha ?? true;
             }
             set
             {
-                _cacheStickers = value;
-                AddOrUpdateValue("CacheStickers", value);
+                _bubbleMeasureAlpha = value;
+                AddOrUpdateValue("BubbleMeasureAlpha", value);
+            }
+        }
+
+        private bool? _bubbleKnockout;
+        public bool BubbleKnockout
+        {
+            get
+            {
+                if (_bubbleKnockout == null)
+                    _bubbleKnockout = GetValueOrDefault("BubbleKnockout", false);
+
+                return _bubbleKnockout ?? false;
+            }
+            set
+            {
+                _bubbleKnockout = value;
+                AddOrUpdateValue("BubbleKnockout", value);
             }
         }
     }

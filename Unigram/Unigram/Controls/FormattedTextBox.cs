@@ -7,8 +7,8 @@ using Telegram.Td;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls.Chats;
-using Unigram.Controls.Views;
 using Unigram.Converters;
+using Unigram.Views.Popups;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
@@ -34,12 +34,12 @@ namespace Unigram.Controls
 
             //ContextMenuOpening += OnContextMenuOpening;
 
-            if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.RichEditBox", "DisabledFormattingAccelerators"))
+            if (ApiInfo.CanUseAccelerators)
             {
                 DisabledFormattingAccelerators = DisabledFormattingAccelerators.All;
             }
 
-            if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.UIElement", "KeyboardAcceleratorPlacementMode"))
+            if (ApiInfo.CanUseKeyboardAcceleratorPlacementMode)
             {
                 KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
 
@@ -273,7 +273,7 @@ namespace Unigram.Controls
             var start = Math.Min(range.StartPosition, range.EndPosition);
             var end = Math.Max(range.StartPosition, range.EndPosition);
 
-            var dialog = new CreateLinkView();
+            var dialog = new CreateLinkPopup();
             dialog.Text = text;
             dialog.Link = range.Link.Trim('"');
 
@@ -611,6 +611,11 @@ namespace Unigram.Controls
 
         }
 
+        protected virtual void OnSettingText()
+        {
+
+        }
+
         public virtual bool IsEmpty
         {
             get
@@ -635,12 +640,15 @@ namespace Unigram.Controls
             }
             else
             {
+                OnSettingText();
                 Document.LoadFromStream(TextSetOptions.None, new InMemoryRandomAccessStream());
             }
         }
 
         public void SetText(string text, IList<TextEntity> entities)
         {
+            OnSettingText();
+
             Document.BatchDisplayUpdates();
             Document.LoadFromStream(TextSetOptions.None, new InMemoryRandomAccessStream());
 
@@ -740,6 +748,23 @@ namespace Unigram.Controls
             }
 
             Document.ApplyDisplayUpdates();
+        }
+
+        public void InsertText(string text, bool allowPreceding = false, bool allowTrailing = false)
+        {
+            var start = Document.Selection.StartPosition;
+            var end = Document.Selection.EndPosition;
+
+            var preceding = start > 0 && !char.IsWhiteSpace(Document.GetRange(start - 1, start).Character);
+            var trailing = !char.IsWhiteSpace(Document.GetRange(end, end + 1).Character) || Document.GetRange(end, end + 1).Character == '\r';
+
+            var block = string.Format("{0}{1}{2}",
+                preceding && allowPreceding ? " " : "",
+                text,
+                trailing && allowTrailing ? " " : "");
+
+            Document.Selection.SetText(TextSetOptions.None, block);
+            Document.Selection.StartPosition = Document.Selection.EndPosition;
         }
     }
 }

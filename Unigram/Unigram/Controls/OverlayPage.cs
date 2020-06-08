@@ -86,7 +86,7 @@ namespace Unigram.Controls
                 //titlebar.ButtonBackgroundColor = maskBackground;
                 titlebar.ButtonForegroundColor = maskForeground;
 
-                if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+                if (ApiInfo.HasStatusBar)
                 {
                     var statusBar = StatusBar.GetForCurrentView();
                     statusBar.BackgroundColor = maskBackground;
@@ -295,7 +295,7 @@ namespace Unigram.Controls
 
         private void Outside_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            Hide();
+            //Hide();
         }
 
         private void OnSizeChanged(object sender, WindowSizeChangedEventArgs e)

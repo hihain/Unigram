@@ -1,30 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unigram.Views;
-using Unigram.ViewModels.Chats;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Telegram.Td.Api;
+using Unigram.Common;
+using Unigram.Controls;
+using Unigram.ViewModels.BasicGroups;
+using Unigram.Views.Popups;
+using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Windows.Storage.Pickers;
-using Unigram.Common;
-using Unigram.Controls.Views;
-using Unigram.Controls;
 using Windows.UI.Xaml.Media.Imaging;
-using Unigram.ViewModels.BasicGroups;
-using Telegram.Td.Api;
 
 namespace Unigram.Views.BasicGroups
 {
-    public sealed partial class BasicGroupCreateStep1Page : Page
+    public sealed partial class BasicGroupCreateStep1Page : HostedPage
     {
         public BasicGroupCreateStep1ViewModel ViewModel => DataContext as BasicGroupCreateStep1ViewModel;
 
@@ -49,14 +37,10 @@ namespace Unigram.Views.BasicGroups
             var file = await picker.PickSingleFileAsync();
             if (file != null)
             {
-                var dialog = new EditYourPhotoView(file)
-                {
-                    CroppingProportions = ImageCroppingProportions.Square,
-                    IsCropEnabled = false
-                };
+                var dialog = new EditMediaPopup(file, BitmapProportions.Square, ImageCropperMask.Ellipse);
 
                 var confirm = await dialog.ShowAsync();
-                if (confirm == ContentDialogResult.Primary)
+                if (confirm == ContentDialogResult.Primary && dialog.Result != null)
                 {
                     ViewModel.EditPhotoCommand.Execute(dialog.Result);
                 }
@@ -87,7 +71,7 @@ namespace Unigram.Views.BasicGroups
             var button = args.Element as Button;
             var content = button.Content as Grid;
 
-            var chat = sender.ItemsSourceView.GetAt(args.Index) as Chat;
+            var chat = button.DataContext as Chat;
 
             var title = content.Children[1] as TextBlock;
             title.Text = ViewModel.ProtoService.GetTitle(chat);

@@ -22,7 +22,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Unigram.Views.Chats
 {
-    public sealed partial class ChatSharedMediaPage : Page, INavigablePage, IFileDelegate
+    public sealed partial class ChatSharedMediaPage : HostedPage, INavigablePage, IFileDelegate
     {
         public ChatSharedMediaViewModel ViewModel => DataContext as ChatSharedMediaViewModel;
 
@@ -428,7 +428,7 @@ namespace Unigram.Views.Chats
                 {
                     var grid = hyperlink.Content as Grid;
                     var photo = grid.Children[0] as Image;
-                    photo.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, videoMessage.Video.Thumbnail.Photo, 0, 0);
+                    photo.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, videoMessage.Video.Thumbnail.File, 0, 0);
 
                     var panel = grid.Children[1] as Grid;
                     var duration = panel.Children[1] as TextBlock;
@@ -500,11 +500,11 @@ namespace Unigram.Views.Chats
                     else if (message.Content is MessageVideo video)
                     {
                         var thumb = video.Video.Thumbnail;
-                        if (thumb != null && thumb.Photo.Id == file.Id && file.Local.IsDownloadingCompleted)
+                        if (thumb != null && thumb.File.Id == file.Id && file.Local.IsDownloadingCompleted)
                         {
                             var grid = content.Content as Grid;
                             var thumbnail = grid.Children[0] as Image;
-                            thumbnail.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, thumb.Photo, 0, 0);
+                            thumbnail.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, thumb.File, 0, 0);
                         }
                     }
                 }
@@ -599,68 +599,15 @@ namespace Unigram.Views.Chats
 
         private void Header_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var tab = _tab;
-            var shift = 0;
-
-            if (tab?.Index < 1)
+            if (e.ClickedItem is ChatSharedMediaTab tab)
             {
-                shift += 1;
-            }
-
-            if (e.ClickedItem == _mediaHeader)
-            {
-                ScrollingHost.SelectedIndex = 0 + shift;
-            }
-            else if (e.ClickedItem == _filesHeader)
-            {
-                ScrollingHost.SelectedIndex = 1 + shift;
-            }
-            else if (e.ClickedItem == _linksHeader)
-            {
-                ScrollingHost.SelectedIndex = 2 + shift;
-            }
-            else if (e.ClickedItem == _musicHeader)
-            {
-                ScrollingHost.SelectedIndex = 3 + shift;
-            }
-            else if (e.ClickedItem == _voiceHeader)
-            {
-                ScrollingHost.SelectedIndex = 4 + shift;
-            }
-            else if (e.ClickedItem == _tabs[tab.Index])
-            {
-                ScrollingHost.SelectedIndex = tab.Index;
+                ScrollingHost.SelectedIndex = _tabs.IndexOf(tab);
             }
         }
 
         private void ScrollingHost_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var tab = _tab;
-            var shift = 0;
-
-            if (tab?.Index < 1)
-            {
-                shift -= 1;
-            }
-
-            switch (ScrollingHost.SelectedIndex + shift)
-            {
-                case 0:
-                    Header.SelectedItem = _mediaHeader;
-                    break;
-                case 1:
-                    Header.SelectedItem = _filesHeader;
-                    break;
-                case 2:
-                    Header.SelectedItem = _linksHeader;
-                    break;
-                case 3:
-                    Header.SelectedItem = _musicHeader;
-                    break;
-                case 4:
-                    Header.SelectedItem = _voiceHeader;
-                    break;
-            }
+            Header.SelectedItem = _tabs[ScrollingHost.SelectedIndex];
         }
 
         private void Scrolling_Loaded(object sender, RoutedEventArgs e)

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Controls;
-using Unigram.ViewModels.Dialogs;
+using Unigram.ViewModels.Drawers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,7 +22,7 @@ namespace Unigram.Common
             _listView.Unloaded += OnUnloaded;
 
             _throttler = new DispatcherTimer();
-            _throttler.Interval = TimeSpan.FromMilliseconds(Constants.TypingTimeout);
+            _throttler.Interval = TimeSpan.FromMilliseconds(Constants.AnimatedThrottle);
             _throttler.Tick += (s, args) =>
             {
                 _throttler.Stop();
@@ -57,18 +55,22 @@ namespace Unigram.Common
             UnloadVisibleItems();
         }
 
-        private async void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (e.PreviousSize.Width < _listView.ActualWidth || e.PreviousSize.Height < _listView.ActualHeight)
             {
-                await _listView.ItemsPanelRoot.UpdateLayoutAsync();
-                LoadVisibleItems(false);
+                _throttler.Stop();
+                _throttler.Start();
             }
         }
 
         private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
+            LoadVisibleItems(true);
+
             _throttler.Stop();
+            _throttler.Start();
+            return;
 
             if (e.IsIntermediate)
             {
@@ -82,8 +84,19 @@ namespace Unigram.Common
             //LoadVisibleItems(/*e.IsIntermediate*/ false);
         }
 
+        public void LoadVisibleItemsThrottled()
+        {
+            _throttler.Stop();
+            _throttler.Start();
+        }
+
         public void LoadVisibleItems(bool intermediate)
         {
+            if (intermediate && _old.Count < 1)
+            {
+                return;
+            }
+
             int lastVisibleIndex;
             int firstVisibleIndex;
 
@@ -99,6 +112,12 @@ namespace Unigram.Common
             }
             else
             {
+                return;
+            }
+
+            if (lastVisibleIndex < firstVisibleIndex || firstVisibleIndex < 0)
+            {
+                UnloadVisibleItems();
                 return;
             }
 
@@ -131,9 +150,9 @@ namespace Unigram.Common
                 }
             }
 
-            if (animations.Count > 0 && !intermediate)
+            if (animations.Count > 0)
             {
-                Play(animations, true);
+                Play(animations, !intermediate);
             }
         }
 
@@ -184,7 +203,7 @@ namespace Unigram.Common
                 }
                 else if (item.Sticker is StickerSetViewModel setViewModel)
                 {
-                    animation = setViewModel.Thumbnail?.Photo ?? setViewModel.Covers.FirstOrDefault()?.Thumbnail?.Photo;
+                    animation = setViewModel.Thumbnail?.File ?? setViewModel.Covers.FirstOrDefault()?.Thumbnail?.File;
                 }
                 else if (item.Sticker is Sticker sticker)
                 {
@@ -192,7 +211,7 @@ namespace Unigram.Common
                 }
                 else if (item.Sticker is StickerSetInfo set)
                 {
-                    animation = set.Thumbnail?.Photo ?? set.Covers.FirstOrDefault()?.Thumbnail?.Photo;
+                    animation = set.Thumbnail?.File ?? set.Covers.FirstOrDefault()?.Thumbnail?.File;
                 }
                 else
                 {
@@ -250,7 +269,7 @@ namespace Unigram.Common
 
                 if (news.TryGetValue(item, out MediaPlayerItem data) && data.Container != null && data.Container.Children.Count < 5)
                 {
-                    var presenter = new LottieView();
+                    var presenter = new LottieView(false);
                     presenter.AutoPlay = true;
                     presenter.IsLoopingEnabled = true;
                     presenter.Source = new Uri("file:///" + data.File.Local.Path);

@@ -38,8 +38,9 @@ $identity.Attributes["Name"].Value = $h[$config]
 
 $version = $identity.Attributes["Version"].Value;
 $regex = [regex]'(?:(\d+)\.)(?:(\d+)\.)(?:(\d*?)\.\d+)'
+$date = Get-Date -Format yy.M
 
-$identity.Attributes["Version"].Value = $regex.Replace($version, '$1.$2.{0}.0' -f $out)
+$identity.Attributes["Version"].Value = -join($date, $regex.Replace($version, '.{0}.0' -f $out))
 
 if ($original1 -eq $identity.Attributes["Name"].Value -and $original2 -eq $identity.Attributes["Version"].Value) {
     exit

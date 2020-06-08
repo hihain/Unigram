@@ -1,10 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas.Effects;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
@@ -14,18 +10,13 @@ using Unigram.ViewModels;
 using Unigram.ViewModels.Delegates;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Sensors;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
 using Windows.Storage;
-using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
@@ -33,7 +24,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Unigram.Views
 {
-    public sealed partial class BackgroundPage : Page, IHandle<UpdateFile>, IBackgroundDelegate
+    public sealed partial class BackgroundPage : HostedPage, IHandle<UpdateFile>, IBackgroundDelegate
     {
         public BackgroundViewModel ViewModel => DataContext as BackgroundViewModel;
 
@@ -212,10 +203,13 @@ namespace Unigram.Views
                 {
                     //content.Background = pattern.Fill.ToBrush();
                     //rectangle.Opacity = pattern.Intensity / 100d
-                    var surface = PlaceholderHelper.GetVectorSurface(ViewModel.ProtoService, big.DocumentValue);
-                    if (surface != null)
+                    if (string.Equals(wallpaper.Document.MimeType, "application/x-tgwallpattern", StringComparison.OrdinalIgnoreCase))
                     {
-                        rectangle.Fill = new TiledBrush { SvgSource = surface }; //new ImageBrush { ImageSource = PlaceholderHelper.GetVector(ViewModel.ProtoService, big.DocumentValue), Stretch = Stretch.Uniform, AlignmentX = AlignmentX.Center, AlignmentY = AlignmentY.Center };
+                        rectangle.Fill = new TiledBrush { SvgSource = PlaceholderHelper.GetVectorSurface(null, big.DocumentValue) };
+                    }
+                    else
+                    {
+                        rectangle.Fill = new ImageBrush { ImageSource = new BitmapImage(new Uri("file:///" + big.DocumentValue.Local.Path)), AlignmentX = AlignmentX.Center, AlignmentY = AlignmentY.Center, Stretch = Stretch.UniformToFill };
                     }
                 }
             }
@@ -312,7 +306,7 @@ namespace Unigram.Views
                             continue;
                         }
 
-                        content.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, small.Photo, wallpaper.Document.Thumbnail.Width, wallpaper.Document.Thumbnail.Height);
+                        content.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, small.File, wallpaper.Document.Thumbnail.Width, wallpaper.Document.Thumbnail.Height);
                     }
                     else
                     {
@@ -382,10 +376,13 @@ namespace Unigram.Views
                     {
                         //content.Background = pattern.Fill.ToBrush();
                         //rectangle.Opacity = pattern.Intensity / 100d;
-                        var surface = PlaceholderHelper.GetVectorSurface(ViewModel.ProtoService, big.DocumentValue);
-                        if (surface != null)
+                        if (string.Equals(wallpaper.Document.MimeType, "application/x-tgwallpattern", StringComparison.OrdinalIgnoreCase))
                         {
-                            rectangle.Fill = new TiledBrush { SvgSource = surface }; //new ImageBrush { ImageSource = PlaceholderHelper.GetVector(ViewModel.ProtoService, big.DocumentValue), Stretch = Stretch.Uniform, AlignmentX = AlignmentX.Center, AlignmentY = AlignmentY.Center };
+                            rectangle.Fill = new TiledBrush { SvgSource = PlaceholderHelper.GetVectorSurface(null, big.DocumentValue) };
+                        }
+                        else
+                        {
+                            rectangle.Fill = new ImageBrush { ImageSource = new BitmapImage(new Uri("file:///" + big.DocumentValue.Local.Path)), AlignmentX = AlignmentX.Center, AlignmentY = AlignmentY.Center, Stretch = Stretch.UniformToFill };
                         }
                     }
                 }
@@ -454,7 +451,7 @@ namespace Unigram.Views
                 }
 
                 var content = root.Children[0] as Image;
-                content.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, small.Photo, wallpaper.Document.Thumbnail.Width, wallpaper.Document.Thumbnail.Height);
+                content.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, small.File, wallpaper.Document.Thumbnail.Width, wallpaper.Document.Thumbnail.Height);
 
                 content.Opacity = ViewModel.Intensity / 100d;
                 root.Background = ViewModel.GetFill().ToBrush();

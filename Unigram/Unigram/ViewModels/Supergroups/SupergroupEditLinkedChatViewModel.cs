@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Collections;
 using Unigram.Common;
 using Unigram.Controls;
-using Unigram.Converters;
-using Unigram.Entities;
 using Unigram.Services;
 using Unigram.ViewModels.Delegates;
-using Unigram.Views.Channels;
-using Unigram.Views.Supergroups;
-using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -237,7 +229,7 @@ namespace Unigram.ViewModels.Supergroups
                     history = true;
                 }
 
-                var confirm = await TLMessageDialog.ShowAsync(message, Strings.Resources.DiscussionLinkGroup, Strings.Resources.DiscussionLinkGroup, Strings.Resources.Cancel);
+                var confirm = await MessagePopup.ShowAsync(message, Strings.Resources.DiscussionLinkGroup, Strings.Resources.DiscussionLinkGroup, Strings.Resources.Cancel);
                 if (confirm != ContentDialogResult.Primary)
                 {
                     return;
@@ -294,7 +286,7 @@ namespace Unigram.ViewModels.Supergroups
                 return;
             }
 
-            var confirm = await TLMessageDialog.ShowAsync(string.Format(Strings.Resources.DiscussionUnlinkChannelAlert, linkedChat.Title), Strings.Resources.DiscussionUnlinkGroup, Strings.Resources.DiscussionUnlink, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(string.Format(Strings.Resources.DiscussionUnlinkChannelAlert, linkedChat.Title), Strings.Resources.DiscussionUnlinkGroup, Strings.Resources.DiscussionUnlink, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;

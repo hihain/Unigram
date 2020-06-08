@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Td;
 using Telegram.Td.Api;
@@ -407,7 +405,7 @@ namespace Unigram.Services
             });
         }
 
-#region Handle
+        #region Handle
 
         public void Handle(UpdateLanguagePackStrings update)
         {
@@ -435,7 +433,7 @@ namespace Unigram.Services
             }
         }
 
-#endregion
+        #endregion
 
         private Dictionary<string, string> GetLanguagePack(string key)
         {

@@ -7,7 +7,6 @@
     xmlns:controls="using:Unigram.Controls"
     xmlns:drawers="using:Unigram.Controls.Drawers"
     xmlns:selectors="using:Unigram.Selectors"
-    xmlns:viewModels="using:Unigram.ViewModels.Dialogs"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -116,38 +115,53 @@
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState x:Name="NarrowState"/>
-                <VisualState x:Name="SidebarState"/>
+                <VisualState x:Name="SidebarState">
+                    <VisualState.Setters>
+                        <Setter Target="ButtonExpand.Visibility" Value="Collapsed"/>
+                    </VisualState.Setters>
+                </VisualState>
                 <VisualState x:Name="FilledState">
                     <VisualState.Setters>
-                        <Setter Target="Show.Width" Value="362*"/>
-                        <Setter Target="Show.MaxWidth" Value="362"/>
-                        <Setter Target="Hide.Width" Value="*"/>
+                        <Setter Target="ShowColumn.Width" Value="362*"/>
+                        <Setter Target="ShowColumn.MaxWidth" Value="362"/>
+                        <Setter Target="HideColumn.Width" Value="*"/>
                         <Setter Target="BackgroundElement.BorderThickness" Value="1"/>
-                        <Setter Target="BackgroundElement.Margin" Value="8"/>
                         <Setter Target="BackgroundElement.CornerRadius" Value="4"/>
 
                         <Setter Target="ShowRow.Height" Value="736*"/>
                         <Setter Target="ShowRow.MaxHeight" Value="736"/>
                         <Setter Target="HideRow.Height" Value="*"/>
+                        
+                        <Setter Target="PaddingTopRow.Height" Value="8"/>
+                        <Setter Target="PaddingLeftColumn.Width" Value="12"/>
+                        <Setter Target="PaddingBottomRow.Height" Value="4"/>
+                        <Setter Target="PaddingRightColumn.Width" Value="12"/>
+                        
+                        <Setter Target="ButtonExpand.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="Hide" Width="0"/>
-            <ColumnDefinition x:Name="Show"/>
+            <ColumnDefinition x:Name="HideColumn" Width="0"/>
+            <ColumnDefinition x:Name="PaddingLeftColumn" Width="0"/>
+            <ColumnDefinition x:Name="ShowColumn"/>
+            <ColumnDefinition x:Name="PaddingRightColumn" Width="0"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition x:Name="HideRow" Height="0"/>
+            <RowDefinition x:Name="PaddingTopRow" Height="0"/>
             <RowDefinition x:Name="ShowRow"/>
+            <RowDefinition x:Name="PaddingBottomRow" Height="0"/>
         </Grid.RowDefinitions>
 
         <Border x:Name="ShadowElement" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
 
-        <Border Background="Transparent" Grid.Column="1" Grid.Row="1">
+        <Border x:Name="TransparentElement" Background="Transparent" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="3"/>
+
+        <Border x:Name="CanvasElement" Background="Transparent" Grid.Column="2" Grid.Row="2">
             <Grid x:Name="BackgroundElement"
                   Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                  MinHeight="{ThemeResource AppBarThemeCompactHeight}"
                   BorderBrush="{ThemeResource TelegramBackgroundAccentBrush}"
                   BorderThickness="0,0,0,0">
                 <Grid.RowDefinitions>
@@ -158,7 +172,16 @@
 
                 <Pivot x:Name="Pivot" Style="{StaticResource HeaderlessPivotStyle}" SelectionChanged="Pivot_SelectionChanged" Grid.Row="1">
                     <PivotItem>
-                        <drawers:EmojiDrawer x:Name="Emojis" x:DeferLoadStrategy="Lazy" ItemClick="Emojis_ItemClick" Grid.RowSpan="3" d:IsHidden="True"/>
+                        <Grid>
+                            <drawers:EmojiDrawer x:Name="EmojisRoot" ItemClick="Emojis_ItemClick"/>
+                            <TextBlock
+                                x:Name="EmojisPermission"
+                                VerticalAlignment="Center"
+                                TextAlignment="Center"
+                                Margin="12"
+                                Foreground="{ThemeResource ButtonForegroundDisabled}"
+                                Style="{StaticResource BodyTextBlockStyle}"/>
+                        </Grid>
                     </PivotItem>
                     <PivotItem>
                         <Grid>
@@ -199,9 +222,9 @@
                             <ColumnDefinition Width="{ThemeResource AppBarThemeCompactHeight}"/>
                         </Grid.ColumnDefinitions>
                         <!--<controls:GlyphButton Glyph="&#xE721;"
-                                              FontSize="{StaticResource GlyphButtonFontSize}"
-                                              Width="{ThemeResource AppBarThemeCompactHeight}"
-                                              Height="{ThemeResource AppBarThemeCompactHeight}"/>-->
+                                                FontSize="{StaticResource GlyphButtonFontSize}"
+                                                Width="{ThemeResource AppBarThemeCompactHeight}"
+                                                Height="{ThemeResource AppBarThemeCompactHeight}"/>-->
 
                         <controls:PivotRadioButton
                             SelectedValue="{x:Bind Pivot.SelectedIndex, Mode=TwoWay}"
@@ -216,7 +239,6 @@
                             Grid.Column="2"/>
 
                         <controls:PivotRadioButton
-                            Visibility="{x:Bind ViewModel.Stickers.SavedGifs.Count, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                             SelectedValue="{x:Bind Pivot.SelectedIndex, Mode=TwoWay}"
                             Index="1"
                             Glyph="&#xF4A9;"
@@ -239,6 +261,12 @@
                             ToolTipService.ToolTip="{CustomResource AccDescrStickers}"
                             GroupName="StickersView"
                             Grid.Column="4"/>
+
+                        <controls:GlyphToggleButton x:Name="ButtonExpand"
+                                                    CheckedGlyph="&#xE011;"
+                                                    UncheckedGlyph="&#xE010;"
+                                                    Click="ButtonExpand_Click"
+                                                    AllowFocusOnInteraction="False"/>
                     </Grid>
                 </Grid>
             </Grid>

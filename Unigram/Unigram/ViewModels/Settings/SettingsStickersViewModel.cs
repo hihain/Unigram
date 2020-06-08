@@ -1,7 +1,7 @@
 ﻿using Unigram.Common;
-using Unigram.Controls.Views;
 using Unigram.Services;
 using Unigram.Services.Settings;
+using Unigram.Views.Popups;
 using Windows.UI.Xaml.Controls;
 
 namespace Unigram.ViewModels.Settings
@@ -60,7 +60,7 @@ namespace Unigram.ViewModels.Settings
                 new SelectRadioItem(StickersSuggestionMode.None, Strings.Resources.SuggestStickersNone, SuggestStickers == StickersSuggestionMode.None),
             };
 
-            var dialog = new SelectRadioView(items);
+            var dialog = new SelectRadioPopup(items);
             dialog.Title = Strings.Resources.SuggestStickers;
             dialog.PrimaryButtonText = Strings.Resources.OK;
             dialog.SecondaryButtonText = Strings.Resources.Cancel;

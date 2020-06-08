@@ -1,27 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
 using Unigram.Converters;
 using Unigram.ViewModels;
 using Unigram.ViewModels.Folders;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Views.Folders
 {
-    public sealed partial class FolderPage : Page
+    public sealed partial class FolderPage : HostedPage
     {
         public FolderViewModel ViewModel => DataContext as FolderViewModel;
 
@@ -31,13 +22,17 @@ namespace Unigram.Views.Folders
             DataContext = TLContainer.Current.Resolve<FolderViewModel>();
         }
 
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            TitleField.Focus(FocusState.Keyboard);
+        }
+
         private void OnElementPrepared(Microsoft.UI.Xaml.Controls.ItemsRepeater sender, Microsoft.UI.Xaml.Controls.ItemsRepeaterElementPreparedEventArgs args)
         {
             var button = args.Element as Button;
             var content = button.Content as Grid;
 
-            var element = sender.ItemsSourceView.GetAt(args.Index) as ChatFilterElement;
-            button.Tag = element;
+            var element = button.DataContext as ChatFilterElement;
 
             var title = content.Children[1] as TextBlock;
             var photo = content.Children[0] as ProfilePicture;
@@ -96,7 +91,7 @@ namespace Unigram.Views.Folders
             var flyout = new MenuFlyout();
 
             var element = sender as FrameworkElement;
-            var chat = element.Tag as ChatFilterElement;
+            var chat = element.DataContext as ChatFilterElement;
 
             flyout.CreateFlyoutItem(viewModel.RemoveIncludeCommand, chat, Strings.Resources.StickersRemove, new FontIcon { Glyph = Icons.Delete });
 
@@ -114,7 +109,7 @@ namespace Unigram.Views.Folders
             var flyout = new MenuFlyout();
 
             var element = sender as FrameworkElement;
-            var chat = element.Tag as ChatFilterElement;
+            var chat = element.DataContext as ChatFilterElement;
 
             flyout.CreateFlyoutItem(viewModel.RemoveExcludeCommand, chat, Strings.Resources.StickersRemove, new FontIcon { Glyph = Icons.Delete });
 
@@ -123,10 +118,19 @@ namespace Unigram.Views.Folders
 
         private void Emoji_Click(object sender, RoutedEventArgs e)
         {
-            EmojiList.ItemsSource = ChatFilterIcon.Items;
+            EmojiList.ItemsSource = Icons.Filters;
+            EmojiList.SelectedItem = ViewModel.Icon;
 
-            var flyout = FlyoutBase.GetAttachedFlyout(EmojiButton);
-            flyout.ShowAt(EmojiButton, new FlyoutShowOptions { Placement = FlyoutPlacementMode.BottomEdgeAlignedRight });
+            var flyout = FlyoutBase.GetAttachedFlyout(EmojiButton);       
+            
+            if (ApiInfo.CanUseNewFlyoutPlacementMode)
+            {
+                flyout.ShowAt(EmojiButton, new FlyoutShowOptions { Placement = FlyoutPlacementMode.BottomEdgeAlignedRight });
+            }
+            else
+            {
+                flyout.ShowAt(EmojiButton);
+            }
         }
 
         private void EmojiList_ItemClick(object sender, ItemClickEventArgs e)
@@ -135,15 +139,33 @@ namespace Unigram.Views.Folders
 
             if (e.ClickedItem is ChatFilterIcon icon)
             {
-                ViewModel.Emoji = icon.Emoji;
+                ViewModel.SetIcon(icon);
+            }
+        }
+
+        private void EmojiList_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.InRecycleQueue)
+            {
+                return;
+            }
+
+            if (args.ItemContainer.ContentTemplateRoot is BitmapIcon image && args.Item is ChatFilterIcon icon)
+            {
+                image.UriSource = new Uri($"ms-appx:///Assets/Filters/{icon}.png");
             }
         }
 
         #region Binding
 
-        private string ConvertEmoji(string emoji)
+        private string ConvertTitle(ChatFilter filter)
         {
-            return ChatFilterIcon.FromEmoji(emoji);
+            return filter == null ? Strings.Resources.FilterNew : filter.Title;
+        }
+
+        private Uri ConvertEmoji(ChatFilterIcon icon)
+        {
+            return new Uri($"ms-appx:///Assets/Filters/{icon}.png");
         }
 
         #endregion

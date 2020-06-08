@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
-using Unigram.Common;
-using Unigram.Services;
+using System.Numerics;
 using Unigram.Services.Settings;
 using Windows.Globalization;
 using Windows.Storage;
-using Windows.UI.Xaml;
 
 namespace Unigram.Services
 {
@@ -55,6 +52,10 @@ namespace Unigram.Services
         bool IsAccountsSelectorExpanded { get; set; }
         bool IsAllAccountsNotifications { get; set; }
         bool SaveCameraMediaInGallery { get; set; }
+
+        bool IsLeftTabsEnabled { get; set; }
+
+        Vector2 Pencil { get; set; }
 
         DistanceUnits DistanceUnits { get; set; }
 
@@ -194,9 +195,9 @@ namespace Unigram.Services
 
         #region App version
 
-        //public const ulong CurrentVersion = (3UL << 48) | (15UL << 32) | (3073UL << 16);
+        //public const ulong CurrentVersion = (4UL << 48) | (0UL << 32) | (5072UL << 16);
+        //public const string CurrentChangelog = "• Chat folders.\r\n• Stream Videos and Audio files.\r\n• Improved stickers, GIFs and emojis.\r\n\r\nRead more: https://telegra.ph/Unigram-40-05-28";
         public static readonly string CurrentChangelog = $"Beta Build {GetAppVersion().Build}. Thanks for taking the risk and time testing this beta release. Please use the beta group for any feedback: https://t.me/joinchat/E_I5AhukKgSSXf4Acp8nbA";
-        public const bool CurrentMedia = false;
 
         public int Session => _session;
 
@@ -591,6 +592,23 @@ namespace Unigram.Services
             }
         }
 
+        private static bool? _isLeftTabsEnabled;
+        public bool IsLeftTabsEnabled
+        {
+            get
+            {
+                if (_isLeftTabsEnabled == null)
+                    _isLeftTabsEnabled = GetValueOrDefault(_local, "IsLeftTabsEnabled", false);
+
+                return _isLeftTabsEnabled ?? false;
+            }
+            set
+            {
+                _isLeftTabsEnabled = value;
+                AddOrUpdateValue(_local, "IsLeftTabsEnabled", value);
+            }
+        }
+
         private static bool? _autocorrectWords;
         public bool AutocorrectWords
         {
@@ -843,6 +861,29 @@ namespace Unigram.Services
             {
                 _volumeLevel = value;
                 AddOrUpdateValue("VolumeLevel", value);
+            }
+        }
+
+        private static Vector2? _pencil;
+        public Vector2 Pencil
+        {
+            get
+            {
+                if (_pencil == null)
+                {
+                    var offset = GetValueOrDefault(_local, "PencilOffset", 1f);
+                    var thickness = GetValueOrDefault(_local, "PencilThickness", 0.22f);
+
+                    _pencil = new Vector2(offset, thickness);
+                }
+
+                return _pencil ?? new Vector2(1f, 0.22f);
+            }
+            set
+            {
+                _pencil = value;
+                AddOrUpdateValue(_local, "PencilOffset", value.X);
+                AddOrUpdateValue(_local, "PencilThickness", value.Y);
             }
         }
 

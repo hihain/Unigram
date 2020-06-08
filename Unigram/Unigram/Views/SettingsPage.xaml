@@ -6,8 +6,6 @@
       xmlns:settings="using:Unigram.Views.Settings"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
-      xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
       mc:Ignorable="d">
 
     <Grid Background="{ThemeResource PageBackgroundDarkBrush}">
@@ -57,15 +55,17 @@
                         <Border.Background>
                             <SolidColorBrush Opacity="0.2" Color="{ThemeResource SystemAccentColor}"/>
                         </Border.Background>
-                        <controls:GlyphButton Glyph="&#xE114;"
-                                              Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
-                                              AutomationProperties.Name="{CustomResource AccDescrChangeProfilePicture}"
-                                              ToolTipService.ToolTip="{CustomResource AccDescrChangeProfilePicture}"
-                                              Width="36"
-                                              Height="36"
-                                              Radius="18"
-                                              Padding="0,0,0,0"
-                                              FontSize="16">
+                        <controls:GlyphButton
+                            Glyph="&#xE114;"
+                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                            AutomationProperties.Name="{CustomResource AccDescrChangeProfilePicture}"
+                            ToolTipService.ToolTip="{CustomResource AccDescrChangeProfilePicture}"
+                            Style="{StaticResource RoundGlyphButtonStyle}"
+                            Width="36"
+                            Height="36"
+                            Radius="18"
+                            Padding="0,0,0,0"
+                            FontSize="16">
                             <Button.Flyout>
                                 <MenuFlyout x:Name="PhotoFlyout">
                                     <MenuFlyoutItem Click="EditCamera_Click" Text="{CustomResource FromCamera}">
@@ -115,48 +115,52 @@
                 <StackPanel
                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     Margin="0,24,0,0">
-                    <controls:BadgeButton Content="{CustomResource NotificationsAndSounds}"
-                                          Glyph="&#xEC42;"
-                                          Click="Notifications_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"/>
-                    <controls:BadgeButton Content="{CustomResource PrivacySettings}"
-                                          Glyph="&#xE1F6;"
-                                          Click="Privacy_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"/>
-                    <controls:BadgeButton Content="{CustomResource DataSettings}"
-                                          Glyph="&#xEB05;"
-                                          Click="Data_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"/>
-                    <controls:BadgeButton Content="{CustomResource StickersName}"
-                                          Glyph="&#xF4AA;"
-                                          Click="Stickers_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"/>
-                    <controls:BadgeButton Content="{CustomResource ChatSettings}"
-                                          Glyph="&#xE8BD;"
-                                          Click="Appearance_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"/>
-                    <controls:BadgeButton Content="{CustomResource Language}"
-                                          Glyph="&#xE774;"
-                                          Click="Language_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"/>
-                    <controls:BadgeButton Content="{CustomResource PrivacyAdvanced}"
-                                          Glyph="&#xE9E9;"
-                                          Click="Advanced_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"/>
+                    <controls:BadgeButton
+                        Content="{CustomResource Filters}"
+                        Glyph="&#xF12B;"
+                        Click="Folders_Click"
+                        Style="{StaticResource TextGlyphButtonStyle}"/>
                 </StackPanel>
-
-                <!--<StackPanel Visibility="{x:Bind ViewModel.HasPassportData, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Margin="0,24,0,0">
-                    <controls:BadgeButton Content="{CustomResource GramWallet}"
-                                          Glyph="&#x1F48E;"
-                                          Click="Wallet_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"
-                                          FontFamily="Segoe UI Emoji"/>
-                    <controls:BadgeButton Content="{CustomResource TelegramPassport}"
-                                          Glyph="&#xE8C7;"
-                                          Click="Passport_Click"
-                                          Style="{StaticResource TextGlyphButtonStyle}"/>
-                </StackPanel>-->
+                
+                <StackPanel
+                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    Margin="0,24,0,0">
+                    <controls:BadgeButton
+                        Content="{CustomResource NotificationsAndSounds}"
+                        Glyph="&#xEC42;"
+                        Click="Notifications_Click"
+                        Style="{StaticResource TextGlyphButtonStyle}"/>
+                    <controls:BadgeButton
+                        Content="{CustomResource PrivacySettings}"
+                        Glyph="&#xE1F6;"
+                        Click="Privacy_Click"
+                        Style="{StaticResource TextGlyphButtonStyle}"/>
+                    <controls:BadgeButton
+                        Content="{CustomResource DataSettings}"
+                        Glyph="&#xEB05;"
+                        Click="Data_Click"
+                        Style="{StaticResource TextGlyphButtonStyle}"/>
+                    <controls:BadgeButton
+                        Content="{CustomResource StickersName}"
+                        Glyph="&#xF4AA;"
+                        Click="Stickers_Click"
+                        Style="{StaticResource TextGlyphButtonStyle}"/>
+                    <controls:BadgeButton
+                        Content="{CustomResource ChatSettings}"
+                        Glyph="&#xE8BD;"
+                        Click="Appearance_Click"
+                        Style="{StaticResource TextGlyphButtonStyle}"/>
+                    <controls:BadgeButton
+                        Content="{CustomResource Language}"
+                        Glyph="&#xE774;"
+                        Click="Language_Click"
+                        Style="{StaticResource TextGlyphButtonStyle}"/>
+                    <controls:BadgeButton
+                        Content="{CustomResource PrivacyAdvanced}"
+                        Glyph="&#xE9E9;"
+                        Click="Advanced_Click"
+                        Style="{StaticResource TextGlyphButtonStyle}"/>
+                </StackPanel>
                 
                 <StackPanel
                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"

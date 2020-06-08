@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
+﻿using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.System.Profile;
 using Windows.UI.ViewManagement;
@@ -45,7 +40,7 @@ namespace Unigram.Common
 
             var sender = CoreApplication.GetCurrentView().TitleBar;
 
-            if (string.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Desktop") && UIViewSettings.GetForCurrentView().UserInteractionMode == UserInteractionMode.Mouse)
+            if (ApiInfo.IsFullExperience && UIViewSettings.GetForCurrentView().UserInteractionMode == UserInteractionMode.Mouse)
             {
                 // If running on PC and tablet mode is disabled, then titlebar is most likely visible
                 // So we're going to force it

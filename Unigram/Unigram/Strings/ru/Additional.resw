@@ -117,29 +117,120 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdaptiveWideSetting" xml:space="preserve">
+    <value>Адаптивная раскладка для широкого экрана</value>
+    <comment>SettingsAdvancedPage</comment>
+  </data>
+  <data name="CallSettingInput" xml:space="preserve">
+    <value>Устройство ввода</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingInputTitle" xml:space="preserve">
+    <value>Микрофон</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingOutput" xml:space="preserve">
+    <value>Устройство вывода</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingOutputTitle" xml:space="preserve">
+    <value>Динамики и наушники</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingsTitle" xml:space="preserve">
+    <value>Настройки вызова</value>
+    <comment>SettingsAdvancedPage</comment>
+  </data>
   <data name="Chats" xml:space="preserve">
     <value>Чаты</value>
   </data>
   <data name="CopyImage" xml:space="preserve">
-    <value>Copy image</value>
+    <value>Копировать рисунок</value>
+  </data>
+  <data name="Cut" xml:space="preserve">
+    <value>Вырезать</value>
   </data>
   <data name="DeletedMessage" xml:space="preserve">
-    <value>Deleted message</value>
+    <value>Удалить сообщение</value>
+  </data>
+  <data name="EditLink" xml:space="preserve">
+    <value>Редактировать ссылку</value>
+  </data>
+  <data name="Formatting" xml:space="preserve">
+    <value>Форматирование</value>
+  </data>
+  <data name="FormattingHide" xml:space="preserve">
+    <value>Скрыть форматирование</value>
+  </data>
+  <data name="FormattingShow" xml:space="preserve">
+    <value>Показать форматирование</value>
+  </data>
+  <data name="InputVolume" xml:space="preserve">
+    <value>Входная громкость</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="IPv6ToggleSetting" xml:space="preserve">
+    <value>Соединяться через IPv6 по возможности</value>
+    <comment>SettingsAdvancedPage</comment>
   </data>
   <data name="News" xml:space="preserve">
     <value>Новости</value>
   </data>
   <data name="OriginalMessage" xml:space="preserve">
-    <value>original</value>
+    <value>исходное</value>
     <comment>Original message date and time</comment>
   </data>
+  <data name="OutputVolume" xml:space="preserve">
+    <value>Выходная громкость</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Вставить</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Повторить</value>
+  </data>
+  <data name="ReplaceEmoji" xml:space="preserve">
+    <value>Заменить emoji</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
   <data name="SaveAs" xml:space="preserve">
-    <value>Save as...</value>
+    <value>Сохранить как...</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>Выбрать</value>
   </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Выбрать все</value>
+  </data>
+  <data name="SettingIsTextFormattingVisible" xml:space="preserve">
+    <value>Показать кнопки форматирования</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
   <data name="ShowInFolder" xml:space="preserve">
     <value>Открыть папку с файлом</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Светлая</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="ThemeSystemTheme" xml:space="preserve">
+    <value>Системная</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Отменить</value>
+  </data>
+  <data name="SettingPlayStickers" xml:space="preserve">
+    <value>Воспроизводить анимированные стикеры</value>
+    <comment>SettingStickersPage</comment>
+  </data>
+  <data name="SettingsDisableHighlightWords" xml:space="preserve">
+    <value>Не выделять ошибки</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="SettingsDisableAutocorrectWords" xml:space="preserve">
+    <value>Отключить автокоррекцию</value>
+    <comment>SettingsAppearancePage</comment>
   </data>
 </root>

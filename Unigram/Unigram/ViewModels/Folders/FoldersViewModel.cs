@@ -5,6 +5,7 @@ using Unigram.Collections;
 using Unigram.Common;
 using Unigram.Controls;
 using Unigram.Services;
+using Unigram.Services.Updates;
 using Unigram.Views.Folders;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -16,6 +17,9 @@ namespace Unigram.ViewModels.Folders
         public FoldersViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(protoService, cacheService, settingsService, aggregator)
         {
+            UseLeftLayout = settingsService.IsLeftTabsEnabled;
+            UseTopLayout = !settingsService.IsLeftTabsEnabled;
+
             Items = new MvxObservableCollection<ChatFilterInfo>();
             Recommended = new MvxObservableCollection<RecommendedChatFilter>();
 
@@ -48,6 +52,51 @@ namespace Unigram.ViewModels.Folders
             return base.OnNavigatedFromAsync(pageState, suspending);
         }
 
+        public int LeftLayoutScale
+        {
+            get
+            {
+                //Note: Slider snaps in only on integers -> convert float percentage to int
+                return System.Convert.ToInt16(Settings.Appearance.TabsLeftLayoutScale * 100 - 50) / 5;
+            }
+            set
+            {
+                var update = value * .05f + .5f;
+
+                if (Settings.Appearance.TabsLeftLayoutScale != update)
+                {
+                    Settings.Appearance.TabsLeftLayoutScale = update;
+                    RaisePropertyChanged();
+                    Aggregator.Publish(new UpdateChatFiltersLayout());
+                }
+            }
+        }
+
+        private bool _useLeftLayout;
+        public bool UseLeftLayout
+        {
+            get => _useLeftLayout;
+            set
+            {
+                if (_useLeftLayout != value)
+                {
+                    _useLeftLayout = value;
+                    Settings.IsLeftTabsEnabled = value;
+
+                    RaisePropertyChanged(() => UseLeftLayout);
+
+                    Aggregator.Publish(new UpdateChatFiltersLayout());
+                }
+            }
+        }
+
+        private bool _useTopLayout;
+        public bool UseTopLayout
+        {
+            get => _useTopLayout;
+            set => Set(ref _useTopLayout, value);
+        }
+
         public void Handle(UpdateChatFilters update)
         {
             BeginOnUIThread(async () =>
@@ -72,19 +121,19 @@ namespace Unigram.ViewModels.Folders
         public RelayCommand<ChatFilterInfo> EditCommand { get; }
         private void EditExecute(ChatFilterInfo filter)
         {
-            NavigationService.Navigate(typeof(FolderPage), filter.ChatFilterId);
+            NavigationService.Navigate(typeof(FolderPage), filter.Id);
         }
 
         public RelayCommand<ChatFilterInfo> DeleteCommand { get; }
         private async void DeleteExecute(ChatFilterInfo filter)
         {
-            var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.FilterDeleteAlert, Strings.Resources.FilterDelete, Strings.Resources.Delete, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(Strings.Resources.FilterDeleteAlert, Strings.Resources.FilterDelete, Strings.Resources.Delete, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
             }
 
-            ProtoService.Send(new DeleteChatFilter(filter.ChatFilterId));
+            ProtoService.Send(new DeleteChatFilter(filter.Id));
         }
 
         public RelayCommand CreateCommand { get; }

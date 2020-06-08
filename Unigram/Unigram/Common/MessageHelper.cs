@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Telegram.Td.Api;
 using Unigram.Controls;
-using Unigram.Controls.Views;
 using Unigram.Converters;
 using Unigram.Navigation;
 using Unigram.Services;
@@ -11,7 +10,7 @@ using Unigram.Services.Navigation;
 using Unigram.ViewModels;
 using Unigram.Views;
 using Unigram.Views.Host;
-using Unigram.Views.Passport;
+using Unigram.Views.Popups;
 using Unigram.Views.Settings;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
@@ -379,10 +378,6 @@ namespace Unigram.Common
             {
                 NavigateToSendCode(protoService, phoneCode);
             }
-            else if (auth != null)
-            {
-                navigation.Navigate(typeof(PassportPage), state: auth);
-            }
             else if (lang != null)
             {
                 NavigateToLanguage(protoService, navigation, lang);
@@ -396,7 +391,7 @@ namespace Unigram.Common
                 var response = await protoService.SendAsync(new GetDeepLinkInfo(scheme.AbsoluteUri));
                 if (response is DeepLinkInfo info)
                 {
-                    var confirm = await TLMessageDialog.ShowAsync(info.Text, Strings.Resources.AppName, Strings.Resources.OK, info.NeedUpdateApplication ? Strings.Resources.UpdateApp : null);
+                    var confirm = await MessagePopup.ShowAsync(info.Text, Strings.Resources.AppName, Strings.Resources.OK, info.NeedUpdateApplication ? Strings.Resources.UpdateApp : null);
                     if (confirm == ContentDialogResult.Secondary)
                     {
                         await Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?PFN=" + Package.Current.Id.FamilyName));
@@ -533,7 +528,7 @@ namespace Unigram.Common
                 }
                 else
                 {
-                    await TLMessageDialog.ShowAsync(Strings.Resources.LinkNotFound, Strings.Resources.AppName, Strings.Resources.OK);
+                    await MessagePopup.ShowAsync(Strings.Resources.LinkNotFound, Strings.Resources.AppName, Strings.Resources.OK);
                 }
             }
             else
@@ -549,7 +544,7 @@ namespace Unigram.Common
             {
                 if (info.Id == SettingsService.Current.LanguagePackId)
                 {
-                    var confirm = await TLMessageDialog.ShowAsync(string.Format(Strings.Resources.LanguageSame, info.Name), Strings.Resources.Language, Strings.Resources.OK, Strings.Resources.Settings);
+                    var confirm = await MessagePopup.ShowAsync(string.Format(Strings.Resources.LanguageSame, info.Name), Strings.Resources.Language, Strings.Resources.OK, Strings.Resources.Settings);
                     if (confirm != ContentDialogResult.Secondary)
                     {
                         return;
@@ -559,7 +554,7 @@ namespace Unigram.Common
                 }
                 else if (info.TotalStringCount == 0)
                 {
-                    await TLMessageDialog.ShowAsync(string.Format(Strings.Resources.LanguageUnknownCustomAlert, info.Name), Strings.Resources.LanguageUnknownTitle, Strings.Resources.OK);
+                    await MessagePopup.ShowAsync(string.Format(Strings.Resources.LanguageUnknownCustomAlert, info.Name), Strings.Resources.LanguageUnknownTitle, Strings.Resources.OK);
                 }
                 else
                 {
@@ -574,7 +569,7 @@ namespace Unigram.Common
                         message = message.Insert(end + 1, $"({info.TranslationUrl})");
                     }
 
-                    var confirm = await TLMessageDialog.ShowAsync(string.Format(message, info.Name, (int)Math.Ceiling(info.TranslatedStringCount / (float)info.TotalStringCount * 100)), Strings.Resources.LanguageTitle, Strings.Resources.Change, Strings.Resources.Cancel);
+                    var confirm = await MessagePopup.ShowAsync(string.Format(message, info.Name, (int)Math.Ceiling(info.TranslatedStringCount / (float)info.TotalStringCount * 100)), Strings.Resources.LanguageTitle, Strings.Resources.Change, Strings.Resources.Cancel);
                     if (confirm != ContentDialogResult.Primary)
                     {
                         return;
@@ -634,31 +629,31 @@ namespace Unigram.Common
                 {
                     if (error.TypeEquals(ErrorType.PHONE_NUMBER_INVALID))
                     {
-                        await TLMessageDialog.ShowAsync(error.Message, Strings.Resources.InvalidPhoneNumber, Strings.Resources.OK);
+                        await MessagePopup.ShowAsync(error.Message, Strings.Resources.InvalidPhoneNumber, Strings.Resources.OK);
                     }
                     else if (error.TypeEquals(ErrorType.PHONE_CODE_EMPTY) || error.TypeEquals(ErrorType.PHONE_CODE_INVALID))
                     {
-                        await TLMessageDialog.ShowAsync(error.Message, Strings.Resources.InvalidCode, Strings.Resources.OK);
+                        await MessagePopup.ShowAsync(error.Message, Strings.Resources.InvalidCode, Strings.Resources.OK);
                     }
                     else if (error.TypeEquals(ErrorType.PHONE_CODE_EXPIRED))
                     {
-                        await TLMessageDialog.ShowAsync(error.Message, Strings.Resources.CodeExpired, Strings.Resources.OK);
+                        await MessagePopup.ShowAsync(error.Message, Strings.Resources.CodeExpired, Strings.Resources.OK);
                     }
                     else if (error.TypeEquals(ErrorType.FIRSTNAME_INVALID))
                     {
-                        await TLMessageDialog.ShowAsync(error.Message, Strings.Resources.InvalidFirstName, Strings.Resources.OK);
+                        await MessagePopup.ShowAsync(error.Message, Strings.Resources.InvalidFirstName, Strings.Resources.OK);
                     }
                     else if (error.TypeEquals(ErrorType.LASTNAME_INVALID))
                     {
-                        await TLMessageDialog.ShowAsync(error.Message, Strings.Resources.InvalidLastName, Strings.Resources.OK);
+                        await MessagePopup.ShowAsync(error.Message, Strings.Resources.InvalidLastName, Strings.Resources.OK);
                     }
                     else if (error.Message.StartsWith("FLOOD_WAIT"))
                     {
-                        await TLMessageDialog.ShowAsync(Strings.Resources.FloodWait, Strings.Resources.AppName, Strings.Resources.OK);
+                        await MessagePopup.ShowAsync(Strings.Resources.FloodWait, Strings.Resources.AppName, Strings.Resources.OK);
                     }
                     else if (error.Code != -1000)
                     {
-                        await TLMessageDialog.ShowAsync(error.Message, Strings.Resources.AppName, Strings.Resources.OK);
+                        await MessagePopup.ShowAsync(error.Message, Strings.Resources.AppName, Strings.Resources.OK);
                     }
 
                     Logs.Logger.Warning(Logs.Target.API, "account.signIn error " + error);
@@ -671,7 +666,7 @@ namespace Unigram.Common
                     phoneCode = phoneCode.Substring(0, 3) + "-" + phoneCode.Substring(3);
                 }
 
-                await TLMessageDialog.ShowAsync(string.Format(Strings.Resources.OtherLoginCode, phoneCode), Strings.Resources.AppName, Strings.Resources.OK);
+                await MessagePopup.ShowAsync(string.Format(Strings.Resources.OtherLoginCode, phoneCode), Strings.Resources.AppName, Strings.Resources.OK);
             }
         }
 
@@ -681,7 +676,7 @@ namespace Unigram.Common
             var passText = password != null ? $"{Strings.Resources.UseProxyPassword}: {password}\n" : string.Empty;
             var secretText = secret != null ? $"{Strings.Resources.UseProxySecret}: {secret}\n" : string.Empty;
             var secretInfo = secret != null ? $"\n\n{Strings.Resources.UseProxyTelegramInfo2}" : string.Empty;
-            var confirm = await TLMessageDialog.ShowAsync($"{Strings.Resources.EnableProxyAlert}\n\n{Strings.Resources.UseProxyAddress}: {server}\n{Strings.Resources.UseProxyPort}: {port}\n{userText}{passText}{secretText}\n{Strings.Resources.EnableProxyAlert2}{secretInfo}", Strings.Resources.Proxy, Strings.Resources.ConnectingConnectProxy, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync($"{Strings.Resources.EnableProxyAlert}\n\n{Strings.Resources.UseProxyAddress}: {server}\n{Strings.Resources.UseProxyPort}: {port}\n{userText}{passText}{secretText}\n{Strings.Resources.EnableProxyAlert2}{secretInfo}", Strings.Resources.Proxy, Strings.Resources.ConnectingConnectProxy, Strings.Resources.Cancel);
             if (confirm == ContentDialogResult.Primary)
             {
                 ProxyType type;
@@ -700,7 +695,7 @@ namespace Unigram.Common
 
         public static async void NavigateToStickerSet(string text)
         {
-            await StickerSetView.GetForCurrentView().ShowAsync(text);
+            await StickerSetPopup.GetForCurrentView().ShowAsync(text);
         }
 
         public static async void NavigateToUsername(IProtoService protoService, INavigationService navigation, string username, string accessToken, string post, string game, PageKind kind = PageKind.Dialog)
@@ -724,7 +719,7 @@ namespace Unigram.Common
                     {
                         if (kind == PageKind.Search)
                         {
-                            await ShareView.GetForCurrentView().ShowAsync(user, accessToken);
+                            await SharePopup.GetForCurrentView().ShowAsync(user, accessToken);
                         }
                         else
                         {
@@ -750,7 +745,7 @@ namespace Unigram.Common
             }
             else
             {
-                await TLMessageDialog.ShowAsync(Strings.Resources.NoUsernameFound, Strings.Resources.AppName, Strings.Resources.OK);
+                await MessagePopup.ShowAsync(Strings.Resources.NoUsernameFound, Strings.Resources.AppName, Strings.Resources.OK);
             }
         }
 
@@ -770,7 +765,7 @@ namespace Unigram.Common
                 }
                 else
                 {
-                    var dialog = new JoinChatView(protoService, info);
+                    var dialog = new JoinChatPopup(protoService, info);
 
                     var confirm = await dialog.ShowQueuedAsync();
                     if (confirm != ContentDialogResult.Primary)
@@ -787,15 +782,15 @@ namespace Unigram.Common
                     {
                         if (error.TypeEquals(ErrorType.FLOOD_WAIT))
                         {
-                            await TLMessageDialog.ShowAsync(Strings.Resources.FloodWait, Strings.Resources.AppName, Strings.Resources.OK);
+                            await MessagePopup.ShowAsync(Strings.Resources.FloodWait, Strings.Resources.AppName, Strings.Resources.OK);
                         }
                         else if (error.TypeEquals(ErrorType.USERS_TOO_MUCH))
                         {
-                            await TLMessageDialog.ShowAsync(Strings.Resources.JoinToGroupErrorFull, Strings.Resources.AppName, Strings.Resources.OK);
+                            await MessagePopup.ShowAsync(Strings.Resources.JoinToGroupErrorFull, Strings.Resources.AppName, Strings.Resources.OK);
                         }
                         else
                         {
-                            await TLMessageDialog.ShowAsync(Strings.Resources.JoinToGroupErrorNotExist, Strings.Resources.AppName, Strings.Resources.OK);
+                            await MessagePopup.ShowAsync(Strings.Resources.JoinToGroupErrorNotExist, Strings.Resources.AppName, Strings.Resources.OK);
                         }
                     }
                 }
@@ -804,11 +799,11 @@ namespace Unigram.Common
             {
                 if (error.TypeEquals(ErrorType.FLOOD_WAIT))
                 {
-                    await TLMessageDialog.ShowAsync(Strings.Resources.FloodWait, Strings.Resources.AppName, Strings.Resources.OK);
+                    await MessagePopup.ShowAsync(Strings.Resources.FloodWait, Strings.Resources.AppName, Strings.Resources.OK);
                 }
                 else
                 {
-                    await TLMessageDialog.ShowAsync(Strings.Resources.JoinToGroupErrorNotExist, Strings.Resources.AppName, Strings.Resources.OK);
+                    await MessagePopup.ShowAsync(Strings.Resources.JoinToGroupErrorNotExist, Strings.Resources.AppName, Strings.Resources.OK);
                 }
             }
         }
@@ -897,7 +892,7 @@ namespace Unigram.Common
 
                     if (untrust)
                     {
-                        var confirm = await TLMessageDialog.ShowAsync(string.Format(Strings.Resources.OpenUrlAlert, url), Strings.Resources.OpenUrlTitle, Strings.Resources.Open, Strings.Resources.Cancel);
+                        var confirm = await MessagePopup.ShowAsync(string.Format(Strings.Resources.OpenUrlAlert, url), Strings.Resources.OpenUrlTitle, Strings.Resources.Open, Strings.Resources.Cancel);
                         if (confirm != ContentDialogResult.Primary)
                         {
                             return;
@@ -936,7 +931,7 @@ namespace Unigram.Common
                     var flyout = new MenuFlyout();
                     flyout.Items.Add(copy);
 
-                    if (ApiInformation.IsTypePresent("Windows.UI.Xaml.Controls.Primitives.FlyoutShowOptions"))
+                    if (ApiInfo.CanUseFlyoutShowOptions)
                     {
                         // We don't want to unfocus the text are when the context menu gets opened
                         flyout.ShowAt(sender, new FlyoutShowOptions { Position = point, ShowMode = FlyoutShowMode.Transient });
@@ -965,15 +960,15 @@ namespace Unigram.Common
                     }
 
                     var type = GetEntityType(hyperlink);
-                    if (type == null)
-                    {
-                        args.Handled = false;
-                        return;
-                    }
+                    //if (type == null)
+                    //{
+                    //    args.Handled = false;
+                    //    return;
+                    //}
 
                     var flyout = new MenuFlyout();
 
-                    if (type is TextEntityTypeUrl || type is TextEntityTypeTextUrl)
+                    if (type == null || type is TextEntityTypeUrl || type is TextEntityTypeTextUrl)
                     {
                         var open = new MenuFlyoutItem { Text = Strings.Resources.Open, DataContext = link, Icon = new FontIcon { Glyph = Icons.OpenInNewWindow } };
                         open.Click += LinkOpen_Click;
@@ -1000,7 +995,7 @@ namespace Unigram.Common
                     copy.Click += LinkCopy_Click;
                     flyout.Items.Add(copy);
 
-                    if (ApiInformation.IsTypePresent("Windows.UI.Xaml.Controls.Primitives.FlyoutShowOptions"))
+                    if (ApiInfo.CanUseFlyoutShowOptions)
                     {
                         // We don't want to unfocus the text are when the context menu gets opened
                         flyout.ShowAt(sender, new FlyoutShowOptions { Position = point, ShowMode = FlyoutShowMode.Transient });
@@ -1038,7 +1033,7 @@ namespace Unigram.Common
                 flyout.Items.Add(open);
                 flyout.Items.Add(copy);
 
-                if (ApiInformation.IsTypePresent("Windows.UI.Xaml.Controls.Primitives.FlyoutShowOptions"))
+                if (ApiInfo.CanUseFlyoutShowOptions)
                 {
                     // We don't want to unfocus the text are when the context menu gets opened
                     flyout.ShowAt(sender, new FlyoutShowOptions { Position = point, ShowMode = FlyoutShowMode.Transient });

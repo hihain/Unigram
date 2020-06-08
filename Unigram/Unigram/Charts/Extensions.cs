@@ -1,5 +1,4 @@
-﻿using Unigram.Charts;
-using Microsoft.Graphics.Canvas;
+﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using System;
@@ -89,7 +88,22 @@ namespace Unigram.Charts
         public static double ToDegrees(double radians)
         {
             double degrees = (180 / Math.PI) * radians;
-            return (degrees);
+            return degrees;
+        }
+    }
+
+    public static class MathFEx
+    {
+        public static float ToRadians(float degrees)
+        {
+            float radians = ((float)Math.PI / 180) * degrees;
+            return radians;
+        }
+
+        public static float ToDegrees(float radians)
+        {
+            float degrees = (180 / (float)Math.PI) * radians;
+            return degrees;
         }
     }
 

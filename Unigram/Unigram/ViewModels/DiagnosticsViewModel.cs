@@ -8,9 +8,9 @@ using Telegram.Td;
 using Telegram.Td.Api;
 using Unigram.Collections;
 using Unigram.Common;
-using Unigram.Controls.Views;
 using Unigram.Navigation;
 using Unigram.Services;
+using Unigram.Views.Popups;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -104,22 +104,32 @@ namespace Unigram.ViewModels
         public MvxObservableCollection<DiagnosticsOption> Options { get; private set; }
         public MvxObservableCollection<DiagnosticsTag> Tags { get; private set; }
 
-        public bool PlayStickers
+        public bool ShowFilesInFolder
         {
-            get => Settings.Diagnostics.PlayStickers;
+            get => Settings.Diagnostics.ShowFilesInFolder;
             set
             {
-                Settings.Diagnostics.PlayStickers = value;
+                Settings.Diagnostics.ShowFilesInFolder = value;
                 RaisePropertyChanged();
             }
         }
 
-        public bool CacheStickers
+        public bool BubbleMeasureAlpha
         {
-            get => Settings.Diagnostics.CacheStickers;
+            get => Settings.Diagnostics.BubbleMeasureAlpha;
             set
             {
-                Settings.Diagnostics.CacheStickers = value;
+                Settings.Diagnostics.BubbleMeasureAlpha = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool BubbleKnockout
+        {
+            get => Settings.Diagnostics.BubbleKnockout;
+            set
+            {
+                Settings.Diagnostics.BubbleKnockout = value;
                 RaisePropertyChanged();
             }
         }
@@ -167,7 +177,7 @@ namespace Unigram.ViewModels
                 return new SelectRadioItem(x, Enum.GetName(typeof(VerbosityLevel), x), x == Verbosity);
             }).ToArray();
 
-            var dialog = new SelectRadioView(items);
+            var dialog = new SelectRadioPopup(items);
             dialog.Title = "Verbosity Level";
             dialog.PrimaryButtonText = Strings.Resources.OK;
             dialog.SecondaryButtonText = Strings.Resources.Cancel;
@@ -229,7 +239,7 @@ namespace Unigram.ViewModels
                 return new SelectRadioItem(x, Enum.GetName(typeof(VerbosityLevel), x), x == _value);
             }).ToArray();
 
-            var dialog = new SelectRadioView(items);
+            var dialog = new SelectRadioPopup(items);
             dialog.Title = Name;
             dialog.PrimaryButtonText = Strings.Resources.OK;
             dialog.SecondaryButtonText = Strings.Resources.Cancel;

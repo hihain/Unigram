@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Collections;
 using Unigram.Common;
-using Unigram.Controls.Views;
 using Unigram.Services;
-using Unigram.Views.BasicGroups;
-using Unigram.Views.Chats;
+using Unigram.Views.Popups;
 using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
-using ChatCreateStep2Tuple = System.Tuple<string, object>;
 
 namespace Unigram.ViewModels.BasicGroups
 {
@@ -60,7 +54,7 @@ namespace Unigram.ViewModels.BasicGroups
         public RelayCommand AddCommand { get; }
         private async void AddExecute()
         {
-            var chats = await ShareView.PickChatsAsync(Strings.Resources.SelectContacts, Items.Select(x => x.Id).ToArray());
+            var chats = await SharePopup.PickChatsAsync(Strings.Resources.SelectContacts, Items.Select(x => x.Id).ToArray());
             if (chats != null)
             {
                 Items.ReplaceWith(chats);
@@ -84,7 +78,7 @@ namespace Unigram.ViewModels.BasicGroups
                     // TODO: photo
 
                     NavigationService.NavigateToChat(chat);
-                    NavigationService.RemoveLast();
+                    NavigationService.GoBackAt(0, false);
                 }
                 else if (response is Error error)
                 {
@@ -100,7 +94,7 @@ namespace Unigram.ViewModels.BasicGroups
         public RelayCommand<StorageFile> EditPhotoCommand { get; }
         private async void EditPhotoExecute(StorageFile file)
         {
-            await Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
         }
 
         private void ContinueUploadingPhoto()

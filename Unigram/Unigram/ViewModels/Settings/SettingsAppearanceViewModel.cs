@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unigram.Common;
-using Unigram.Controls.Views;
 using Unigram.Services;
 using Unigram.Services.Navigation;
 using Unigram.Services.Updates;
+using Unigram.Views.Popups;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -79,7 +79,7 @@ namespace Unigram.ViewModels.Settings
         {
             get
             {
-                var size = (int)Theme.Current.GetValueOrDefault("MessageFontSize", ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 7) ? 14d : 15d);
+                var size = (int)Theme.Current.GetValueOrDefault("MessageFontSize", ApiInfo.IsUniversalApiContract7Present ? 14d : 15d);
                 if (_sizeToIndex.TryGetValue(size, out int index))
                 {
                     return (double)index;
@@ -229,7 +229,7 @@ namespace Unigram.ViewModels.Settings
                 new SelectRadioItem(DistanceUnits.Miles, Strings.Resources.DistanceUnitsMiles, DistanceUnits == DistanceUnits.Miles),
             };
 
-            var dialog = new SelectRadioView(items);
+            var dialog = new SelectRadioPopup(items);
             dialog.Title = Strings.Resources.DistanceUnitsTitle;
             dialog.PrimaryButtonText = Strings.Resources.OK;
             dialog.SecondaryButtonText = Strings.Resources.Cancel;
@@ -244,7 +244,7 @@ namespace Unigram.ViewModels.Settings
         public RelayCommand EmojiSetCommand { get; }
         private async void EmojiSetExecute()
         {
-            await new SettingsEmojiSetView(ProtoService, _emojiSetService, Aggregator).ShowQueuedAsync();
+            await new SettingsEmojiSetPopup(ProtoService, _emojiSetService, Aggregator).ShowQueuedAsync();
 
             var emojiSet = Settings.Appearance.EmojiSet;
             EmojiSet = emojiSet.Title;

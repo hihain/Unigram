@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,29 +117,148 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdaptiveWideSetting" xml:space="preserve">
+    <value>Geniş Ekranlara Göre Düzeni Uyarla</value>
+    <comment>SettingsAdvancedPage</comment>
+  </data>
+  <data name="CallSettingInput" xml:space="preserve">
+    <value>Giriş aygıtını seçin</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingInputTitle" xml:space="preserve">
+    <value>Mikrofon</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingOutput" xml:space="preserve">
+    <value>Çıkış aygıtını seçin</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingOutputTitle" xml:space="preserve">
+    <value>Hoparlör ve Kulaklık</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingsTitle" xml:space="preserve">
+    <value>Arama Ayarları</value>
+    <comment>SettingsAdvancedPage</comment>
+  </data>
   <data name="Chats" xml:space="preserve">
     <value>Sohbetler</value>
   </data>
   <data name="CopyImage" xml:space="preserve">
-    <value>Resmi kopyala</value>
+    <value>Resmi Kopyala</value>
+  </data>
+  <data name="Cut" xml:space="preserve">
+    <value>Kes</value>
   </data>
   <data name="DeletedMessage" xml:space="preserve">
-    <value>Silinen mesaj</value>
+    <value>Mesaj Silindi</value>
+  </data>
+  <data name="EditLink" xml:space="preserve">
+    <value>Bağlantıyı Düzenle</value>
+  </data>
+  <data name="Formatting" xml:space="preserve">
+    <value>Biçimlendirme</value>
+  </data>
+  <data name="FormattingHide" xml:space="preserve">
+    <value>Araç Çubuğunu Gizle</value>
+  </data>
+  <data name="FormattingShow" xml:space="preserve">
+    <value>Araç Çubuğunu Göster</value>
+  </data>
+  <data name="InputVolume" xml:space="preserve">
+    <value>Mikrofon ses düzeyi</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="IPv6ToggleSetting" xml:space="preserve">
+    <value>IPv6 üzerinden bağlan</value>
+    <comment>SettingsAdvancedPage</comment>
   </data>
   <data name="News" xml:space="preserve">
-    <value>Haberler</value>
+    <value>Duyurular</value>
   </data>
   <data name="OriginalMessage" xml:space="preserve">
-    <value>özgün</value>
-    <comment>Özgün mesajın tarih ve saati</comment>
+    <value>Özgün</value>
+    <comment>Original message date and time</comment>
+  </data>
+  <data name="OutputVolume" xml:space="preserve">
+    <value>Sesin çıkış düzeyi</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Yapıştır</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Yinele</value>
+  </data>
+  <data name="ReplaceEmoji" xml:space="preserve">
+    <value>İfadeleri emojiye dönüştür</value>
+    <comment>SettingsAppearancePage</comment>
   </data>
   <data name="SaveAs" xml:space="preserve">
-    <value>Farklı kaydet...</value>
+    <value>Farklı Kaydet...</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>Seç</value>
   </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Tümünü Seç</value>
+  </data>
+  <data name="SettingIsTextFormattingVisible" xml:space="preserve">
+    <value>Biçimlendirme seçeneklerini göster</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
   <data name="ShowInFolder" xml:space="preserve">
-    <value>Klasörde göster</value>
+    <value>Klasörde Göster</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Açık</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="ThemeSystemTheme" xml:space="preserve">
+    <value>Windows-Standart</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Geri al</value>
+  </data>
+  <data name="SettingPlayStickers" xml:space="preserve">
+    <value>Hareketli çıkartmaları oynat</value>
+    <comment>SettingStickersPage</comment>
+  </data>
+  <data name="SettingsDisableHighlightWords" xml:space="preserve">
+    <value>Yazım hatasını vurgulamayı kaldır</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="SettingsDisableAutocorrectWords" xml:space="preserve">
+    <value>Otomatik düzeltmeyi kaldır</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="SettingsFoldersTabsAtTheTop" xml:space="preserve">
+    <value>Klasörleri Yukarıda Göster</value>
+    <comment>FoldersPage</comment>
+  </data>
+  <data name="SettingsFoldersTabsOnTheLeft" xml:space="preserve">
+    <value>Klasörleri Sol Kenarda Göster</value>
+    <comment>FoldersPage</comment>
+  </data>
+  <data name="SettingsFoldersTabView" xml:space="preserve">
+    <value>Klasör Listesinin Konumu</value>
+    <comment>FoldersPage</comment>
+  </data>
+  <data name="SettingsFoldersTabViewHint" xml:space="preserve">
+    <value>Çok sayıda klasörünüz varsa, bunları sol tarafa taşıyın.</value>
+    <comment>FoldersPage</comment>
+  </data>
+  <data name="SettingsStorageOtherChats" xml:space="preserve">
+    <value>Diğer Sohbetler</value>
+    <comment>SettingsStoragePage</comment>
+  </data>
+  <data name="ShareRemoveCaptions" xml:space="preserve">
+    <value>Kopyalardan Medya Metnini Kaldır</value>
+    <comment>SharePopup</comment>
+  </data>
+  <data name="ShareSendAsCopy" xml:space="preserve">
+    <value>Kopya Olarak Gönder</value>
+    <comment>SharePopup</comment>
   </data>
 </root>

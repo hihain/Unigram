@@ -1,13 +1,10 @@
-﻿using Telegram.Td.Api;
-using Unigram.Common;
-using Unigram.Controls;
-using Unigram.ViewModels.Settings;
-using Windows.Foundation.Metadata;
+﻿using Unigram.ViewModels.Settings;
+using Windows.ApplicationModel;
 using Windows.UI.Xaml.Controls;
 
 namespace Unigram.Views.Settings
 {
-    public sealed partial class SettingsAdvancedPage : Page
+    public sealed partial class SettingsAdvancedPage : HostedPage
     {
         public SettingsAdvancedViewModel ViewModel => DataContext as SettingsAdvancedViewModel;
 
@@ -15,7 +12,12 @@ namespace Unigram.Views.Settings
         {
             InitializeComponent();
             DataContext = TLContainer.Current.Resolve<SettingsAdvancedViewModel>();
-
+#if CLOUDUPDATES
+            if (Package.Current.SignatureKind != PackageSignatureKind.Store)
+            {
+                FindName(nameof(UpdatePanel));
+            }
+#endif
 #if DESKTOP_BRIDGE
             FindName(nameof(TraySwitch));
 
@@ -30,9 +32,9 @@ namespace Unigram.Views.Settings
 #endif
         }
 
-        private void OnSizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
+        private void Shortcuts_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            AdaptiveWide.Visibility = e.NewSize.Width >= 880 ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            Frame.Navigate(typeof(SettingsShortcutsPage));
         }
 
         private void VoIP_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)

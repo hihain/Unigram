@@ -62,7 +62,7 @@ namespace Unigram.Controls
 
             this.BeginOnUIThread(async () =>
             {
-                var confirm = await TLMessageDialog.ShowAsync("In order to play voice messages you must install Web Media Extensions from the Microsoft Store.", Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
+                var confirm = await MessagePopup.ShowAsync("In order to play voice messages you must install Web Media Extensions from the Microsoft Store.", Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
                 if (confirm != ContentDialogResult.Primary)
                 {
                     return;
@@ -151,7 +151,6 @@ namespace Unigram.Controls
                 Visibility = Visibility.Visible;
             }
 
-
             PlaybackButton.Glyph = _playbackService.PlaybackState == MediaPlaybackState.Playing ? "\uE103" : "\uE102";
             Automation.SetToolTip(PlaybackButton, _playbackService.PlaybackState == MediaPlaybackState.Playing ? Strings.Resources.AccActionPause : Strings.Resources.AccActionPlay);
 
@@ -163,14 +162,8 @@ namespace Unigram.Controls
 
             var webPage = message.Content is MessageText text ? text.WebPage : null;
 
-            if (message.Content is MessageVoiceNote || webPage?.VoiceNote != null)
+            if (message.Content is MessageVoiceNote || message.Content is MessageVideoNote || webPage?.VoiceNote != null || webPage?.VideoNote != null)
             {
-                var voiceNote = message.Content is MessageVoiceNote messageVoiceNote ? messageVoiceNote?.VoiceNote : webPage?.VoiceNote;
-                if (voiceNote == null)
-                {
-                    return;
-                }
-
                 var date = BindConvert.Current.DateTime(message.Date);
                 var user = _cacheService.GetUser(message.SenderUserId);
                 if (user == null)
@@ -203,16 +196,6 @@ namespace Unigram.Controls
                 {
                     TitleLabel.Text = audio.Title;
                     SubtitleLabel.Text = "- " + audio.Performer;
-                }
-                else if (audio.Performer.Length > 0)
-                {
-                    TitleLabel.Text = Strings.Resources.AudioUnknownTitle;
-                    SubtitleLabel.Text = "- " + audio.Performer;
-                }
-                else if (audio.Title.Length > 0)
-                {
-                    TitleLabel.Text = audio.Title;
-                    SubtitleLabel.Text = Strings.Resources.AudioUnknownArtist;
                 }
                 else
                 {

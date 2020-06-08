@@ -7,16 +7,31 @@ using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
-using Unigram.Controls.Views;
+using Unigram.Converters;
 using Unigram.Navigation;
 using Unigram.Services;
+using Unigram.Services.Updates;
+using Unigram.ViewModels.Folders;
+using Unigram.Views;
 using Unigram.Views.Folders;
+using Unigram.Views.Popups;
+using Windows.System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.ViewModels
 {
-    public class MainViewModel : TLMultipleViewModelBase, IHandle<UpdateServiceNotification>, IHandle<UpdateUnreadMessageCount>, IHandle<UpdateChatFilters>
+    public class MainViewModel : TLMultipleViewModelBase,
+        IHandle<UpdateServiceNotification>,
+        IHandle<UpdateUnreadMessageCount>,
+        IHandle<UpdateUnreadChatCount>,
+        IHandle<UpdateChatFilters>
+#if CLOUDUPDATES
+        ,
+        IHandle<UpdateAppVersion>,
+        IHandle<UpdateWindowActivated>
+#endif
     {
         private readonly INotificationsService _pushService;
         private readonly IContactsService _contactsService;
@@ -26,13 +41,19 @@ namespace Unigram.ViewModels
         private readonly ISessionService _sessionService;
         private readonly IVoIPService _voipService;
         private readonly IEmojiSetService _emojiSetService;
+        private readonly ICloudUpdateService _cloudUpdateService;
         private readonly IPlaybackService _playbackService;
         private readonly IShortcutsService _shortcutService;
 
         public bool Refresh { get; set; }
 
+#if CLOUDUPDATES
+        public MainViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService pushService, IContactsService contactsService, IVibrationService vibrationService, IPasscodeService passcodeService, ILifetimeService lifecycle, ISessionService session, IVoIPService voipService, ISettingsSearchService settingsSearchService, IEmojiSetService emojiSetService, ICloudUpdateService cloudUpdateService, IPlaybackService playbackService, IShortcutsService shortcutService)
+            : base(protoService, cacheService, settingsService, aggregator)
+#else
         public MainViewModel(IProtoService protoService, ICacheService cacheService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService pushService, IContactsService contactsService, IVibrationService vibrationService, IPasscodeService passcodeService, ILifetimeService lifecycle, ISessionService session, IVoIPService voipService, ISettingsSearchService settingsSearchService, IEmojiSetService emojiSetService, IPlaybackService playbackService, IShortcutsService shortcutService)
             : base(protoService, cacheService, settingsService, aggregator)
+#endif
         {
             _pushService = pushService;
             _contactsService = contactsService;
@@ -42,6 +63,9 @@ namespace Unigram.ViewModels
             _sessionService = session;
             _voipService = voipService;
             _emojiSetService = emojiSetService;
+#if CLOUDUPDATES
+            _cloudUpdateService = cloudUpdateService;
+#endif
             _playbackService = playbackService;
             _shortcutService = shortcutService;
 
@@ -72,7 +96,9 @@ namespace Unigram.ViewModels
             CreateSecretChatCommand = new RelayCommand(CreateSecretChatExecute);
 
             SetupFiltersCommand = new RelayCommand(SetupFiltersExecute);
-
+#if CLOUDUPDATES
+            UpdateAppCommand = new RelayCommand(UpdateAppExecute);
+#endif
             FilterEditCommand = new RelayCommand<ChatFilterViewModel>(FilterEditExecute);
             FilterAddCommand = new RelayCommand<ChatFilterViewModel>(FilterAddExecute);
             FilterDeleteCommand = new RelayCommand<ChatFilterViewModel>(FilterDeleteExecute);
@@ -133,12 +159,37 @@ namespace Unigram.ViewModels
             set => Set(ref _unreadUnmutedCount, value);
         }
 
+        private bool _isUpdateAvailable;
+        public bool IsUpdateAvailable
+        {
+            get => _isUpdateAvailable;
+            set => Set(ref _isUpdateAvailable, value);
+        }
+
         public RelayCommand ReturnToCallCommand { get; }
         private void ReturnToCallExecute()
         {
             _voipService.Show();
         }
+#if CLOUDUPDATES
+        public void Handle(UpdateAppVersion update)
+        {
+            BeginOnUIThread(() => UpdateAppVersion(update.Update));
+        }
 
+        public void Handle(UpdateWindowActivated update)
+        {
+            if (update.IsActive)
+            {
+                _ = _cloudUpdateService.UpdateAsync(false);
+            }
+        }
+
+        private void UpdateAppVersion(CloudUpdate update)
+        {
+            IsUpdateAvailable = update?.File != null;
+        }
+#endif
         public void Handle(UpdateServiceNotification update)
         {
 
@@ -146,16 +197,28 @@ namespace Unigram.ViewModels
 
         public void Handle(UpdateUnreadMessageCount update)
         {
-            if (update.ChatList is ChatListArchive)
+            if (update.ChatList is ChatListMain)
             {
-                return;
+                BeginOnUIThread(() =>
+                {
+                    UnreadCount = update.UnreadCount;
+                    UnreadUnmutedCount = update.UnreadUnmutedCount;
+                    UnreadMutedCount = update.UnreadCount - update.UnreadUnmutedCount;
+                });
             }
+        }
 
+        public void Handle(UpdateUnreadChatCount update)
+        {
             BeginOnUIThread(() =>
             {
-                UnreadCount = update.UnreadCount;
-                UnreadUnmutedCount = update.UnreadUnmutedCount;
-                UnreadMutedCount = update.UnreadCount - update.UnreadUnmutedCount;
+                foreach (var filter in _filters)
+                {
+                    if (filter.ChatList is ChatListFilter && filter.ChatList.ListEquals(update.ChatList))
+                    {
+                        filter.UpdateCount(update);
+                    }
+                }
             });
         }
 
@@ -171,7 +234,7 @@ namespace Unigram.ViewModels
                 var selected = SelectedFilter?.ChatFilterId ?? Constants.ChatListMain;
                 //var origin = chatFilters.Select(x => Filters.FirstOrDefault(y => y.ChatFilterId == x.ChatFilterId));
 
-                Merge(Filters, new[] { new ChatFilterInfo { ChatFilterId = Constants.ChatListMain, Title = Strings.Resources.FilterAllChats, Emoji = "\U0001F4BC" } }.Union(chatFilters).ToArray());
+                Merge(Filters, new[] { new ChatFilterInfo { Id = Constants.ChatListMain, Title = Strings.Resources.FilterAllChats, IconName = "All" } }.Union(chatFilters).ToArray());
 
                 if (Chats.Items.ChatList is ChatListFilter already && already.ChatFilterId != selected)
                 {
@@ -184,13 +247,18 @@ namespace Unigram.ViewModels
 
                 foreach (var filter in _filters)
                 {
+                    if (filter.ChatList is ChatListMain)
+                    {
+                        continue;
+                    }
+
                     var unreadCount = CacheService.GetUnreadCount(filter.ChatList);
                     if (unreadCount == null)
                     {
                         continue;
                     }
 
-                    filter.UnreadCount = unreadCount.UnreadChatCount.UnreadUnmutedCount;
+                    filter.UpdateCount(unreadCount.UnreadChatCount);
                 }
             }
             else
@@ -211,7 +279,7 @@ namespace Unigram.ViewModels
 
                     for (int j = 0; j < origin.Count; j++)
                     {
-                        if (origin[j].ChatFilterId == user.ChatFilterId)
+                        if (origin[j].Id == user.ChatFilterId)
                         {
                             index = j;
                             break;
@@ -232,7 +300,7 @@ namespace Unigram.ViewModels
 
                     for (int j = 0; j < destination.Count; j++)
                     {
-                        if (destination[j].ChatFilterId == filter.ChatFilterId)
+                        if (destination[j].ChatFilterId == filter.Id)
                         {
                             destination[j].Update(filter);
 
@@ -300,7 +368,9 @@ namespace Unigram.ViewModels
             //Dispatch(() => Dialogs.LoadFirstSlice());
             //Dispatch(() => Contacts.getTLContacts());
             //Dispatch(() => Contacts.GetSelfAsync());
-
+#if CLOUDUPDATES
+            UpdateAppVersion(_cloudUpdateService.NextUpdate);
+#endif
             UpdateChatFilters(CacheService.ChatFilters);
 
             var unreadCount = CacheService.GetUnreadCount(new ChatListMain());
@@ -312,6 +382,9 @@ namespace Unigram.ViewModels
                 Task.Run(() => _pushService.RegisterAsync());
                 Task.Run(() => _contactsService.JumpListAsync());
                 Task.Run(() => _emojiSetService.UpdateAsync());
+#if CLOUDUPDATES
+                Task.Run(() => _cloudUpdateService.UpdateAsync(false));
+#endif
             }
 
             return base.OnNavigatedToAsync(parameter, mode, state);
@@ -337,11 +410,24 @@ namespace Unigram.ViewModels
         }
 
 
+#if CLOUDUPDATES
+        public RelayCommand UpdateAppCommand { get; }
+        private async void UpdateAppExecute()
+        {
+            var file = _cloudUpdateService.NextUpdate?.File;
+            if (file == null)
+            {
+                return;
+            }
 
+            await Launcher.LaunchFileAsync(file);
+            Application.Current.Exit();
+        }
+#endif
         public RelayCommand CreateSecretChatCommand { get; }
         private async void CreateSecretChatExecute()
         {
-            var selected = await ShareView.PickChatAsync(Strings.Resources.NewSecretChat);
+            var selected = await SharePopup.PickChatAsync(Strings.Resources.NewSecretChat);
             var user = CacheService.GetUser(selected);
 
             if (user == null)
@@ -349,7 +435,7 @@ namespace Unigram.ViewModels
                 return;
             }
 
-            var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.AreYouSureSecretChat, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(Strings.Resources.AreYouSureSecretChat, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
@@ -378,15 +464,16 @@ namespace Unigram.ViewModels
         public RelayCommand<ChatFilterViewModel> FilterEditCommand { get; }
         private async void FilterAddExecute(ChatFilterViewModel filter)
         {
-            // Meh I'm lazy
-            Logs.Logger.Warning(Logs.Target.API, "He was lazy. (Not yet implemented!)");
-            await Task.CompletedTask;
+            var viewModel = TLContainer.Current.Resolve<FolderViewModel>();
+            await viewModel.OnNavigatedToAsync(filter.ChatFilterId, NavigationMode.New, null);
+            await viewModel.AddIncludeAsync();
+            await viewModel.SendAsync();
         }
 
         public RelayCommand<ChatFilterViewModel> FilterDeleteCommand { get; }
         private async void FilterDeleteExecute(ChatFilterViewModel filter)
         {
-            var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.FilterDeleteAlert, Strings.Resources.FilterDelete, Strings.Resources.Delete, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(Strings.Resources.FilterDeleteAlert, Strings.Resources.FilterDelete, Strings.Resources.Delete, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
@@ -406,21 +493,20 @@ namespace Unigram.ViewModels
 
         public ChatFilterViewModel(ChatFilterInfo info)
         {
-            if (info.ChatFilterId == Constants.ChatListMain)
+            if (info.Id == Constants.ChatListMain)
             {
                 ChatList = new ChatListMain();
             }
             else
             {
-                ChatList = new ChatListFilter(info.ChatFilterId);
-                ChatList = new ChatListArchive();
+                ChatList = new ChatListFilter(info.Id);
             }
 
-            ChatFilterId = info.ChatFilterId;
+            ChatFilterId = info.Id;
 
             _title = info.Title;
-            _emoji = info.Emoji;
-            _glyph = ChatFilterIcon.FromEmoji(info.Emoji);
+            _icon = Icons.ParseFilter(info.IconName);
+            _iconUri = new Uri($"ms-appx:///Assets/Filters/{_icon}.png");
         }
 
         private ChatFilterViewModel()
@@ -431,8 +517,8 @@ namespace Unigram.ViewModels
         public void Update(ChatFilterInfo info)
         {
             Title = info.Title;
-            Emoji = info.Emoji;
-            Glyph = ChatFilterIcon.FromEmoji(info.Emoji);
+            Icon = Icons.ParseFilter(info.IconName);
+            IconUri = new Uri($"ms-appx:///Assets/Filters/{_icon}.png");
         }
 
         public ChatList ChatList { get; }
@@ -446,18 +532,18 @@ namespace Unigram.ViewModels
             set => Set(ref _title, value);
         }
 
-        private string _emoji;
-        public string Emoji
+        private ChatFilterIcon _icon;
+        public ChatFilterIcon Icon
         {
-            get => _emoji;
-            set => Set(ref _emoji, value);
+            get => _icon;
+            set => Set(ref _icon, value);
         }
 
-        private string _glyph;
-        public string Glyph
+        private Uri _iconUri;
+        public Uri IconUri
         {
-            get => _glyph;
-            set => Set(ref _glyph, value);
+            get => _iconUri;
+            set => Set(ref _iconUri, value);
         }
 
         private int _unreadCount;
@@ -466,66 +552,60 @@ namespace Unigram.ViewModels
             get => _unreadCount;
             set => Set(ref _unreadCount, value);
         }
+
+        private int _unreadUnmutedCount;
+        public int UnreadUnmutedCount
+        {
+            get => _unreadUnmutedCount;
+            set => Set(ref _unreadUnmutedCount, value);
+        }
+
+        private int _unreadMutedCount;
+        public int UnreadMutedCount
+        {
+            get => _unreadMutedCount;
+            set => Set(ref _unreadMutedCount, value);
+        }
+
+        public bool ShowUnmuted => _unreadUnmutedCount > 0;
+        public bool ShowMuted => _unreadMutedCount > 0 && _unreadUnmutedCount == 0;
+
+        public void UpdateCount(UpdateUnreadChatCount update)
+        {
+            UnreadCount = update.UnreadCount;
+            UnreadUnmutedCount = update.UnreadUnmutedCount;
+            UnreadMutedCount = update.UnreadCount - update.UnreadUnmutedCount;
+
+            RaisePropertyChanged(() => ShowUnmuted);
+            RaisePropertyChanged(() => ShowMuted);
+        }
     }
 
-    public class ChatFilterIcon
+    public enum ChatFilterIcon
     {
-        public string Emoji { get; set; }
-        public string Glyph { get; set; }
-
-        private static readonly Dictionary<string, ChatFilterIcon> _map;
-        public static IList<ChatFilterIcon> Items { get; }
-
-        public static string Default { get; } = "\U0001F4C1";
-
-        public static string FromEmoji(string emoji)
-        {
-            if (_map.TryGetValue(emoji, out ChatFilterIcon icon))
-            {
-                return icon.Glyph;
-            }
-
-            return Items[0].Glyph;
-        }
-
-        static ChatFilterIcon()
-        {
-            Items = new ChatFilterIcon[]
-            {
-                new ChatFilterIcon("\U0001F431", "\uF1AD"),
-                new ChatFilterIcon("\U0001F451", ""),
-                new ChatFilterIcon("\u2B50",     "\uE734"),
-                new ChatFilterIcon("\U0001F339", ""),
-                new ChatFilterIcon("\U0001F3AE", "\uE7FC"),
-                new ChatFilterIcon("\U0001F3E0", "\uE80F"),
-                new ChatFilterIcon("\u2764",     "\uEB51"),
-                new ChatFilterIcon("\U0001F3AD", ""),
-                new ChatFilterIcon("\U0001F378", ""),
-                new ChatFilterIcon("\u26BD", ""),
-                new ChatFilterIcon("\U0001F393", "\uE7BE"),
-                new ChatFilterIcon("\U0001F4C8", ""),
-                new ChatFilterIcon("\u2708",     "\uE709"),
-                new ChatFilterIcon("\U0001F4BC", "\uE821"),
-                new ChatFilterIcon("\U0001F4AC", "\uE8F2"),
-                new ChatFilterIcon("\u2705", ""),
-                new ChatFilterIcon("\U0001F514", ""),
-
-                new ChatFilterIcon("\U0001F916", "\uE99A"),
-                new ChatFilterIcon("\U0001F4E2", "\uE789"),
-                new ChatFilterIcon("\U0001F465", "\uE902"),
-                new ChatFilterIcon("\U0001F464", "\uE77B"),
-                new ChatFilterIcon("\U0001F4C1", "\uF12B"),
-                new ChatFilterIcon("\U0001F4CB", "\uEA37"),
-            };
-             
-            _map = Items.ToDictionary(x => x.Emoji, y => y);
-        }
-
-        private ChatFilterIcon(string emoji, string glyph)
-        {
-            Emoji = emoji;
-            Glyph = string.IsNullOrEmpty(glyph) ? emoji : glyph;
-        }
+        Custom,
+        All,
+        Unread,
+        Unmuted,
+        Bots,
+        Channels,
+        Groups,
+        Private,
+        Setup,
+        Cat,
+        Crown,
+        Favorite,
+        Flower,
+        Game,
+        Home,
+        Love,
+        Mask,
+        Party,
+        Sport,
+        Study,
+        Trade,
+        Travel,
+        Work
     }
 
     public class ChatFilterCollection : ObservableCollection<ChatFilterViewModel>, IKeyIndexMapping

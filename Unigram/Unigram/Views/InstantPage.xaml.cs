@@ -30,7 +30,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Unigram.Views
 {
-    public sealed partial class InstantPage : Page, IMessageDelegate, IHandle<UpdateFile>
+    public sealed partial class InstantPage : HostedPage, IMessageDelegate, IHandle<UpdateFile>
     {
         public InstantViewModel ViewModel => DataContext as InstantViewModel;
 
@@ -41,12 +41,14 @@ namespace Unigram.Views
         private FileContext<Tuple<IContentWithFile, MessageViewModel>> _filesMap = new FileContext<Tuple<IContentWithFile, MessageViewModel>>();
         private FileContext<Image> _iconsMap = new FileContext<Image>();
 
+        private List<(AnimationContent, AnimationView)> _animations = new List<(AnimationContent, AnimationView)>();
+
         public InstantPage()
         {
             InitializeComponent();
             DataContext = TLContainer.Current.Resolve<InstantViewModel>();
 
-            if (ApiInformation.IsEnumNamedValuePresent("Windows.UI.Xaml.Controls.Primitives.FlyoutPlacementMode", "BottomEdgeAlignedRight"))
+            if (ApiInfo.CanUseNewFlyoutPlacementMode)
             {
                 EllipsisFlyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedRight;
             }
@@ -69,6 +71,15 @@ namespace Unigram.Views
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             ViewModel.Aggregator.Unsubscribe(this);
+
+            foreach (var animation in _animations)
+            {
+                try
+                {
+                    animation.Item1.Children.Remove(animation.Item2);
+                }
+                catch { }
+            }
         }
 
         private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
@@ -93,6 +104,22 @@ namespace Unigram.Views
                     {
                         panel.Item2.UpdateFile(update.File);
                         panel.Item1.UpdateFile(panel.Item2, update.File);
+
+                        if (panel.Item1 is AnimationContent content && panel.Item2.Content is MessageAnimation animation)
+                        {
+                            if (update.File.Local.IsDownloadingCompleted && update.File.Id == animation.Animation.AnimationValue.Id)
+                            {
+                                var presenter = new AnimationView();
+                                presenter.AutoPlay = true;
+                                presenter.IsLoopingEnabled = true;
+                                presenter.IsHitTestVisible = false;
+                                presenter.Source = new Uri("file:///" + update.File.Local.Path);
+
+                                content.Children.Add(presenter);
+
+                                _animations.Add((content, presenter));
+                            }
+                        }
                     }
 
                     if (update.File.Local.IsDownloadingCompleted && !update.File.Remote.IsUploadingActive)
@@ -981,7 +1008,7 @@ namespace Unigram.Views
 
             if (block.Video.Thumbnail != null)
             {
-                _filesMap[block.Video.Thumbnail.Photo.Id].Add(Tuple.Create(content as IContentWithFile, message));
+                _filesMap[block.Video.Thumbnail.File.Id].Add(Tuple.Create(content as IContentWithFile, message));
             }
 
             _filesMap[block.Video.VideoValue.Id].Add(Tuple.Create(content as IContentWithFile, message));
@@ -1012,9 +1039,22 @@ namespace Unigram.Views
             content.ClearValue(MaxWidthProperty);
             content.ClearValue(MaxHeightProperty);
 
+            if (block.Animation.AnimationValue.Local.IsDownloadingCompleted)
+            {
+                var presenter = new AnimationView();
+                presenter.AutoPlay = true;
+                presenter.IsLoopingEnabled = true;
+                presenter.IsHitTestVisible = false;
+                presenter.Source = new Uri("file:///" + block.Animation.AnimationValue.Local.Path);
+
+                content.Children.Add(presenter);
+
+                _animations.Add((content, presenter));
+            }
+
             if (block.Animation.Thumbnail != null)
             {
-                _filesMap[block.Animation.Thumbnail.Photo.Id].Add(Tuple.Create(content as IContentWithFile, message));
+                _filesMap[block.Animation.Thumbnail.File.Id].Add(Tuple.Create(content as IContentWithFile, message));
             }
 
             _filesMap[block.Animation.AnimationValue.Id].Add(Tuple.Create(content as IContentWithFile, message));
@@ -1139,7 +1179,7 @@ namespace Unigram.Views
 
                     if (videoBlock.Video.Thumbnail != null)
                     {
-                        _filesMap[videoBlock.Video.Thumbnail.Photo.Id].Add(Tuple.Create(content as IContentWithFile, message));
+                        _filesMap[videoBlock.Video.Thumbnail.File.Id].Add(Tuple.Create(content as IContentWithFile, message));
                     }
 
                     _filesMap[videoBlock.Video.VideoValue.Id].Add(Tuple.Create(content as IContentWithFile, message));

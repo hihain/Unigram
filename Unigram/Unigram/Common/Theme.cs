@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unigram.Services;
 using Unigram.Services.Settings;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 
 namespace Unigram.Common
@@ -37,7 +31,7 @@ namespace Unigram.Common
 
                 this.Add("MessageServiceBackgroundColor", GetColorOrDefault("MessageServiceBackgroundBrush", Color.FromArgb(0x66, 0x7A, 0x8A, 0x96)));
 
-                this.Add("MessageFontSize", GetValueOrDefault("MessageFontSize", ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 7) ? 14d : 15d));
+                this.Add("MessageFontSize", GetValueOrDefault("MessageFontSize", ApiInfo.IsUniversalApiContract7Present ? 14d : 15d));
 
                 var emojiSet = SettingsService.Current.Appearance.EmojiSet;
                 switch (emojiSet.Id)
@@ -114,7 +108,7 @@ namespace Unigram.Common
             MergedDictionaries[0].MergedDictionaries.Clear();
             MergedDictionaries[0].MergedDictionaries.Add(dict);
 
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            if (ApiInfo.HasStatusBar)
             {
                 try
                 {
@@ -179,7 +173,7 @@ namespace Unigram.Common
                 MergedDictionaries[0].MergedDictionaries.Clear();
                 MergedDictionaries[0].MergedDictionaries.Add(dict);
 
-                if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+                if (ApiInfo.HasStatusBar)
                 {
                     TLWindowContext.GetForCurrentView().UpdateTitleBar();
                 }

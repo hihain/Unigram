@@ -2,12 +2,12 @@
 using System.Linq;
 using Telegram.Td.Api;
 using Unigram.Controls;
-using Unigram.Controls.Views;
 using Unigram.Native;
 using Unigram.Navigation;
 using Unigram.Services;
 using Unigram.Services.Navigation;
 using Unigram.Views;
+using Unigram.Views.Popups;
 using Unigram.Views.SignIn;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -164,7 +164,7 @@ namespace Unigram.Common
             titleBar.ButtonHoverBackgroundColor = buttonHover;
 
             // Mobile Status Bar
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            if (ApiInfo.HasStatusBar)
             {
                 var backgroundBrush = Application.Current.Resources["PageHeaderBackgroundBrush"] as SolidColorBrush;
                 var foregroundBrush = Application.Current.Resources["PageHeaderForegroundBrush"] as SolidColorBrush;
@@ -178,23 +178,8 @@ namespace Unigram.Common
 
         #endregion
 
-        private bool? _apiAvailable;
-
         private CoreWindowActivationMode _activationMode;
-        public CoreWindowActivationMode ActivationMode
-        {
-            get
-            {
-                _apiAvailable = _apiAvailable ?? ApiInformation.IsReadOnlyPropertyPresent("Windows.UI.Core.CoreWindow", "ActivationMode");
-
-                if (_apiAvailable == true)
-                {
-                    return _window.CoreWindow.ActivationMode;
-                }
-
-                return _activationMode;
-            }
-        }
+        public CoreWindowActivationMode ActivationMode => ApiInfo.IsUniversalApiContract5Present ? _window.CoreWindow.ActivationMode : _activationMode;
 
         public ContactPanel ContactPanel { get; private set; }
 
@@ -251,7 +236,7 @@ namespace Unigram.Common
                     case AuthorizationStateWaitPassword waitPassword:
                         if (!string.IsNullOrEmpty(waitPassword.RecoveryEmailAddressPattern))
                         {
-                            await TLMessageDialog.ShowAsync(string.Format(Strings.Resources.RestoreEmailSent, waitPassword.RecoveryEmailAddressPattern), Strings.Resources.AppName, Strings.Resources.OK);
+                            await MessagePopup.ShowAsync(string.Format(Strings.Resources.RestoreEmailSent, waitPassword.RecoveryEmailAddressPattern), Strings.Resources.AppName, Strings.Resources.OK);
                         }
 
                         service.Navigate(typeof(SignInPasswordPage));
@@ -312,7 +297,7 @@ namespace Unigram.Common
 
                 var query = "tg://";
 
-                if (ApiInformation.IsPropertyPresent("Windows.ApplicationModel.DataTransfer.ShareTarget.ShareOperation", "Contacts"))
+                if (ApiInfo.CanShareContacts)
                 {
                     var contactId = await ContactsService.GetContactIdAsync(share.ShareOperation.Contacts.FirstOrDefault());
                     if (contactId is int userId)
@@ -431,7 +416,7 @@ namespace Unigram.Common
                     service.NavigateToMain(string.Empty);
                 }
 
-                await new ThemePreviewView(file.Files[0].Path).ShowQueuedAsync();
+                await new ThemePreviewPopup(file.Files[0].Path).ShowQueuedAsync();
             }
             else
             {
@@ -543,7 +528,7 @@ namespace Unigram.Common
         {
             Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().Title = text;
 
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            if (ApiInfo.HasStatusBar)
             {
                 StatusBar.GetForCurrentView().ProgressIndicator.Text = text;
                 await StatusBar.GetForCurrentView().ProgressIndicator.ShowAsync();
@@ -554,7 +539,7 @@ namespace Unigram.Common
         {
             Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().Title = string.Empty;
 
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            if (ApiInfo.HasStatusBar)
             {
                 StatusBar.GetForCurrentView().ProgressIndicator.Text = string.Empty;
                 await StatusBar.GetForCurrentView().ProgressIndicator.HideAsync();

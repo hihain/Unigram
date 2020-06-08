@@ -1,19 +1,13 @@
-﻿using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.Effects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Collections;
 using Unigram.Common;
-using Unigram.Controls.Views;
-using Unigram.Native;
 using Unigram.Services;
-using Unigram.Services.Updates;
 using Unigram.ViewModels.Delegates;
-using Windows.Foundation;
+using Unigram.Views.Popups;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml.Navigation;
@@ -282,7 +276,7 @@ namespace Unigram.ViewModels
             var response = await ProtoService.SendAsync(new GetBackgroundUrl(background.Name, background.Type));
             if (response is HttpUrl url)
             {
-                await ShareView.GetForCurrentView().ShowAsync(new Uri(url.Url), null);
+                await SharePopup.GetForCurrentView().ShowAsync(new Uri(url.Url), null);
             }
         }
 

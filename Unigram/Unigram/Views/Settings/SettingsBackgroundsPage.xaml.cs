@@ -1,29 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Services;
 using Unigram.ViewModels.Settings;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
 namespace Unigram.Views.Settings
 {
-    public sealed partial class SettingsBackgroundsPage : Page, IHandle<UpdateFile>
+    public sealed partial class SettingsBackgroundsPage : HostedPage, IHandle<UpdateFile>
     {
         public SettingsBackgroundsViewModel ViewModel => DataContext as SettingsBackgroundsViewModel;
 
@@ -84,8 +74,8 @@ namespace Unigram.Views.Settings
                 }
 
                 var content = root.Children[0] as Image;
-                content.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, small.Photo, wallpaper.Document.Thumbnail.Width, wallpaper.Document.Thumbnail.Height);     
-                
+                content.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, small.File, wallpaper.Document.Thumbnail.Width, wallpaper.Document.Thumbnail.Height);
+
                 if (wallpaper.Type is BackgroundTypePattern pattern)
                 {
                     content.Opacity = pattern.Intensity / 100d;
@@ -136,7 +126,7 @@ namespace Unigram.Views.Settings
                             return;
                         }
 
-                        content.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, small.Photo, item.Document.Thumbnail.Width, item.Document.Thumbnail.Height);
+                        content.Source = PlaceholderHelper.GetBitmap(ViewModel.ProtoService, small.File, item.Document.Thumbnail.Width, item.Document.Thumbnail.Height);
                     }
                 }
             });

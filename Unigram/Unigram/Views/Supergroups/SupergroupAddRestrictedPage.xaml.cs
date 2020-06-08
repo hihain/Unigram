@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Unigram.Views.Supergroups
 {
-    public sealed partial class SupergroupAddRestrictedPage : Page
+    public sealed partial class SupergroupAddRestrictedPage : HostedPage
     {
         public SupergroupAddRestrictedViewModel ViewModel => DataContext as SupergroupAddRestrictedViewModel;
 
@@ -159,7 +159,7 @@ namespace Unigram.Views.Supergroups
                     subtitle.Text = LastSeenConverter.GetLabel(user, true);
                 }
 
-                if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.TextBlock", "TextHighlighters"))
+                if (ApiInfo.CanUseTextHighlighters)
                 {
                     if (subtitle.Text.StartsWith($"@{result.Query}", StringComparison.OrdinalIgnoreCase))
                     {

@@ -500,6 +500,23 @@ namespace Unigram.Services.Settings
                 AddOrUpdateValue("BubbleRadius", value);
             }
         }
+
+        private static float? _tabsLeftLayoutScale;
+        public float TabsLeftLayoutScale
+        {
+            get
+            {
+                if (_tabsLeftLayoutScale == null)
+                    _tabsLeftLayoutScale = GetValueOrDefault("TabsLeftLayoutScale", .85f);
+
+                return _tabsLeftLayoutScale ?? .85f;
+            }
+            set
+            {
+                _tabsLeftLayoutScale = value;
+                AddOrUpdateValue("TabsLeftLayoutScale", value);
+            }
+        }
     }
 
     public enum NightMode

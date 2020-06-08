@@ -1,29 +1,19 @@
 ﻿using LinqToVisualTree;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Unigram.Common;
-using Unigram.Controls.Chats;
 using Unigram.Services;
 using Unigram.Services.Settings;
 using Unigram.ViewModels;
 using Unigram.Views;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.Text.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Controls.Drawers
 {
@@ -76,15 +66,13 @@ namespace Unigram.Controls.Drawers
 
         public StickersTab Tab => StickersTab.Emoji;
 
-        public void Activate()
-        {
+        public void Activate() { }
 
-        }
+        public void Deactivate() { }
 
-        public void Deactivate()
-        {
+        public void LoadVisibleItems() { }
 
-        }
+        public void UnloadVisibleItems() { }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -123,7 +111,7 @@ namespace Unigram.Controls.Drawers
             {
                 _needUpdate = true;
             }
-            
+
             if (_needUpdate)
             {
                 var items = Emoji.Get(tone, !microsoft);
@@ -229,7 +217,7 @@ namespace Unigram.Controls.Drawers
 
         private void UpdateSkinTone(EmojiSkinTone selected, bool expand, bool animated)
         {
-            Canvas.SetZIndex(SkinDefault, (int)selected  == 0 ? 6 : 5);
+            Canvas.SetZIndex(SkinDefault, (int)selected == 0 ? 6 : 5);
             Canvas.SetZIndex(SkinFitz12, (int)selected == 1 ? 6 : 4);
             Canvas.SetZIndex(SkinFitz3, (int)selected == 2 ? 6 : 3);
             Canvas.SetZIndex(SkinFitz4, (int)selected == 3 ? 6 : 2);

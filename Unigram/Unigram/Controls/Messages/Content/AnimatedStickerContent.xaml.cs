@@ -8,7 +8,6 @@ using Unigram.Services.Updates;
 using Unigram.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 
 namespace Unigram.Controls.Messages.Content
 {
@@ -54,7 +53,7 @@ namespace Unigram.Controls.Messages.Content
 
             if (sticker.Thumbnail != null && !sticker.StickerValue.Local.IsDownloadingCompleted)
             {
-                UpdateThumbnail(message, sticker.Thumbnail.Photo);
+                UpdateThumbnail(message, sticker.Thumbnail.File);
             }
 
             UpdateFile(message, sticker.StickerValue);
@@ -70,7 +69,7 @@ namespace Unigram.Controls.Messages.Content
                 return;
             }
 
-            if (sticker.Thumbnail != null && sticker.Thumbnail.Photo.Id == file.Id)
+            if (sticker.Thumbnail != null && sticker.Thumbnail.File.Id == file.Id)
             {
                 UpdateThumbnail(message, file);
                 return;
@@ -82,8 +81,6 @@ namespace Unigram.Controls.Messages.Content
 
             if (file.Local.IsDownloadingCompleted)
             {
-                LayoutRoot.Background = null;
-
                 Player.IsLoopingEnabled = (message.Content is MessageDice dice && dice.Value == 0) || (message.Content is MessageSticker && SettingsService.Current.Stickers.IsLoopingEnabled);
                 Player.IsCachingEnabled = !(message.Content is MessageDice dies && !message.GeneratedContentUnread);
                 Player.Source = new Uri("file:///" + file.Local.Path);
@@ -120,7 +117,7 @@ namespace Unigram.Controls.Messages.Content
         {
             if (file.Local.IsDownloadingCompleted)
             {
-                LayoutRoot.Background = new ImageBrush { ImageSource = PlaceholderHelper.GetWebPFrame(file.Local.Path) };
+                Player.Thumbnail = PlaceholderHelper.GetWebPFrame(file.Local.Path);
             }
             else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
             {

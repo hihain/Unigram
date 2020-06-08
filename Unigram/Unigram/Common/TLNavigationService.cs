@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
+using Unigram.Controls;
+using Unigram.Services;
 using Unigram.Services.Navigation;
 using Unigram.Services.ViewService;
-using Unigram.Controls;
-using Unigram.Controls.Views;
-using Unigram.Services;
 using Unigram.Views;
+using Unigram.Views.Popups;
 using Unigram.Views.Settings;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
@@ -86,7 +86,7 @@ namespace Unigram.Common
                 var reason = user.GetRestrictionReason();
                 if (reason != null && reason.Length > 0)
                 {
-                    await TLMessageDialog.ShowAsync(reason, Strings.Resources.AppName, Strings.Resources.OK);
+                    await MessagePopup.ShowAsync(reason, Strings.Resources.AppName, Strings.Resources.OK);
                     return;
                 }
             }
@@ -100,14 +100,14 @@ namespace Unigram.Common
 
                 if (supergroup.Status is ChatMemberStatusLeft && string.IsNullOrEmpty(supergroup.Username) && !supergroup.HasLocation && !supergroup.HasLinkedChat)
                 {
-                    await TLMessageDialog.ShowAsync(Strings.Resources.ChannelCantOpenPrivate, Strings.Resources.AppName, Strings.Resources.OK);
+                    await MessagePopup.ShowAsync(Strings.Resources.ChannelCantOpenPrivate, Strings.Resources.AppName, Strings.Resources.OK);
                     return;
                 }
 
                 var reason = supergroup.GetRestrictionReason();
                 if (reason != null && reason.Length > 0)
                 {
-                    await TLMessageDialog.ShowAsync(reason, Strings.Resources.AppName, Strings.Resources.OK);
+                    await MessagePopup.ShowAsync(reason, Strings.Resources.AppName, Strings.Resources.OK);
                     return;
                 }
             }
@@ -120,7 +120,7 @@ namespace Unigram.Common
                 }
                 else
                 {
-                    await page.ViewModel.LoadMessageSliceAsync(null, chat.LastMessage?.Id ?? long.MaxValue, VerticalAlignment.Bottom, 8);
+                    await page.ViewModel.LoadMessageSliceAsync(null, chat.LastMessage?.Id ?? long.MaxValue, VerticalAlignment.Bottom);
                 }
 
                 page.ViewModel.TextField?.Focus(FocusState.Programmatic);
@@ -200,7 +200,7 @@ namespace Unigram.Common
         {
             if (_passcodeService.IsEnabled)
             {
-                var dialog = new SettingsPasscodeConfirmView(passcode => Task.FromResult(!_passcodeService.Check(passcode)), _passcodeService.IsSimple);
+                var dialog = new SettingsPasscodeConfirmPopup(passcode => Task.FromResult(!_passcodeService.Check(passcode)), _passcodeService.IsSimple);
                 dialog.IsSimple = _passcodeService.IsSimple;
 
                 var confirm = await dialog.ShowAsync();

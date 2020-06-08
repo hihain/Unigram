@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
-using Unigram.Controls.Views;
-using Unigram.ViewModels.Dialogs;
+using Unigram.Controls.Gallery;
+using Unigram.Services;
+using Unigram.Services.Settings;
+using Unigram.Services.Updates;
+using Unigram.ViewModels.Chats;
+using Unigram.ViewModels.Delegates;
+using Unigram.ViewModels.Gallery;
 using Unigram.Views;
+using Unigram.Views.Popups;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Unigram.Services;
-using Unigram.ViewModels.Delegates;
-using Unigram.ViewModels.Chats;
-using Unigram.ViewModels.Gallery;
-using Unigram.Services.Settings;
-using Unigram.Controls.Gallery;
-using Unigram.Services.Updates;
 using Windows.UI.Xaml.Controls.Primitives;
 
 namespace Unigram.ViewModels
@@ -239,7 +236,7 @@ namespace Unigram.ViewModels
             {
                 if (file.Local.Path.EndsWith(".unigram-theme"))
                 {
-                    await new ThemePreviewView(file.Local.Path).ShowQueuedAsync();
+                    await new ThemePreviewPopup(file.Local.Path).ShowQueuedAsync();
                     return;
                 }
 
@@ -282,7 +279,7 @@ namespace Unigram.ViewModels
         {
             if (sticker.SetId != 0)
             {
-                await StickerSetView.GetForCurrentView().ShowAsync(sticker.SetId, Sticker_Click);
+                await StickerSetPopup.GetForCurrentView().ShowAsync(sticker.SetId, Sticker_Click);
             }
         }
 
@@ -380,7 +377,7 @@ namespace Unigram.ViewModels
             }
             else
             {
-                await TLMessageDialog.ShowAsync(Strings.Resources.NoUsernameFound, Strings.Resources.AppName, Strings.Resources.OK);
+                await MessagePopup.ShowAsync(Strings.Resources.NoUsernameFound, Strings.Resources.AppName, Strings.Resources.OK);
             }
         }
 
@@ -474,7 +471,7 @@ namespace Unigram.ViewModels
 
                     if (untrust)
                     {
-                        var confirm = await TLMessageDialog.ShowAsync(string.Format(Strings.Resources.OpenUrlAlert, url), Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
+                        var confirm = await MessagePopup.ShowAsync(string.Format(Strings.Resources.OpenUrlAlert, url), Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
                         if (confirm != ContentDialogResult.Primary)
                         {
                             return;
@@ -503,7 +500,7 @@ namespace Unigram.ViewModels
         {
             if (message.Content is MessagePoll poll)
             {
-                await new PollResultsView(ProtoService, CacheService, Settings, Aggregator, message.ChatId, message.Id, poll.Poll).ShowQueuedAsync();
+                await new PollResultsPopup(ProtoService, CacheService, Settings, Aggregator, this, message.ChatId, message.Id, poll.Poll).ShowQueuedAsync();
                 return;
             }
 

@@ -1,28 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Telegram.Td.Api;
 using Unigram.Common;
-using Unigram.Native;
-using Unigram.ViewModels.Channels;
 using Unigram.ViewModels.Supergroups;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Views.Supergroups
 {
-    public sealed partial class SupergroupEditStickerSetPage : Page
+    public sealed partial class SupergroupEditStickerSetPage : HostedPage
     {
         public SupergroupEditStickerSetViewModel ViewModel => DataContext as SupergroupEditStickerSetViewModel;
 
@@ -70,10 +57,10 @@ namespace Unigram.Views.Supergroups
                     return;
                 }
 
-                var file = cover.Photo;
+                var file = cover.File;
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    if (stickerSet.IsAnimated)
+                    if (cover.Format is ThumbnailFormatTgs)
                     {
                         photo.Source = PlaceholderHelper.GetLottieFrame(file.Local.Path, 0, 48, 48);
                     }
@@ -123,7 +110,7 @@ namespace Unigram.Views.Supergroups
                 return;
             }
 
-            var file = cover.Photo;
+            var file = cover.File;
             if (file.Local.IsDownloadingCompleted)
             {
                 if (stickerSet.IsAnimated)

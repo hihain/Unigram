@@ -1,8 +1,6 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
@@ -210,7 +208,7 @@ namespace Unigram.Collections
                 {
                     if (animation.Thumbnail != null)
                     {
-                        _filesMap[animation.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[animation.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[animation.AnimationValue.Id].Add(target);
@@ -219,7 +217,7 @@ namespace Unigram.Collections
                 {
                     if (audio.AlbumCoverThumbnail != null)
                     {
-                        _filesMap[audio.AlbumCoverThumbnail.Photo.Id].Add(target);
+                        _filesMap[audio.AlbumCoverThumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[audio.AudioValue.Id].Add(target);
@@ -228,7 +226,7 @@ namespace Unigram.Collections
                 {
                     if (document.Thumbnail != null)
                     {
-                        _filesMap[document.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[document.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[document.DocumentValue.Id].Add(target);
@@ -244,7 +242,7 @@ namespace Unigram.Collections
                 {
                     if (sticker.Thumbnail != null)
                     {
-                        _filesMap[sticker.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[sticker.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[sticker.StickerValue.Id].Add(target);
@@ -253,7 +251,7 @@ namespace Unigram.Collections
                 {
                     if (video.Thumbnail != null)
                     {
-                        _filesMap[video.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[video.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[video.VideoValue.Id].Add(target);
@@ -262,7 +260,7 @@ namespace Unigram.Collections
                 {
                     if (videoNote.Thumbnail != null)
                     {
-                        _filesMap[videoNote.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[videoNote.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[videoNote.Video.Id].Add(target);
@@ -447,7 +445,7 @@ namespace Unigram.Collections
                 {
                     if (animation.Thumbnail != null)
                     {
-                        _filesMap[animation.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[animation.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[animation.AnimationValue.Id].Add(target);
@@ -456,7 +454,7 @@ namespace Unigram.Collections
                 {
                     if (audio.AlbumCoverThumbnail != null)
                     {
-                        _filesMap[audio.AlbumCoverThumbnail.Photo.Id].Add(target);
+                        _filesMap[audio.AlbumCoverThumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[audio.AudioValue.Id].Add(target);
@@ -465,7 +463,7 @@ namespace Unigram.Collections
                 {
                     if (document.Thumbnail != null)
                     {
-                        _filesMap[document.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[document.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[document.DocumentValue.Id].Add(target);
@@ -481,7 +479,7 @@ namespace Unigram.Collections
                 {
                     if (sticker.Thumbnail != null)
                     {
-                        _filesMap[sticker.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[sticker.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[sticker.StickerValue.Id].Add(target);
@@ -490,7 +488,7 @@ namespace Unigram.Collections
                 {
                     if (video.Thumbnail != null)
                     {
-                        _filesMap[video.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[video.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[video.VideoValue.Id].Add(target);
@@ -499,7 +497,7 @@ namespace Unigram.Collections
                 {
                     if (videoNote.Thumbnail != null)
                     {
-                        _filesMap[videoNote.Thumbnail.Photo.Id].Add(target);
+                        _filesMap[videoNote.Thumbnail.File.Id].Add(target);
                     }
 
                     _filesMap[videoNote.Video.Id].Add(target);

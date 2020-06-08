@@ -7,6 +7,7 @@ using Unigram.Services.Navigation;
 using Unigram.Views;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
@@ -225,6 +226,9 @@ namespace Unigram.Controls
 
             MasterPresenter.RegisterPropertyChangedCallback(VisibilityProperty, OnVisibilityChanged);
 
+            var detailVisual = ElementCompositionPreview.GetElementVisual(DetailPresenter);
+            detailVisual.Clip = Window.Current.Compositor.CreateInsetClip();
+
             if (DetailFrame != null)
             {
                 var parent = VisualTreeHelper.GetParent(DetailFrame) as UIElement;
@@ -272,6 +276,15 @@ namespace Unigram.Controls
 
         private void OnNavigated(object sender, NavigationEventArgs e)
         {
+            if (e.Content is HostedPage hosted)
+            {
+                DetailHeader = hosted.Header;
+            }
+            else
+            {
+                DetailHeader = null;
+            }
+
             if (AdaptivePanel == null)
             {
                 return;
@@ -483,37 +496,42 @@ namespace Unigram.Controls
 
         #endregion
 
-        #region Header
+        #region Banner
 
-        public static UIElement GetHeader(DependencyObject obj)
-        {
-            return (UIElement)obj.GetValue(HeaderProperty);
-        }
-
-        public static void SetHeader(DependencyObject obj, UIElement value)
-        {
-            obj.SetValue(HeaderProperty, value);
-        }
-
-        public static readonly DependencyProperty HeaderProperty =
-            DependencyProperty.RegisterAttached("Header", typeof(UIElement), typeof(MasterDetailView), new PropertyMetadata(null));
-
-        #endregion
-
-        #region PageHeader
-
-
-
-        public UIElement PageHeader
+        public UIElement Banner
         {
             get { return (UIElement)GetValue(PageHeaderProperty); }
             set { SetValue(PageHeaderProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for PageHeader.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PageHeaderProperty =
-            DependencyProperty.Register("PageHeader", typeof(UIElement), typeof(MasterDetailView), new PropertyMetadata(null));
+            DependencyProperty.Register("Banner", typeof(UIElement), typeof(MasterDetailView), new PropertyMetadata(null));
 
+        #endregion
+
+        #region MasterHeader
+
+        public UIElement MasterHeader
+        {
+            get { return (UIElement)GetValue(MasterHeaderProperty); }
+            set { SetValue(MasterHeaderProperty, value); }
+        }
+
+        public static readonly DependencyProperty MasterHeaderProperty =
+            DependencyProperty.Register("MasterHeader", typeof(UIElement), typeof(MasterDetailView), new PropertyMetadata(null));
+
+        #endregion
+
+        #region DetailHeader
+
+        public UIElement DetailHeader
+        {
+            get { return (UIElement)GetValue(DetailHeaderProperty); }
+            set { SetValue(DetailHeaderProperty, value); }
+        }
+
+        public static readonly DependencyProperty DetailHeaderProperty =
+            DependencyProperty.Register("DetailHeader", typeof(UIElement), typeof(MasterDetailView), new PropertyMetadata(null));
 
         #endregion
 

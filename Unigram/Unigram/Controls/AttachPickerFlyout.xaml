@@ -10,8 +10,7 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
-    Loaded="OnLoaded"
-    Unloaded="OnUnloaded">
+    Loaded="OnLoaded">
 
     <UserControl.Resources>
         <x:Double x:Key="MenuFlyoutMaxWidth">360</x:Double>
@@ -39,41 +38,6 @@
                 <Setter Property="MinHeight" Value="0"/>
                 <Setter Property="Margin" Value="0,0,8,0"/>
                 <Setter Property="Padding" Value="0"/>
-                <!--<Setter Property="Template">
-                     <Setter.Value>
-                     <ControlTemplate TargetType="ListViewItem">
-                     <ListViewItemPresenter ContentTransitions="{TemplateBinding ContentTransitions}"
-                     Control.IsTemplateFocusTarget="True"
-                     FocusVisualMargin="{TemplateBinding FocusVisualMargin}"
-                     FocusVisualPrimaryBrush="{TemplateBinding FocusVisualPrimaryBrush}"
-                     FocusVisualPrimaryThickness="{TemplateBinding FocusVisualPrimaryThickness}"
-                     FocusVisualSecondaryBrush="{TemplateBinding FocusVisualSecondaryBrush}"
-                     FocusVisualSecondaryThickness="{TemplateBinding FocusVisualSecondaryThickness}"
-                     SelectionCheckMarkVisualEnabled="{ThemeResource ListViewItemSelectionCheckMarkVisualEnabled}"
-                     CheckBrush="{ThemeResource ListViewItemCheckBrush}"
-                     CheckBoxBrush="{ThemeResource ListViewItemCheckBoxBrush}"
-                     DragBackground="{ThemeResource ListViewItemDragBackground}"
-                     DragForeground="{ThemeResource ListViewItemDragForeground}"
-                     FocusBorderBrush="{ThemeResource ListViewItemFocusBorderBrush}"
-                     FocusSecondaryBorderBrush="{ThemeResource ListViewItemFocusSecondaryBorderBrush}"
-                     PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackground}"
-                     PointerOverBackground="{ThemeResource ListViewItemBackgroundPointerOver}"
-                     PointerOverForeground="{ThemeResource ListViewItemForegroundPointerOver}"
-                     SelectedBackground="{ThemeResource ListViewItemBackgroundSelected}"
-                     SelectedForeground="{ThemeResource ListViewItemForegroundSelected}"
-                     SelectedPointerOverBackground="{ThemeResource ListViewItemBackgroundSelectedPointerOver}"
-                     PressedBackground="{ThemeResource ListViewItemBackgroundPressed}"
-                     SelectedPressedBackground="{ThemeResource ListViewItemBackgroundSelectedPressed}"
-                     DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
-                     DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
-                     ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
-                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                     VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                     ContentMargin="{TemplateBinding Padding}"
-                     CheckMode="Overlay" />
-                     </ControlTemplate>
-                     </Setter.Value>
-                     </Setter>-->
             </Style>
         </ListView.ItemContainerStyle>
         <ListView.Header>
@@ -89,7 +53,8 @@
                         <Grid Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="72" Height="72">
                             <Image Source="{x:Bind Thumbnail, Mode=OneWay}"/>
                             <Border BorderBrush="#26000000" BorderThickness="1"/>
-                            <CheckBox IsChecked="{x:Bind IsSelected, Mode=TwoWay}" HorizontalAlignment="Right" VerticalAlignment="Top" RequestedTheme="Dark" Style="{StaticResource OnlyCheckBoxStyle}"/>
+                            <CheckBox HorizontalAlignment="Right" VerticalAlignment="Top" RequestedTheme="Dark" Style="{StaticResource OnlyCheckBoxStyle}"
+                                      Unchecked="CheckBox_Unchecked" Checked="CheckBox_Checked" Loaded="CheckBox_Loaded" />
                         </Grid>
                     </DataTemplate>
                 </selectors:StorageMediaTemplateSelector.PhotoTemplate>
@@ -104,7 +69,8 @@
                             </Grid>
 
                             <Border BorderBrush="#26000000" BorderThickness="1"/>
-                            <CheckBox IsChecked="{x:Bind IsSelected, Mode=TwoWay}" HorizontalAlignment="Right" VerticalAlignment="Top" RequestedTheme="Dark" Style="{StaticResource OnlyCheckBoxStyle}"/>
+                            <CheckBox HorizontalAlignment="Right" VerticalAlignment="Top" RequestedTheme="Dark" Style="{StaticResource OnlyCheckBoxStyle}"
+                                      Unchecked="CheckBox_Unchecked" Checked="CheckBox_Checked" Loaded="CheckBox_Loaded" />
                         </Grid>
                     </DataTemplate>
                 </selectors:StorageMediaTemplateSelector.VideoTemplate>

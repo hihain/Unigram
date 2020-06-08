@@ -1,11 +1,7 @@
 ﻿using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Composition;
 
@@ -25,11 +21,7 @@ namespace Unigram.Assets.Animations
 
         static bool IsRuntimeCompatible()
         {
-            if (!Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Composition.CompositionGeometricClip"))
-            {
-                return false;
-            }
-            return true;
+            return Common.ApiInfo.IsUniversalApiContract7Present; //IsTypePresent("Windows.UI.Composition.CompositionGeometricClip")
         }
 
         sealed class AnimatedVisual : IAnimatedVisual

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
-using Unigram.Controls.Views;
 using Unigram.Services;
+using Unigram.Views.Popups;
 using Unigram.Views.Settings;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -130,7 +130,7 @@ namespace Unigram.ViewModels.Settings
 
         public async void Clear(StorageStatisticsByChat byChat)
         {
-            if (byChat == null)
+            if (byChat == null || byChat.ByFileType.IsEmpty())
             {
                 return;
             }
@@ -216,7 +216,7 @@ namespace Unigram.ViewModels.Settings
                 new SelectRadioItem(0, Strings.Resources.KeepMediaForever, !enabled)
             };
 
-            var dialog = new SelectRadioView(items);
+            var dialog = new SelectRadioPopup(items);
             dialog.Title = Strings.Resources.KeepMedia;
             dialog.PrimaryButtonText = Strings.Resources.OK;
             dialog.SecondaryButtonText = Strings.Resources.Cancel;

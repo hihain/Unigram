@@ -117,14 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdaptiveWideSetting" xml:space="preserve">
+    <value>为宽屏准备的适应性布局</value>
+    <comment>SettingsAdvancedPage</comment>
+  </data>
+  <data name="CallSettingInput" xml:space="preserve">
+    <value>输入设备</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingInputTitle" xml:space="preserve">
+    <value>麦克风</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingOutput" xml:space="preserve">
+    <value>输出设备</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingOutputTitle" xml:space="preserve">
+    <value>扬声器和耳机</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="CallSettingsTitle" xml:space="preserve">
+    <value>拨号设置</value>
+    <comment>SettingsAdvancedPage</comment>
+  </data>
   <data name="Chats" xml:space="preserve">
     <value>对话</value>
   </data>
   <data name="CopyImage" xml:space="preserve">
     <value>复制图片</value>
   </data>
+  <data name="Cut" xml:space="preserve">
+    <value>剪贴</value>
+  </data>
   <data name="DeletedMessage" xml:space="preserve">
     <value>已删除消息</value>
+  </data>
+  <data name="EditLink" xml:space="preserve">
+    <value>修改链接</value>
+  </data>
+  <data name="Formatting" xml:space="preserve">
+    <value>格式</value>
+  </data>
+  <data name="FormattingHide" xml:space="preserve">
+    <value>隐藏格式</value>
+  </data>
+  <data name="FormattingShow" xml:space="preserve">
+    <value>显示格式</value>
+  </data>
+  <data name="InputVolume" xml:space="preserve">
+    <value>输入音量</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="IPv6ToggleSetting" xml:space="preserve">
+    <value>试图通过IPv6连接</value>
+    <comment>SettingsAdvancedPage</comment>
   </data>
   <data name="News" xml:space="preserve">
     <value>新闻</value>
@@ -133,13 +180,58 @@
     <value>原消息</value>
     <comment>Original message date and time</comment>
   </data>
+  <data name="OutputVolume" xml:space="preserve">
+    <value>输出音量</value>
+    <comment>SettingsVoIPPage</comment>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>撤销</value>
+  </data>
+  <data name="ReplaceEmoji" xml:space="preserve">
+    <value>替换表情</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
   <data name="SaveAs" xml:space="preserve">
-    <value>另存为……</value>
+    <value>另存为…</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>选择</value>
   </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="SettingIsTextFormattingVisible" xml:space="preserve">
+    <value>显示格式按钮</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
   <data name="ShowInFolder" xml:space="preserve">
     <value>打开文件夹</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>亮色主题</value>
+    <comment>SettingsAppearancePage
+Fuzzy</comment>
+  </data>
+  <data name="ThemeSystemTheme" xml:space="preserve">
+    <value>系统主题</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>撤销</value>
+  </data>
+  <data name="SettingPlayStickers" xml:space="preserve">
+    <value>播放动画壁纸</value>
+    <comment>SettingStickersPage</comment>
+  </data>
+  <data name="SettingsDisableHighlightWords" xml:space="preserve">
+    <value>关闭格式错误高亮</value>
+    <comment>SettingsAppearancePage</comment>
+  </data>
+  <data name="SettingsDisableAutocorrectWords" xml:space="preserve">
+    <value>关闭自动修正</value>
+    <comment>SettingsAppearancePage</comment>
   </data>
 </root>

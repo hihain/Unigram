@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
-using Unigram.Controls.Views;
 using Unigram.Services;
 using Unigram.ViewModels.Delegates;
+using Unigram.Views.Popups;
 using Unigram.Views.Supergroups;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
@@ -366,7 +365,7 @@ namespace Unigram.ViewModels.Supergroups
                 new SelectRadioItem(false, Strings.Resources.ChatHistoryHidden, !initialValue) { Footer = Strings.Resources.ChatHistoryHiddenInfo }
             };
 
-            var dialog = new SelectRadioView(items);
+            var dialog = new SelectRadioPopup(items);
             dialog.Title = Strings.Resources.ChatHistory;
             dialog.PrimaryButtonText = Strings.Resources.OK;
             dialog.SecondaryButtonText = Strings.Resources.Cancel;
@@ -417,7 +416,7 @@ namespace Unigram.ViewModels.Supergroups
                 return;
             }
 
-            var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.RevokeAlert, Strings.Resources.RevokeLink, Strings.Resources.RevokeButton, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(Strings.Resources.RevokeAlert, Strings.Resources.RevokeLink, Strings.Resources.RevokeButton, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
@@ -435,7 +434,8 @@ namespace Unigram.ViewModels.Supergroups
                 return;
             }
 
-            var dialog = new DeleteChatView(ProtoService, chat, false, true);
+            var updated = await ProtoService.SendAsync(new GetChat(chat.Id)) as Chat ?? chat;
+            var dialog = new DeleteChatPopup(ProtoService, updated, null, false, true);
 
             var confirm = await dialog.ShowQueuedAsync();
             if (confirm != ContentDialogResult.Primary)

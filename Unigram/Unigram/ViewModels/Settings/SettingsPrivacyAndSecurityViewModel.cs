@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
-using Unigram.Controls.Views;
 using Unigram.Services;
 using Unigram.ViewModels.Settings.Privacy;
+using Unigram.Views.Popups;
 using Unigram.Views.Settings;
 using Unigram.Views.Settings.Password;
 using Windows.UI.Xaml;
@@ -193,7 +193,7 @@ namespace Unigram.ViewModels.Settings
         {
             if (!value)
             {
-                var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.SuggestContactsAlert, Strings.Resources.AppName, Strings.Resources.MuteDisable, Strings.Resources.Cancel);
+                var confirm = await MessagePopup.ShowAsync(Strings.Resources.SuggestContactsAlert, Strings.Resources.AppName, Strings.Resources.MuteDisable, Strings.Resources.Cancel);
                 if (confirm != ContentDialogResult.Primary)
                 {
                     RaisePropertyChanged(() => IsContactsSuggestEnabled);
@@ -240,7 +240,7 @@ namespace Unigram.ViewModels.Settings
         public RelayCommand ClearDraftsCommand { get; }
         private async void ClearDraftsExecute()
         {
-            var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.AreYouSureClearDrafts, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(Strings.Resources.AreYouSureClearDrafts, Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
@@ -256,7 +256,7 @@ namespace Unigram.ViewModels.Settings
         public RelayCommand ClearContactsCommand { get; }
         private async void ClearContactsExecute()
         {
-            var confirm = await TLMessageDialog.ShowAsync(Strings.Resources.SyncContactsDeleteInfo, Strings.Resources.Contacts, Strings.Resources.OK, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(Strings.Resources.SyncContactsDeleteInfo, Strings.Resources.Contacts, Strings.Resources.OK, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
@@ -284,7 +284,7 @@ namespace Unigram.ViewModels.Settings
         public RelayCommand ClearPaymentsCommand { get; }
         private async void ClearPaymentsExecute()
         {
-            var dialog = new TLContentDialog();
+            var dialog = new ContentPopup();
             var stack = new StackPanel();
             var checkShipping = new CheckBox { Content = Strings.Resources.PrivacyClearShipping, IsChecked = true };
             var checkPayment = new CheckBox { Content = Strings.Resources.PrivacyClearPayment, IsChecked = true };
@@ -367,7 +367,7 @@ namespace Unigram.ViewModels.Settings
                 selected.IsChecked = true;
             }
 
-            var dialog = new SelectRadioView(items);
+            var dialog = new SelectRadioPopup(items);
             dialog.Title = Strings.Resources.DeleteAccountTitle;
             dialog.PrimaryButtonText = Strings.Resources.OK;
             dialog.SecondaryButtonText = Strings.Resources.Cancel;

@@ -8,12 +8,12 @@ using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
-using Unigram.Controls;
 using Unigram.Controls.Messages;
 using Unigram.Native;
 using Unigram.Navigation;
 using Unigram.Services;
 using Unigram.Services.Navigation;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
@@ -34,6 +34,11 @@ namespace Unigram.Common
 {
     public static class Extensions
     {
+        public static Version ToVersion(this PackageVersion version)
+        {
+            return new Version(version.Major, version.Minor, version.Build, version.Revision);
+        }
+
         public static string ToQuery(this Dictionary<string, string> dictionary)
         {
             var result = string.Empty;
@@ -376,11 +381,6 @@ namespace Unigram.Common
             {
                 // Most likey Excep_InvalidComObject_NoRCW_Wrapper, so we can just ignore it
             }
-        }
-
-        public static bool IsCompactOverlaySupported(this ApplicationView view)
-        {
-            return ApiInformation.IsMethodPresent("Windows.UI.ViewManagement.ApplicationView", "IsViewModeSupported") && view.IsViewModeSupported(ApplicationViewMode.CompactOverlay);
         }
 
         public static string NormalizeTextDirection(this string data)
@@ -865,10 +865,10 @@ namespace Unigram.Common
 
         public static ScrollViewer GetScrollViewer(this ListViewBase listViewBase)
         {
-            if (listViewBase is ChatsListView bubble)
-            {
-                return bubble.ScrollingHost;
-            }
+            //if (listViewBase is ChatsListView bubble)
+            //{
+            //    return bubble.ScrollingHost;
+            //}
 
             return listViewBase.Descendants<ScrollViewer>().FirstOrDefault() as ScrollViewer;
         }

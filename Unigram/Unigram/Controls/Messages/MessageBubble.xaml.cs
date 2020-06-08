@@ -8,21 +8,17 @@ using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls.Messages.Content;
 using Unigram.Converters;
-using Unigram.Selectors;
 using Unigram.Services;
 using Unigram.ViewModels;
 using Windows.Foundation;
-using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Text;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace Unigram.Controls.Messages
@@ -31,18 +27,33 @@ namespace Unigram.Controls.Messages
     {
         private MessageViewModel _message;
 
-        private bool _knockout = false;
+        private bool _placeholder;
+        private double _maxWidth;
 
         public MessageBubble()
         {
             InitializeComponent();
         }
 
-        public void UpdateAdaptive(HorizontalAlignment alignment)
+        public void UpdateKnockout(double top, double bottom)
         {
-            UpdateAttach(_message, alignment == HorizontalAlignment.Left);
+            var gradient = ContentPanel.Background as LinearGradientBrush;
+            if (gradient == null)
+            {
+                ContentPanel.Background = gradient = new LinearGradientBrush();
+                //gradient.GradientStops.Add(new GradientStop { Color = Color.FromArgb(0xFF, 0xF0, 0xFD, 0xDF), Offset = 0 });
+                //gradient.GradientStops.Add(new GradientStop { Color = Color.FromArgb(0xFF, 0xF8, 0xEA, 0x8F), Offset = 1 });
+                gradient.GradientStops.Add(new GradientStop { Color =Color.FromArgb(0xff, 0xea, 0x27, 0x39), Offset = 0d / 6d });
+                gradient.GradientStops.Add(new GradientStop { Color =Color.FromArgb(0xff, 0xdb, 0x3a, 0xd2), Offset = 1d / 6d });
+                gradient.GradientStops.Add(new GradientStop { Color =Color.FromArgb(0xff, 0x30, 0x51, 0xe3), Offset = 2d / 6d });
+                gradient.GradientStops.Add(new GradientStop { Color =Color.FromArgb(0xff, 0x49, 0xc5, 0xed), Offset = 3d / 6d });
+                gradient.GradientStops.Add(new GradientStop { Color =Color.FromArgb(0xff, 0x80, 0xc8, 0x64), Offset = 4d / 6d });
+                gradient.GradientStops.Add(new GradientStop { Color =Color.FromArgb(0xff, 0xfc, 0xde, 0x65), Offset = 5d / 6d });
+                gradient.GradientStops.Add(new GradientStop { Color =Color.FromArgb(0xff, 0xfc, 0x96, 0x4d), Offset = 6d / 6d });
+            }
 
-            HorizontalAlignment = alignment;
+            gradient.StartPoint = new Point(0, top);
+            gradient.EndPoint = new Point(0, bottom);
         }
 
         public void UpdateMessage(MessageViewModel message)
@@ -221,7 +232,7 @@ namespace Unigram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             if (message.ReplyMarkup is ReplyMarkupInlineKeyboard)
             {
-                if (content is MessageSticker || content is MessageVideoNote || _knockout)
+                if (content is MessageSticker || content is MessageVideoNote)
                 {
                     ContentPanel.CornerRadius = new CornerRadius();
                 }
@@ -232,7 +243,7 @@ namespace Unigram.Controls.Messages
 
                 Markup.CornerRadius = new CornerRadius(small, small, bottomRight, bottomLeft);
             }
-            else if (content is MessageSticker || content is MessageVideoNote || _knockout)
+            else if (content is MessageSticker || content is MessageVideoNote)
             {
                 ContentPanel.CornerRadius = new CornerRadius();
             }
@@ -245,16 +256,6 @@ namespace Unigram.Controls.Messages
 
 
             //UpdateMessageContent(message, true);
-
-
-
-            if (_knockout && Knockout != null)
-            {
-                Knockout.Margin = new Thickness(-10 - 60, -4 - (message.IsFirst ? 3 : 2), -10 - 24, -6 - (message.IsLast ? 3 : 2));
-                ContentPanel.Background = null;
-
-                UpdateKnockout(topLeft, topRight, bottomRight, bottomLeft, 60, 24, message.IsFirst ? 3 : 2, message.IsLast ? 3 : 2, ContentPanel.ActualWidth, ContentPanel.ActualHeight);
-            }
         }
 
         public void UpdateMessageReply(MessageViewModel message)
@@ -549,7 +550,7 @@ namespace Unigram.Controls.Messages
             else if (message.ForwardInfo?.Origin is MessageForwardOriginHiddenUser fromHiddenUser)
             {
                 Window.Current.ShowTeachingTip(HeaderLabel, Strings.Resources.HidAccount);
-                //await TLMessageDialog.ShowAsync(Strings.Resources.HidAccount, Strings.Resources.AppName, Strings.Resources.OK);
+                //await MessagePopup.ShowAsync(Strings.Resources.HidAccount, Strings.Resources.AppName, Strings.Resources.OK);
             }
         }
 
@@ -614,7 +615,7 @@ namespace Unigram.Controls.Messages
                 display = text.Text.Text;
 
                 Media.Margin = new Thickness(0);
-                Placeholder.Visibility = Visibility.Visible;
+                _placeholder = true;
                 FooterToNormal();
                 Grid.SetRow(Footer, 2);
                 Grid.SetRow(Message, 2);
@@ -659,14 +660,14 @@ namespace Unigram.Controls.Messages
                 }
 
                 Media.Margin = new Thickness(left, top, right, bottom);
-                Placeholder.Visibility = caption ? Visibility.Visible : Visibility.Collapsed;
+                _placeholder = caption;
                 Grid.SetRow(Footer, caption ? 4 : 3);
                 Grid.SetRow(Message, caption ? 4 : 2);
             }
             else if (content is MessageSticker || content is MessageVideoNote)
             {
                 Media.Margin = new Thickness(-10, -4, -10, -6);
-                Placeholder.Visibility = Visibility.Collapsed;
+                _placeholder = false;
                 FooterToLightMedia(message.IsOutgoing && !message.IsChannelPost);
                 Grid.SetRow(Footer, 3);
                 Grid.SetRow(Message, 2);
@@ -674,7 +675,7 @@ namespace Unigram.Controls.Messages
             else if ((content is MessageText webPage && webPage.WebPage != null) || content is MessageGame || (content is MessageContact contact && !string.IsNullOrEmpty(contact.Contact.Vcard)))
             {
                 Media.Margin = new Thickness(0);
-                Placeholder.Visibility = Visibility.Collapsed;
+                _placeholder = false;
                 FooterToNormal();
                 Grid.SetRow(Footer, 4);
                 Grid.SetRow(Message, 2);
@@ -682,7 +683,7 @@ namespace Unigram.Controls.Messages
             else if (content is MessagePoll)
             {
                 Media.Margin = new Thickness(0);
-                Placeholder.Visibility = Visibility.Collapsed;
+                _placeholder = false;
                 FooterToNormal();
                 Grid.SetRow(Footer, 3);
                 Grid.SetRow(Message, 2);
@@ -692,7 +693,7 @@ namespace Unigram.Controls.Messages
                 var caption = invoice.Photo == null;
 
                 Media.Margin = new Thickness(0);
-                Placeholder.Visibility = caption ? Visibility.Visible : Visibility.Collapsed;
+                _placeholder = caption;
                 FooterToNormal();
                 Grid.SetRow(Footer, caption ? 3 : 4);
                 Grid.SetRow(Message, 2);
@@ -716,7 +717,7 @@ namespace Unigram.Controls.Messages
                 }
 
                 Media.Margin = new Thickness(0, 4, 0, caption ? 8 : 2);
-                Placeholder.Visibility = caption ? Visibility.Visible : Visibility.Collapsed;
+                _placeholder = caption;
                 Grid.SetRow(Footer, caption ? 4 : 3);
                 Grid.SetRow(Message, caption ? 4 : 2);
             }
@@ -1250,12 +1251,37 @@ namespace Unigram.Controls.Messages
             }
         }
 
-        private void Footer_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (e.NewSize.Width != e.PreviousSize.Width)
+            if (!SettingsService.Current.Diagnostics.BubbleMeasureAlpha)
             {
-                Placeholder.Width = e.NewSize.Width;
+                return;
             }
+
+            if (_placeholder)
+            {
+                var footerWidth = Footer.ActualWidth - 5;
+
+                var width = Message.ActualWidth;
+                var rect = Message.ContentEnd.GetCharacterRect(LogicalDirection.Forward);
+
+                var diff = width - rect.Right;
+                if (diff < footerWidth)
+                {
+                    if (Message.ActualHeight < rect.Height * 2 && width + footerWidth < _maxWidth - ContentPanel.Padding.Left - ContentPanel.Padding.Right)
+                    {
+                        Message.Margin = new Thickness(0, 0, footerWidth, 0);
+                    }
+                    else
+                    {
+                        Message.Margin = new Thickness(0, 0, 0, Footer.ActualHeight);
+                    }
+
+                    return;
+                }
+            }
+
+            Message.Margin = new Thickness();
         }
 
         private SpriteVisual _highlight;
@@ -1380,7 +1406,7 @@ namespace Unigram.Controls.Messages
             Footer.Mockup(outgoing, date);
 
             Media.Margin = new Thickness(0);
-            Placeholder.Visibility = Visibility.Visible;
+            _placeholder = true;
             FooterToNormal();
             Grid.SetRow(Footer, 2);
             Grid.SetRow(Message, 2);
@@ -1409,7 +1435,7 @@ namespace Unigram.Controls.Messages
             Footer.Mockup(outgoing, date);
 
             Media.Margin = new Thickness(0);
-            Placeholder.Visibility = Visibility.Visible;
+            _placeholder = true;
             FooterToNormal();
             Grid.SetRow(Footer, 2);
             Grid.SetRow(Message, 2);
@@ -1460,7 +1486,7 @@ namespace Unigram.Controls.Messages
             Footer.Mockup(outgoing, date);
 
             Media.Margin = new Thickness(0);
-            Placeholder.Visibility = Visibility.Visible;
+            _placeholder = true;
             FooterToNormal();
             Grid.SetRow(Footer, 2);
             Grid.SetRow(Message, 2);
@@ -1490,7 +1516,7 @@ namespace Unigram.Controls.Messages
             Footer.Mockup(outgoing, date);
 
             Media.Margin = new Thickness(0, 4, 0, 2);
-            Placeholder.Visibility = Visibility.Collapsed;
+            _placeholder = false;
             FooterToNormal();
             Grid.SetRow(Footer, 3);
             Grid.SetRow(Message, 2);
@@ -1524,7 +1550,7 @@ namespace Unigram.Controls.Messages
             Footer.Mockup(outgoing, date);
 
             Media.Margin = new Thickness(-10, -4, -10, 4);
-            Placeholder.Visibility = Visibility.Visible;
+            _placeholder = true;
             FooterToNormal();
             Grid.SetRow(Footer, 4);
             Grid.SetRow(Message, 4);
@@ -1614,6 +1640,8 @@ namespace Unigram.Controls.Messages
 
         protected override Size MeasureOverride(Size availableSize)
         {
+            var maxWidth = Math.Min(availableSize.Width, Math.Min(double.IsNaN(Width) ? double.PositiveInfinity : Width, MaxWidth));
+            
             var availableWidth = Math.Min(availableSize.Width, Math.Min(double.IsNaN(Width) ? double.PositiveInfinity : Width, 320));
             var availableHeight = Math.Min(availableSize.Height, Math.Min(double.IsNaN(Height) ? double.PositiveInfinity : Height, 420));
 
@@ -1770,9 +1798,10 @@ namespace Unigram.Controls.Messages
             //    return base.MeasureOverride(new Size(Message.DesiredSize.Width + 20, availableSize.Height));
             //}
 
+            _maxWidth = maxWidth;
             return base.MeasureOverride(availableSize);
 
-        Calculate:
+            Calculate:
 
             if (Footer.DesiredSize.IsEmpty)
                 Footer.Measure(availableSize);
@@ -1785,10 +1814,12 @@ namespace Unigram.Controls.Messages
                 var ratioY = availableHeight / height;
                 var ratio = Math.Min(ratioX, ratioY);
 
+                _maxWidth = Math.Max(96, width * ratio);
                 return base.MeasureOverride(new Size(Math.Max(96, width * ratio), availableSize.Height));
             }
             else
             {
+                _maxWidth = Math.Max(96, width);
                 return base.MeasureOverride(new Size(Math.Max(96, width), availableSize.Height));
             }
         }
@@ -1814,65 +1845,6 @@ namespace Unigram.Controls.Messages
                 default:
                     return false;
             }
-        }
-
-        private void Knockout_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (_knockout && Knockout != null)
-            {
-                UpdateAttach(_message);
-            }
-        }
-
-        private void UpdateKnockout(double topLeft, double topRight, double bottomRight, double bottomLeft, double left, double right, double top, double bottom, double width, double height)
-        {
-            width += left + right;
-            height += top + bottom;
-
-            KnockoutFill.Segments.Clear();
-            KnockoutFill.Segments.Add(new LineSegment { Point = new Point(width, 0) });
-            KnockoutFill.Segments.Add(new LineSegment { Point = new Point(width, height) });
-            KnockoutFill.Segments.Add(new LineSegment { Point = new Point(0, height) });
-
-            KnockoutMask.StartPoint = new Point(left, topLeft + top);
-            KnockoutMask.Segments.Clear();
-            KnockoutMask.Segments.Add(new ArcSegment { Point = new Point(topLeft + left, top), Size = new Size(topLeft, topLeft), SweepDirection = SweepDirection.Clockwise });
-            KnockoutMask.Segments.Add(new LineSegment { Point = new Point(width - topRight - right, top) });
-            KnockoutMask.Segments.Add(new ArcSegment { Point = new Point(width - right, topRight + top), Size = new Size(topRight, topRight), SweepDirection = SweepDirection.Clockwise });
-            KnockoutMask.Segments.Add(new LineSegment { Point = new Point(width - right, height - bottomRight - bottom) });
-            KnockoutMask.Segments.Add(new ArcSegment { Point = new Point(width - bottomRight - right, height - bottom), Size = new Size(bottomRight, bottomRight), SweepDirection = SweepDirection.Clockwise });
-            KnockoutMask.Segments.Add(new LineSegment { Point = new Point(bottomLeft + left, height - bottom) });
-            KnockoutMask.Segments.Add(new ArcSegment { Point = new Point(left, height - bottomLeft - bottom), Size = new Size(bottomLeft, bottomLeft), SweepDirection = SweepDirection.Clockwise });
-            //KnockoutMask.Segments.Add(new LineSegment { Point = new Point(1, topLeft + 1) });
-        }
-
-        private ScrollViewer _scrollingHost;
-        private FrameworkElement _background;
-
-        public void UpdateKnockout(ScrollViewer scrollingHost, FrameworkElement background)
-        {
-            _scrollingHost = scrollingHost;
-            _background = background;
-        }
-
-        private void OnLayoutUpdated(object sender, object e)
-        {
-            if (_background == null)
-            {
-                return;
-            }
-
-            var transform = this.TransformToVisual(_background);
-            var point = transform.TransformPoint(new Point());
-
-            var properties = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(_scrollingHost);
-            var visual = ElementCompositionPreview.GetElementVisual(ContentPanel);
-
-            var offset = Window.Current.Compositor.CreateExpressionAnimation(point.Y + " + scrollViewer.Translation.Y");
-            offset.SetReferenceParameter("scrollViewer", properties);
-
-            visual.StopAnimation("Offset.Y");
-            visual.StartAnimation("Offset.Y", offset);
         }
     }
 }

@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Td.Api;
 using Unigram.Common;
 using Unigram.Controls;
-using Unigram.Controls.Views;
 using Unigram.Services;
 using Unigram.ViewModels.Delegates;
-using Unigram.Views.Channels;
-using Unigram.Views.Chats;
+using Unigram.Views.Popups;
 using Unigram.Views.Supergroups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -144,7 +140,7 @@ namespace Unigram.ViewModels.Supergroups
                 return;
             }
 
-            var selected = await ShareView.PickChatAsync(Strings.Resources.SelectContact);
+            var selected = await SharePopup.PickChatAsync(Strings.Resources.SelectContact);
             var user = CacheService.GetUser(selected);
 
             if (user == null)
@@ -152,7 +148,7 @@ namespace Unigram.ViewModels.Supergroups
                 return;
             }
 
-            var confirm = await TLMessageDialog.ShowAsync(string.Format(Strings.Resources.AddToTheGroup, user.GetFullName()), Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
+            var confirm = await MessagePopup.ShowAsync(string.Format(Strings.Resources.AddToTheGroup, user.GetFullName()), Strings.Resources.AppName, Strings.Resources.OK, Strings.Resources.Cancel);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;

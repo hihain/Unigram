@@ -36,7 +36,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="controls:MasterDetailView">
-                        <controls:MasterDetailPanel x:Name="AdaptivePanel" IsBlank="{TemplateBinding IsBlank}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                        <controls:MasterDetailPanel x:Name="AdaptivePanel" IsBlank="{TemplateBinding IsBlank}" Background="{ThemeResource PageBackgroundDarkBrush}">
                             <chats:ChatBackgroundPresenter
                                 Background="{ThemeResource ChatPageBackgroundBrush}"
                                 Opacity="{TemplateBinding BackgroundOpacity}"
@@ -44,8 +44,9 @@
 
                             <!--<Grid BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding Padding}" VerticalAlignment="Top"/>-->
 
-                            <ContentControl Content="{TemplateBinding Header}" IsTabStop="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" VerticalAlignment="Top"/>
-                            <ContentControl Content="{TemplateBinding PageHeader}" IsTabStop="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" VerticalAlignment="Top"/>
+                            <ContentControl Content="{TemplateBinding MasterHeader}" IsTabStop="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" VerticalAlignment="Top"/>
+                            <ContentControl Content="{TemplateBinding DetailHeader}" IsTabStop="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" VerticalAlignment="Top"/>
+                            <ContentControl Content="{TemplateBinding Banner}" IsTabStop="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" VerticalAlignment="Top"/>
 
                             <Grid x:Name="DetailPresenter">
                                 <Border VerticalAlignment="Top" Background="{TemplateBinding BorderBrush}" Height="{ThemeResource AppBarThemeCompactHeight}"/>
@@ -81,15 +82,25 @@
     </Page.Resources>
 
     <Grid>
-        <controls:MasterDetailView x:Name="MasterDetail" ViewStateChanged="OnStateChanged" Update="OnUpdate">
-            <controls:MasterDetailView.Header>
-                <Grid x:Name="TitleBarrr" Background="{ThemeResource PageTitleBackgroundBrush}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <ProgressBar x:Name="Status" VerticalAlignment="Top" Background="Transparent" Grid.ColumnSpan="2"/>
-                    <TextBlock x:Name="StatusLabel"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="TitleBarrr" Height="32" Background="{ThemeResource PageTitleBackgroundBrush}" Grid.ColumnSpan="2">
+            <contract7Present:Grid.BackgroundTransition>
+                <contract7Present:BrushTransition/>
+            </contract7Present:Grid.BackgroundTransition>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <ProgressBar x:Name="Status" VerticalAlignment="Top" Background="Transparent" Grid.ColumnSpan="2"/>
+            <TextBlock x:Name="StatusLabel"
                                VerticalAlignment="Center"
                                TextLineBounds="TrimToCapHeight"
                                Margin="6,0,0,0"
@@ -97,28 +108,143 @@
                                Foreground="{ThemeResource PageHeaderForegroundBrush}"
                                Style="{StaticResource CaptionTextBlockStyle}"
                                Grid.Column="1"/>
-                </Grid>
-            </controls:MasterDetailView.Header>
-            <controls:MasterDetailView.PageHeader>
+        </Grid>
+
+        <Border
+            x:Load="False"
+            x:Name="ChatTabsLeft"
+            Background="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}"
+            BorderBrush="{ThemeResource PageHeaderBackgroundBrush}"
+            BorderThickness="0,0,0,0"
+            Grid.Row="1">
+            <controls:TopNavView
+                x:Name="ChatFiltersSide"
+                ItemsSource="{x:Bind ViewModel.Filters}"
+                SelectedItem="{x:Bind ConvertFilter(ViewModel.SelectedFilter), Mode=TwoWay, BindBack=ConvertFilterBack}"
+                IsItemClickEnabled="True"
+                ItemClick="ChatFilter_ItemClick"
+                ItemContextRequested="ChatFilter_ContextRequested"
+                Orientation="Vertical"
+                AllowDrop="True"
+                CanDragItems="True"
+                CanReorderItems="False"
+                DragItemsStarting="ChatFilters_DragItemsStarting"
+                DragItemsCompleted="ChatFilters_DragItemsCompleted"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.HorizontalScrollMode="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                ScrollViewer.VerticalScrollMode="Auto"
+                Height="Auto"
+                Width="72">
+                <controls:TopNavView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:ChatFilterViewModel">
+                        <StackPanel Orientation="Vertical">
+                            <Grid>
+                                <BitmapIcon
+                                    UriSource="{x:Bind IconUri, Mode=OneWay}"
+                                    HorizontalAlignment="Center"
+                                    Width="36"
+                                    Height="36"/>
+                                <Border
+                                    Visibility="{x:Bind ShowUnmuted, Mode=OneWay}"
+                                    Background="{ThemeResource ChatUnreadBadgeBrush}"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Margin="0,0,-4,0"
+                                    MinWidth="20"
+                                    Height="20"
+                                    CornerRadius="10">
+                                    <TextBlock
+                                        Text="{x:Bind UnreadCount, Mode=OneWay}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Foreground="{ThemeResource ChatUnreadLabelBrush}"
+                                        TextAlignment="Center"
+                                        Margin="8,2,8,0"/>
+                                </Border>
+                                <Border
+                                    Visibility="{x:Bind ShowMuted, Mode=OneWay}"
+                                    Background="{ThemeResource ChatUnreadBadgeMutedBrush}"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Margin="0,0,-4,0"
+                                    MinWidth="20"
+                                    Height="20"
+                                    CornerRadius="10">
+                                    <TextBlock
+                                        Text="{x:Bind UnreadMutedCount, Mode=OneWay}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Foreground="{ThemeResource ChatUnreadLabelMutedBrush}"
+                                        TextAlignment="Center"
+                                        Margin="8,2,8,0"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock
+                                Text="{x:Bind Title, Mode=OneWay}"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap"
+                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </controls:TopNavView.ItemTemplate>
+                <controls:TopNavView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </controls:TopNavView.ItemsPanel>
+                <controls:TopNavView.ItemContainerStyle>
+                    <Style TargetType="controls:TopNavViewItem">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                        <Setter Property="UseSystemFocusVisuals" Value="True" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="controls:TopNavViewItem">
+                                    <Grid Background="Transparent">
+                                        <ContentPresenter
+                                            x:Name="ContentPresenter"
+                                            Grid.Column="1"
+                                            Margin="8,4,8,4"
+                                            TextWrapping="NoWrap"
+                                            Foreground="{TemplateBinding Foreground}"
+                                            ContentTransitions="{TemplateBinding ContentTransitions}"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            Content="{TemplateBinding Content}"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                            VerticalAlignment="Center"
+                                            AutomationProperties.AccessibilityView="Raw"/>
+                                        <Grid
+                                            x:Name="SelectionIndicatorGrid"
+                                            Margin="4,4,0,4"
+                                            HorizontalAlignment="Left">
+                                            <Rectangle
+                                                x:Name="SelectionIndicator"
+                                                Width="2"
+                                                Fill="{ThemeResource NavigationViewSelectionIndicatorForeground}"
+                                                Opacity="0"
+                                                RadiusX="{Binding Source={ThemeResource ControlCornerRadius}, Converter={StaticResource TopLeftCornerRadiusDoubleValueConverter}}"
+                                                RadiusY="{Binding Source={ThemeResource ControlCornerRadius}, Converter={StaticResource BottomRightCornerRadiusDoubleValueConverter}}" />
+                                        </Grid>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </controls:TopNavView.ItemContainerStyle>
+                <controls:TopNavView.RenderTransform>
+                    <ScaleTransform ScaleX="{x:Bind CurrentSettingsService.Appearance.TabsLeftLayoutScale, Mode=OneWay}" ScaleY="{x:Bind CurrentSettingsService.Appearance.TabsLeftLayoutScale, Mode=OneWay}" />
+                </controls:TopNavView.RenderTransform>
+            </controls:TopNavView>
+        </Border>
+        
+        <controls:MasterDetailView x:Name="MasterDetail" ViewStateChanged="OnStateChanged" Update="OnUpdate" Grid.Column="1" Grid.Row="1">
+            <controls:MasterDetailView.Banner>
                 <controls:PlaybackHeader x:Name="Playback"/>
-            </controls:MasterDetailView.PageHeader>
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup>
-                    <VisualState x:Name="Normal"/>
-                    <VisualState x:Name="TitleBar">
-                        <VisualState.Setters>
-                            <Setter Target="MasterDetail.BorderBrush" Value="{ThemeResource PageHeaderBackgroundBrush}"/>
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
-            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
+            </controls:MasterDetailView.Banner>
+            <controls:MasterDetailView.MasterHeader>
                 <controls:ContentPageHeader x:Name="PageHeader" BackVisibility="Collapsed" Grid.Row="1">
                     <Grid x:Name="Header">
                         <Grid.ColumnDefinitions>
@@ -136,13 +262,13 @@
                                 AutomationProperties.LandmarkType="Search"
                                 Content="{CustomResource Search}"
                                 Foreground="{ThemeResource TextControlPlaceholderForeground}"
-                                Background="{ThemeResource TextControlBackground}"
-                                BorderBrush="{ThemeResource TextControlBorderBrush}"
-                                Padding="{ThemeResource TextControlThemePadding}"
+                                Background="{ThemeResource PageBackgroundDarkBrush}"
+                                BorderBrush="{ThemeResource PageBackgroundDarkBrush}"
                                 HorizontalContentAlignment="Left"
                                 HorizontalAlignment="Stretch"
-                                VerticalAlignment="Bottom"
-                                Margin="0,0,0,8"/>
+                                VerticalAlignment="Center"
+                                Height="32"
+                                Padding="9,0,6,0"/>
 
                             <StackPanel x:Name="SettingsOptions" Orientation="Horizontal" Grid.Column="1">
                                 <Button Foreground="{ThemeResource PageHeaderForegroundBrush}"
@@ -172,7 +298,7 @@
                                                 Text="{CustomResource LogOut}">
                                                 <!--
                                                 <MenuFlyoutItem.Icon>
-                                                    <FontIcon Glyph="&#xF3B1;"/>
+                                                    <FontIcon Glyph="&#xF3B1;" FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
                                                 </MenuFlyoutItem.Icon>
                                                 -->
                                             </MenuFlyoutItem>
@@ -294,19 +420,41 @@
                                 Grid.Column="7"/>
                         </Grid>
 
-                        <controls:SearchTextBox
+                        <TextBox
                             x:Name="SearchField"
-                            Style="{StaticResource QueryTextBoxStyle}"
                             PlaceholderText="{CustomResource Search}"
+                            Background="{ThemeResource PageBackgroundDarkBrush}"
+                            BorderBrush="{ThemeResource PageBackgroundDarkBrush}"
                             PreventKeyboardDisplayOnProgrammaticFocus="True"
-                            Delete="Search_LostFocus"
+                            VerticalAlignment="Center"
                             TextChanged="Search_TextChanged"
                             KeyDown="Search_KeyDown"
                             Visibility="Collapsed"
-                            Margin="0,0,12,8"
+                            Margin="0,0,12,0"
                             Grid.Column="1"/>
                     </Grid>
                 </controls:ContentPageHeader>
+            </controls:MasterDetailView.MasterHeader>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup>
+                    <VisualState x:Name="Normal"/>
+                    <VisualState x:Name="TitleBar">
+                        <VisualState.Setters>
+                            <Setter Target="MasterDetail.BorderBrush" Value="{ThemeResource PageHeaderBackgroundBrush}"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <contract7Present:Grid.BackgroundTransition>
+                    <contract7Present:BrushTransition/>
+                </contract7Present:Grid.BackgroundTransition>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
                 <Grid x:Name="CallBanner" Visibility="Collapsed" Height="32" Background="{ThemeResource SystemControlHighlightAccentBrush}" Grid.Row="2">
                     <Button Command="{x:Bind ViewModel.ReturnToCallCommand}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource EmptyButtonStyle}">
@@ -499,14 +647,24 @@
                                                 x:Name="ChatFilters"
                                                 ItemsSource="{x:Bind ViewModel.Filters}"
                                                 SelectedItem="{x:Bind ConvertFilter(ViewModel.SelectedFilter), Mode=TwoWay, BindBack=ConvertFilterBack}"
-                                                ItemContextRequested="ChatListFolder_ContextRequested"
+                                                IsItemClickEnabled="True"
+                                                ItemClick="ChatFilter_ItemClick"
+                                                ItemContextRequested="ChatFilter_ContextRequested"
+                                                AllowDrop="True"
+                                                CanDragItems="True"
+                                                CanReorderItems="False"
+                                                DragItemsStarting="ChatFilters_DragItemsStarting"
+                                                DragItemsCompleted="ChatFilters_DragItemsCompleted"
                                                 Height="40">
                                                 <controls:TopNavView.ItemTemplate>
                                                     <DataTemplate x:DataType="viewModels:ChatFilterViewModel">
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="{x:Bind Title, Mode=OneWay}" VerticalAlignment="Top"/>
+                                                            <TextBlock
+                                                                Text="{x:Bind Title, Mode=OneWay}"
+                                                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                                VerticalAlignment="Top"/>
                                                             <Border
-                                                                Visibility="{x:Bind UnreadCount, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                Visibility="{x:Bind ShowUnmuted, Mode=OneWay}"
                                                                 Background="{ThemeResource ChatUnreadBadgeBrush}"
                                                                 MinWidth="20"
                                                                 Height="20"
@@ -516,6 +674,20 @@
                                                                     Text="{x:Bind UnreadCount, Mode=OneWay}"
                                                                     Style="{StaticResource CaptionTextBlockStyle}"
                                                                     Foreground="{ThemeResource ChatUnreadLabelBrush}"
+                                                                    TextAlignment="Center"
+                                                                    Margin="6,2,6,0"/>
+                                                            </Border>
+                                                            <Border
+                                                                Visibility="{x:Bind ShowMuted, Mode=OneWay}"
+                                                                Background="{ThemeResource ChatUnreadBadgeMutedBrush}"
+                                                                MinWidth="20"
+                                                                Height="20"
+                                                                CornerRadius="10"
+                                                                Margin="8,0,0,0">
+                                                                <TextBlock
+                                                                    Text="{x:Bind UnreadMutedCount, Mode=OneWay}"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Foreground="{ThemeResource ChatUnreadLabelMutedBrush}"
                                                                     TextAlignment="Center"
                                                                     Margin="6,2,6,0"/>
                                                             </Border>
@@ -576,7 +748,32 @@
                                         ItemsSource="{x:Bind ViewModel.Folder.Items, Mode=OneWay}"
                                         SelectionMode2="{x:Bind ViewModel.Folder.SelectionMode, Mode=TwoWay}"/>
                                 </Grid>
-
+<!--
+                                <Grid
+                                    VerticalAlignment="Bottom"
+                                    HorizontalAlignment="Center"
+                                    Margin="12"
+                                    Grid.Row="1">
+                                    <Rectangle
+                                        x:Name="UpdateShadow"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Fill="{ThemeResource StartButtonBackground}"
+                                        Margin="2"
+                                        RadiusX="18"
+                                        RadiusY="18"/>
+                                    <controls:BadgeButton
+                                        x:Name="UpdateCloud"
+                                        Command="{x:Bind ViewModel.UpdateAppCommand}"
+                                        Visibility="{x:Bind ViewModel.IsUpdateAvailable, Mode=OneWay}"
+                                        Content="{CustomResource UpdateTelegram}"
+                                        Style="{StaticResource StartButtonStyle}"
+                                        Padding="16,3,16,5"
+                                        Radius="18"
+                                        Margin="0"
+                                        Height="36"/>
+                                </Grid>
+-->
                                 <controls:UndoView x:Name="Undo" VerticalAlignment="Bottom" Grid.Row="1"/>
 
                                 <!--<StackPanel x:Name="Arrow" VerticalAlignment="Bottom" HorizontalAlignment="Right">
@@ -801,13 +998,15 @@
                     </PivotItem>
                 </Pivot>
 
-                <Border x:Name="Separator" BorderBrush="{ThemeResource PageHeaderBorderBrush}" BorderThickness="1,0,0,0" IsHitTestVisible="False" HorizontalAlignment="Right" Grid.RowSpan="4" Grid.Row="1"/>
+                <Border x:Name="Separator" BorderBrush="{ThemeResource PageHeaderBorderBrush}" BorderThickness="1,0,0,0" IsHitTestVisible="False" HorizontalAlignment="Right" Margin="0,-48,0,0" Grid.RowSpan="4" Grid.Row="1"/>
             </Grid>
         </controls:MasterDetailView>
 
         <controls:ConfettiView
             x:Name="Confetti"
             Completed="Confetti_Completed"
-            IsHitTestVisible="False"/>
+            IsHitTestVisible="False"
+            Grid.ColumnSpan="2"
+            Grid.Row="1"/>
     </Grid>
 </Page>

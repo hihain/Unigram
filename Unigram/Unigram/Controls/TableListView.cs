@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Unigram.Common;
 using Windows.Foundation.Metadata;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Media;
 
 namespace Unigram.Controls
 {
@@ -27,7 +21,7 @@ namespace Unigram.Controls
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             var root = ItemsPanelRoot;
-            if (root == null || !ApiInformation.IsMethodPresent("Windows.UI.Composition.Compositor", "CreateGeometricClip"))
+            if (root == null || !ApiInfo.CanCreateGeometricClip)
             {
                 return;
             }
@@ -89,13 +83,19 @@ namespace Unigram.Controls
         private static void OnItemsPanelCornerRadiusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var root = ((TableListView)d).ItemsPanelRoot;
-            if (root == null || !ApiInformation.IsMethodPresent("Windows.UI.Composition.Compositor", "CreateGeometricClip"))
+            if (root == null || !ApiInfo.CanCreateGeometricClip)
             {
                 return;
             }
 
             var visual = ElementCompositionPreview.GetElementVisual(root);
+
             var clip = visual.Clip as CompositionGeometricClip;
+            if (clip == null)
+            {
+                return;
+            }
+
             var rect = clip.Geometry as CompositionRoundedRectangleGeometry;
 
             var radius = ((TableListView)d).ItemsPanelCornerRadius;

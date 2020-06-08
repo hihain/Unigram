@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Unigram.Views.Settings
 {
-    public sealed partial class SettingsStorageOptimizationPage : TLContentDialog
+    public sealed partial class SettingsStorageOptimizationPage : ContentPopup
     {
         public SettingsStorageOptimizationPage(IProtoService protoService, StorageStatisticsByChat statistics)
         {
@@ -22,7 +22,7 @@ namespace Unigram.Views.Settings
 
             var chat = protoService.GetChat(statistics.ChatId);
 
-            TitleChat.Text = chat == null ? "Other Chats" : protoService.GetTitle(chat);
+            TitleChat.Text = chat == null ? Strings.Additional.SettingsStorageOtherChats : protoService.GetTitle(chat);
             Subtitle.Text = FileSizeConverter.Convert(statistics.Size, true);
 
             Photo.Source = chat == null ? null : PlaceholderHelper.GetChat(protoService, chat, (int)Photo.Width);
@@ -112,7 +112,7 @@ namespace Unigram.Views.Settings
             var items = List.ItemsSource as IList<StorageChartItem>;
             if (items != null)
             {
-                SelectedItems = items.SelectMany(x => x.Types).ToList();
+                SelectedItems = items.Where(x => x.IsVisible).SelectMany(x => x.Types).ToList();
             }
             else
             {
@@ -136,8 +136,24 @@ namespace Unigram.Views.Settings
                 return;
             }
 
-            item.IsVisible = check.IsChecked == true;
-            Chart.Update(index, item.IsVisible);
+            if (item.IsVisible && Chart.Items.Except(new[] { item }).Any(x => x.IsVisible))
+            {
+                item.IsVisible = false;
+                check.IsChecked = false;
+
+                Chart.Update(index, item.IsVisible);
+            }
+            else if (!item.IsVisible)
+            {
+                item.IsVisible = true;
+                check.IsChecked = true;
+
+                Chart.Update(index, item.IsVisible);
+            }
+            else
+            {
+                VisualUtilities.ShakeView(check);
+            }
 
             var size = Chart.Items.Where(x => x.IsVisible).Sum(x => x.Size);
             var readable = FileSizeConverter.Convert(size, true).Split(' ');

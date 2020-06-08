@@ -1,26 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Unigram.Common;
 using Unigram.ViewModels.Settings;
 using Unigram.ViewModels.Settings.Privacy;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace Unigram.Views.Settings.Privacy
 {
-    public sealed partial class SettingsPrivacyShowForwardedPage : Page
+    public sealed partial class SettingsPrivacyShowForwardedPage : HostedPage
     {
         public SettingsPrivacyShowForwardedViewModel ViewModel => DataContext as SettingsPrivacyShowForwardedViewModel;
 
@@ -37,7 +27,7 @@ namespace Unigram.Views.Settings.Privacy
 
             BackgroundPresenter.Update(ViewModel.SessionId, ViewModel.ProtoService, ViewModel.Aggregator);
 
-            if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.UIElement", "Shadow"))
+            if (ApiInfo.CanUseShadow)
             {
                 var themeShadow = new ThemeShadow();
                 ToolTip.Shadow = themeShadow;

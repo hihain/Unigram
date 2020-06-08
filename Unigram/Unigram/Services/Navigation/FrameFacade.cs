@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using Unigram.Common;
 using Unigram.Navigation;
+using Unigram.Services.Serialization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using Unigram.Services.Serialization;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
-using Unigram.Common;
 
 namespace Unigram.Services.Navigation
 {
@@ -18,7 +18,7 @@ namespace Unigram.Services.Navigation
         #region Debug
 
         [Conditional("DEBUG")]
-        static void DebugWrite(string text = null, Services.Logging.Severities severity = Logging.Severities.Template10, [CallerMemberName]string caller = null) =>
+        static void DebugWrite(string text = null, Services.Logging.Severities severity = Logging.Severities.Template10, [CallerMemberName] string caller = null) =>
             Logging.LoggingService.WriteLine(text, severity, caller: $"{nameof(FrameFacade)}.{caller}");
 
         #endregion
@@ -216,8 +216,8 @@ namespace Unigram.Services.Navigation
         {
             DebugWrite();
 
-            
-            
+
+
             try
             {
                 object context = (Frame as FrameworkElement).DataContext;
@@ -225,7 +225,7 @@ namespace Unigram.Services.Navigation
                 // navigates to the current page with new parameters.
                 Frame.Navigate(CurrentPageType, param, new SuppressNavigationTransitionInfo());
                 (Frame as FrameworkElement).DataContext = context;
-              
+
             }
             catch (Exception)
             {
