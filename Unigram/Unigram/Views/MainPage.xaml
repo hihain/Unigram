@@ -108,7 +108,6 @@
         </Grid>
 
         <Border
-            x:Load="False"
             x:Name="ChatTabsLeft"
             Background="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}"
             BorderBrush="{ThemeResource PageHeaderBackgroundBrush}"

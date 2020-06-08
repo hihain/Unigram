@@ -31,7 +31,6 @@
 
         <controls:ColorSlider
             x:Name="DrawSlider"
-            x:Load="False"
             StrokeChanged="DrawSlider_StrokeChanged"
             Margin="12,0,12,24"
             MaxWidth="320"
@@ -111,7 +110,7 @@
                     Grid.Column="3"/>
             </Grid>
 
-            <Grid x:Name="DrawToolbar" x:Load="False" Grid.Column="2">
+            <Grid x:Name="DrawToolbar" Grid.Column="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>

@@ -310,7 +310,6 @@
             </ListView.ItemContainerStyle>
         </ListView>
         <ListView x:Name="Album"
-                  x:Load="False"
                   ItemsSource="{x:Bind Items}"
                   ItemTemplate="{StaticResource MediaItemTemplate}"
                   ItemsPanel="{StaticResource AlbumPanelTemplate}"
