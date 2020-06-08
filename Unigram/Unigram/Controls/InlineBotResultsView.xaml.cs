@@ -59,6 +59,7 @@ namespace Unigram.Controls
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
+#if !M14939
             var layout = Resources["GridLayout"] as UniformGridLayout;
             if (layout == null)
             {
@@ -77,6 +78,7 @@ namespace Unigram.Controls
             {
                 layout.MaximumRowsOrColumns = (int)Math.Ceiling(e.NewSize.Width / 96);
             }
+#endif
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
