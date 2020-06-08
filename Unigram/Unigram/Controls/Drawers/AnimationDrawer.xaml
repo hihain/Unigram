@@ -29,7 +29,7 @@
                 Grid.Row="1"/>
         </Border>
 
-        <muxc:ProgressRing
+        <ProgressRing
             IsActive="{x:Bind ViewModel.Items.IsLoading, Mode=OneWay}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
