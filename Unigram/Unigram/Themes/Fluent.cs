@@ -49,11 +49,15 @@ namespace Unigram.Themes
             {
                 MergedDictionaries.Add(new Microsoft.UI.Xaml.Controls.XamlControlsResources());
             }
-            else
+            else if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 4))
             {
                 // We don't want any kind of fluent effect prior to Fall Creators Update (so fluent will affect PCs only)
                 MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("ms-appx://Microsoft.UI.Xaml.2.1/Microsoft.UI.Xaml/Themes/rs2_themeresources.xaml") });
                 //this["NavigationViewTopPaneHeight"] = 48d;
+            }
+            else
+            {
+                MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("ms-appx://Microsoft.UI.Xaml.2.1/Microsoft.UI.Xaml/Themes/rs1_themeresources.xaml") });
             }
 
             // Add named themes for custom controls;
