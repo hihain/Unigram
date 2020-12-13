@@ -307,6 +307,8 @@ namespace Unigram.Views.Popups
         private void ResetUiVisibility()
         {
             Cropper.IsCropEnabled = false;
+            Menu.Height = new GridLength(32);
+            Cropper.Padding = new Thickness(8, 0, 8, 8);
             Canvas.IsEnabled = false;
             CaptionInput.Visibility = _hasMessageContext ? Visibility.Visible : Visibility.Collapsed;
             BasicToolbar.Visibility = Visibility.Visible;
@@ -525,6 +527,8 @@ namespace Unigram.Views.Popups
         private void Crop_Click(object sender, RoutedEventArgs e)
         {
             ResetUiVisibility();
+            Menu.Height = new GridLength(1, GridUnitType.Auto);
+            Cropper.Padding = new Thickness(12);
             Cropper.IsCropEnabled = true;
             CaptionInput.Visibility = Visibility.Collapsed;
             BasicToolbar.Visibility = Visibility.Collapsed;
